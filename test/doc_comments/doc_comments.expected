@@ -1,0 +1,543 @@
+== ambiguous.ml
+  | let x = 1 (** After x and before y, without blank lines. *)
+  | let y = 2
+AST:
+  let x = 1[@@ocaml.doc " After x and before y, without blank lines. "]
+  let y = 2[@@ocaml.doc " After x and before y, without blank lines. "]
+Warning: line 1, characters 10-59: ambiguous doc comment
+The compiler agrees.
+
+== ambiguous_two.ml
+  | let x = 1 (** After x. *) (** Between. *) (** Before y. *)
+  | let y = 2
+AST:
+  let x = 1[@@ocaml.doc " After x. "]
+  let y = 2[@@ocaml.doc " Before y. "]
+Warning: line 1, characters 10-25: ambiguous doc comment
+Warning: line 1, characters 26-41: unattached doc comment
+Warning: line 1, characters 42-58: ambiguous doc comment
+The compiler agrees.
+
+== and_groups.ml
+  | let x = 1 (** x. *)
+  | 
+  | and y = 2
+  | (** Ambiguous between y and z. *)
+  | and z = 3
+  | 
+  | type t = int (** t. *)
+  | 
+  | (** Text before u. *)
+  | 
+  | and u = bool
+  | 
+  | module rec M : sig end = struct end (** M. *)
+  | 
+  | and N : sig end = struct end
+  | 
+  | class c = object end (** c. *)
+  | and d = object end
+AST:
+  let x = 1[@@ocaml.doc " x. "]
+  and y = 2[@@ocaml.doc " Ambiguous between y and z. "]
+  and z = 3[@@ocaml.doc " Ambiguous between y and z. "]
+  type t = int[@@ocaml.doc " t. "]
+  and u = bool[@@ocaml.text " Text before u. "]
+  module rec M:sig  end = struct  end[@@ocaml.doc " M. "]
+   and N:sig  end = struct  end
+  class c = object  end[@@ocaml.doc " c. "]
+  and d = object  end[@@ocaml.doc " c. "]
+Warning: line 4, characters 0-33: ambiguous doc comment
+Warning: line 17, characters 21-30: ambiguous doc comment
+The compiler agrees.
+
+== arrows.mli
+  | val f : x:int (** x. *) -> ?y:int (** y. *) -> int (** Unlabelled. *) -> unit
+AST:
+  val f :
+    x:((int)[@ocaml.doc " x. "]) ->
+      ?y:((int)[@ocaml.doc " y. "]) ->
+        ((int)[@ocaml.doc " Unlabelled. "]) -> unit
+The compiler agrees.
+
+== attributes_mark.ml
+  | [@@@attr] (** Marked by the attribute, and before x. *)
+  | let x = 1
+  | let y = 2 (** After y, and marked by the attribute. *)
+  | [@@@attr]
+AST:
+  [@@@attr ]
+  let x = 1[@@ocaml.doc " Marked by the attribute, and before x. "]
+  let y = 2[@@ocaml.doc " After y, and marked by the attribute. "]
+  [@@@attr ]
+Warning: line 1, characters 10-55: ambiguous doc comment
+Warning: line 3, characters 10-54: ambiguous doc comment
+The compiler agrees.
+
+== classes.ml
+  | class c = object
+  |   (** At the start. *)
+  | 
+  |   val x = 1 (** x. *)
+  | 
+  |   method m = x
+  |   (** Ambiguous between m and n. *)
+  |   method n = x
+  | 
+  |   [@@@attr] (** Marked by the floating attribute. *)
+  | 
+  |   (** At the end. *)
+  | end
+  | 
+  | class type ct = object
+  |   method m : int (** m. *)
+  | 
+  |   (** Text. *)
+  | 
+  |   method n : int
+  | end
+AST:
+  class c =
+    object
+      [@@@ocaml.text " At the start. "]
+      val x = 1[@@ocaml.doc " x. "]
+      method m = x[@@ocaml.doc " Ambiguous between m and n. "]
+      method n = x[@@ocaml.doc " Ambiguous between m and n. "]
+      [@@@attr ]
+      [@@@ocaml.text " At the end. "]
+    end
+  class type ct =
+    object
+      method  m : int[@@ocaml.doc " m. "]
+      [@@@ocaml.text " Text. "]
+      method  n : int
+    end
+Warning: line 7, characters 2-35: ambiguous doc comment
+Warning: line 10, characters 12-52: unattached doc comment
+The compiler agrees.
+
+== constructors.ml
+  | type t =
+  |   | A (** A. *)
+  |   | B of int (** B. *)
+  | (** After t. *)
+  | 
+  | type u = C (** C or u? *)
+  | 
+  | type t += D (** D. *) | E (** E. *)
+  | 
+  | exception F (** F. *)
+AST:
+  type t =
+    | A [@ocaml.doc " A. "]
+    | B of int [@ocaml.doc " B. "][@@ocaml.doc " After t. "]
+  type u =
+    | C [@ocaml.doc " C or u? "]
+  type t +=  
+    | D [@ocaml.doc " D. "]
+    | E [@ocaml.doc " E. "]
+  exception F [@ocaml.doc " F. "]
+The compiler agrees.
+
+== empty_doc.ml
+  | (**)
+  | let x = 1 (**)
+  | 
+  | let y = 2
+AST:
+  let x = 1
+  let y = 2
+The compiler agrees.
+
+== expression_let.ml
+  | let x =
+  |   let y = 1 (** Unattached in an expression. *)
+  |   and z = 2 in
+  |   y + z
+AST:
+  let x = let y = 1
+          and z = 2 in y + z
+Warning: line 2, characters 12-47: unattached doc comment
+The compiler agrees.
+
+== extra_text.ml
+  | (** At the start of the file. *)
+  | 
+  | let x = 1
+  | 
+  | module Empty = struct (** In an empty structure. *) end
+  | 
+  | module M = struct
+  |   (** At the start. *)
+  | 
+  |   let y = 2
+  | 
+  |   (** At the end. *)
+  | end
+  | 
+  | (** At the end of the file. *)
+AST:
+  [@@@ocaml.text " At the start of the file. "]
+  let x = 1
+  module Empty = struct [@@@ocaml.text " In an empty structure. "] end
+  module M =
+    struct
+      [@@@ocaml.text " At the start. "]
+      let y = 2
+      [@@@ocaml.text " At the end. "]
+    end
+  [@@@ocaml.text " At the end of the file. "]
+The compiler agrees.
+
+== floating.ml
+  | let x = 1
+  | 
+  | (** Floating text. *)
+  | 
+  | (** More text. *)
+  | 
+  | let y = 2
+AST:
+  let x = 1
+  [@@@ocaml.text " Floating text. "]
+  [@@@ocaml.text " More text. "]
+  let y = 2
+The compiler agrees.
+
+== item_extension_docs.mli
+  | module %ext M : S (** M. *)
+  | ;;
+  | module %ext N (X : S) : S [@@attr] (** N. *);;
+  | module %ext rec A : S (** A. *)
+  | and B : S
+  | type%ext t (** t. *)
+  | val%ext x : int (** x. *)
+AST:
+  [%%ext : module M : S[@@ocaml.doc " M. "]]
+  [%%ext : module N : (X : S) -> S[@@attr ][@@ocaml.doc " N. "]]
+  [%%ext : module rec A: S[@@ocaml.doc " A. "] and B: S[@@ocaml.doc " A. "]]
+  [%%ext : type t[@@ocaml.doc " t. "]]
+  [%%ext : val x : int[@@ocaml.doc " t. "][@@ocaml.doc " x. "]]
+Warning: line 4, characters 22-31: ambiguous doc comment
+Warning: line 6, characters 11-20: ambiguous doc comment
+The compiler agrees.
+
+== item_extension_docs_impl.ml
+  | module%ext M = N (** M. *)
+  | ;;
+  | module%ext N (X : S) = X [@@attr] (** N. *);;
+  | module%ext rec A : S = A (** A. *)
+  | and B : S = B
+  | type%ext t (** t. *)
+  | let%ext x = 1 (** x. *)
+AST:
+  [%%ext module M = N[@@ocaml.doc " M. "]]
+  [%%ext module N(X:S) = X[@@attr ][@@ocaml.doc " N. "]]
+  [%%ext
+    module rec A:S = A[@@ocaml.doc " A. "]  and B:S = B[@@ocaml.doc " A. "]]
+  [%%ext type t[@@ocaml.doc " t. "]]
+  [%%ext let x = 1[@@ocaml.doc " t. "][@@ocaml.doc " x. "]]
+Warning: line 4, characters 25-34: ambiguous doc comment
+Warning: line 6, characters 11-20: ambiguous doc comment
+The compiler agrees.
+
+== local_items.ml
+  | let x =
+  |   let (** Before M. *) module M = struct end (** After M. *) in
+  |   let type t = A (** A. *) in
+  |   let [@@@a] (** Marked by the attribute. *) in
+  |   ()
+AST:
+  let x =
+    let
+      module M = struct  end[@@ocaml.doc " Before M. "][@@ocaml.doc
+                                                         " After M. "] in
+      let type t =
+            | A [@ocaml.doc " A. "] in let [@@@a ] in ()
+Warning: line 4, characters 13-44: unattached doc comment
+The compiler agrees.
+
+== many_in_a_row.ml
+  | let x = 1 (** One. *) (** Two. *) (** Three. *)
+  | 
+  | (** Four. *) (** Five. *)
+  | 
+  | (** Six. *) (** Seven. *)
+  | let y = 2
+AST:
+  let x = 1[@@ocaml.doc " One. "]
+  [@@@ocaml.text " Four. "]
+  [@@@ocaml.text " Five. "]
+  let y = 2[@@ocaml.doc " Seven. "]
+Warning: line 1, characters 22-33: unattached doc comment
+Warning: line 1, characters 34-47: unattached doc comment
+Warning: line 5, characters 0-11: unattached doc comment
+The compiler agrees.
+
+== module_anonymous_doc.mli
+  | module _ : S (** doc *)
+AST:
+  module _ : S[@@ocaml.doc " doc "]
+The compiler agrees.
+
+== module_attribute_doc.mli
+  | module %ext [@a] M : S (** doc *)
+AST:
+  [%%ext : module M : S[@@a ][@@ocaml.doc " doc "]]
+The compiler agrees.
+
+== module_doc_before_rec.mli
+  | module M : S (** doc *);; module rec A : S
+AST:
+  module M : S[@@ocaml.doc " doc "]
+  module rec A: S
+The compiler agrees.
+
+== module_doc_before_rec_group.mli
+  | ;; module M : S (** doc *);; module rec _ : S and X : S
+AST:
+  module M : S[@@ocaml.doc " doc "]
+  module rec _: S
+  and X: S
+The compiler agrees.
+
+== module_functor_unit_doc.mli
+  | module M (X : S) () : S (** doc *)
+AST:
+  module M : (X : S) -> () -> S[@@ocaml.doc " doc "]
+The compiler agrees.
+
+== module_fuzz_reduced_doc.mli
+  | module %class _ (_ : S) () : {%ext|s|} [@@as] (** doc *)
+AST:
+  [%%class : module _ : S -> () -> [%ext {|s|}][@@as ][@@ocaml.doc " doc "]]
+The compiler agrees.
+
+== module_keyword_attributes_doc.mli
+  | module M : S [@@as] [@@nonrec] (** doc *)
+AST:
+  module M : S[@@as ][@@nonrec ][@@ocaml.doc " doc "]
+The compiler agrees.
+
+== module_keyword_extension_doc.mli
+  | module %class M : S (** doc *)
+AST:
+  [%%class : module M : S[@@ocaml.doc " doc "]]
+The compiler agrees.
+
+== module_quoted_extension_doc.mli
+  | module M : {%ext|s|} (** doc *)
+AST:
+  module M : [%ext {|s|}][@@ocaml.doc " doc "]
+The compiler agrees.
+
+== module_semisemi_doc.mli
+  | ;; module M : S (** doc *);;
+AST:
+  module M : S[@@ocaml.doc " doc "]
+The compiler agrees.
+
+== module_unit_doc.mli
+  | module M () : S (** doc *)
+AST:
+  module M : () -> S[@@ocaml.doc " doc "]
+The compiler agrees.
+
+== payload_before_docs.mli
+  | module %ext [@a let x = 1] M : S (** M. *)
+  | module [@a let x = 1] rec A : S (** A. *)
+  | and [@a let y = 2] B : S (** B. *)
+  | class [@a let x = 1] c : object end (** c. *)
+  | type [@a let x = 1] t (** t. *)
+  | val [@a let x = 1] x : int (** x. *)
+AST:
+  [%%ext : module M : S[@@a let x = 1][@@ocaml.doc " M. "]]
+  module rec A: S[@@ocaml.doc " M. "][@@a let x = 1][@@ocaml.doc " A. "]
+  and B: S[@@ocaml.doc " A. "][@@a let y = 2][@@ocaml.doc " B. "]
+  class c : object  end[@@ocaml.doc " B. "][@@a let x = 1][@@ocaml.doc " c. "]
+  type t[@@ocaml.doc " c. "][@@a let x = 1][@@ocaml.doc " t. "]
+  val x : int[@@ocaml.doc " t. "][@@a let x = 1][@@ocaml.doc " x. "]
+Warning: line 1, characters 33-42: ambiguous doc comment
+Warning: line 2, characters 32-41: ambiguous doc comment
+Warning: line 3, characters 25-34: ambiguous doc comment
+Warning: line 4, characters 36-45: ambiguous doc comment
+Warning: line 5, characters 22-31: ambiguous doc comment
+The compiler agrees.
+
+== payload_before_docs_impl.ml
+  | module [@a let x = 1] M = N (** M. *)
+  | module [@a let x = 1] rec A : S = A (** A. *)
+  | and [@a let y = 2] B : S = B (** B. *)
+  | class [@a let x = 1] c = object end (** c. *)
+  | let [@a let x = 1] x = 1 (** x. *)
+  | type [@a let x = 1] t (** t. *)
+  | external [@a let x = 1] f : int -> int = "f" (** f. *)
+AST:
+  module M = N[@@a let x = 1][@@ocaml.doc " M. "]
+  module rec A:S = A[@@ocaml.doc " M. "][@@a let x = 1][@@ocaml.doc " A. "]
+   and B:S = B[@@ocaml.doc " A. "][@@a let y = 2][@@ocaml.doc " B. "]
+  class c = object  end[@@ocaml.doc " B. "][@@a let x = 1][@@ocaml.doc " c. "]
+  let x = 1[@@ocaml.doc " c. "][@@a let x = 1][@@ocaml.doc " x. "]
+  type t[@@ocaml.doc " x. "][@@a let x = 1][@@ocaml.doc " t. "]
+  external f : int -> int = "f"[@@ocaml.doc " t. "][@@a let x = 1][@@ocaml.doc
+                                                                    " f. "]
+Warning: line 1, characters 28-37: ambiguous doc comment
+Warning: line 2, characters 36-45: ambiguous doc comment
+Warning: line 3, characters 29-38: ambiguous doc comment
+Warning: line 4, characters 36-45: ambiguous doc comment
+Warning: line 5, characters 25-34: ambiguous doc comment
+Warning: line 6, characters 22-31: ambiguous doc comment
+The compiler agrees.
+
+== pre_post.ml
+  | (** Before x. *)
+  | let x = 1
+  | 
+  | let y = 2
+  | (** After y. *)
+  | 
+  | (** Before z. *)
+  | 
+  | let z = 3
+AST:
+  let x = 1[@@ocaml.doc " Before x. "]
+  let y = 2[@@ocaml.doc " After y. "]
+  [@@@ocaml.text " Before z. "]
+  let z = 3
+The compiler agrees.
+
+== records.ml
+  | type t = {
+  |   x : int; (** After the semicolon. *)
+  |   y : int (** Before the semicolon. *);
+  |   z : int (** Without a semicolon. *)
+  | }
+  | 
+  | type u = { a : int (** Both. *); (** Second one. *) }
+AST:
+  type t =
+    {
+    x: int [@ocaml.doc " After the semicolon. "];
+    y: int [@ocaml.doc " Before the semicolon. "];
+    z: int [@ocaml.doc " Without a semicolon. "]}
+  type u = {
+    a: int [@ocaml.doc " Both. "]}
+Warning: line 7, characters 33-51: unattached doc comment
+The compiler agrees.
+
+== semisemi_let_and.ml
+  | let () = ()
+  | ;;
+  | (** Before x. *)
+  | let x = 1
+  | (** After x. *)
+  | and y = 2
+  | (** After y. *)
+  | ;;
+  | (** Before the expression. *)
+  | let x = 1
+  | (** After x, in the expression. *)
+  | and y = 2
+  | (** After y, in the expression. *)
+  | in
+  | x + y
+  | ;;
+  | let%ext x = 1 (** x. *) and y = 2 in x
+  | ;;
+  | let module M = N (** M. *) in M.x
+AST:
+  let () = ()
+  let x = 1[@@ocaml.doc " Before x. "][@@ocaml.doc " After x. "]
+  and y = 2[@@ocaml.doc " After x. "][@@ocaml.doc " After y. "]
+  ;;let x = 1
+    and y = 2 in x + y
+  ;;[%ext let x = 1
+          and y = 2 in x]
+  ;;let module M = N[@@ocaml.doc " M. "] in M.x
+Warning: line 5, characters 0-15: ambiguous doc comment
+Warning: line 9, characters 0-29: unattached doc comment
+Warning: line 11, characters 0-34: unattached doc comment
+Warning: line 13, characters 0-34: unattached doc comment
+Warning: line 17, characters 14-23: unattached doc comment
+The compiler agrees.
+
+== semisemi_only.ml
+  | ;; (** Between semicolons. *) ;;
+  | 
+  | module M = struct ;; (** Alone. *) end
+AST:
+  module M = struct [@@@ocaml.text " Alone. "] end
+Warning: line 1, characters 3-29: unattached doc comment
+The compiler agrees.
+
+== signature.mli
+  | (** At the start. *)
+  | 
+  | val x : int (** x. *)
+  | 
+  | type t (** t. *)
+  | ;;
+  | (** After ;;. *)
+  | 
+  | module M : sig (** In an empty signature. *) end
+  | 
+  | [@@@attr]
+  | (** After a floating attribute. *)
+  | external f : int -> int = "f"
+AST:
+  [@@@ocaml.text " At the start. "]
+  val x : int[@@ocaml.doc " x. "]
+  type t[@@ocaml.doc " t. "]
+  module M : sig [@@@ocaml.text " In an empty signature. "] end
+  [@@@attr ]
+  external f : int -> int = "f"[@@ocaml.doc " After a floating attribute. "]
+Warning: line 7, characters 0-16: unattached doc comment
+Warning: line 12, characters 0-34: ambiguous doc comment
+The compiler agrees.
+
+== standalone_expression.ml
+  | (** Before an expression. *)
+  | print_endline "a"
+  | (** After an expression. *)
+  | ;;
+  | let x = 1
+AST:
+  ;;print_endline "a"
+  let x = 1
+Warning: line 1, characters 0-28: unattached doc comment
+Warning: line 3, characters 0-27: unattached doc comment
+The compiler agrees.
+
+== stop_comment.ml
+  | let x = 1
+  | (**/**)
+  | let y = 2
+  | (** Before z. *)
+  | (**/**)
+  | let z = 3
+AST:
+  let x = 1
+  [@@@ocaml.text "/*"]
+  let y = 2[@@ocaml.doc " Before z. "]
+  [@@@ocaml.text "/*"]
+  let z = 3
+The compiler agrees.
+
+== unattached.ml
+  | let x = (** In an expression. *) 1
+  | let f (** Between parameters. *) x = x
+AST:
+  let x = 1
+  let f x = x
+Warning: line 1, characters 8-32: unattached doc comment
+Warning: line 2, characters 6-32: unattached doc comment
+The compiler agrees.
+
+== variants_objects.ml
+  | type t = [ `A (** A. *) | `B of int (** B. *) ]
+  | type o = < m : int (** m. *); n : int; (** n. *) >
+AST:
+  type t = [ `A [@ocaml.doc " A. "] | `B of int [@ocaml.doc " B. "]]
+  type o = < m: int [@ocaml.doc " m. "] ;n: int [@ocaml.doc " n. "]  > 
+The compiler agrees.
+

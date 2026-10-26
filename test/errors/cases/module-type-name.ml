@@ -1,0 +1,1 @@
+module type = sig end

@@ -1,0 +1,104 @@
+; Coverage of OCST by the tests of runtest-full (not the deep fuzzing): the sources
+; of OCST are copied and instrumented with bisect_ppx, with the test helpers,
+; and the tests run against this copy. The coverage, by module, is compared
+; with coverage.expected. Without bisect_ppx, nothing here is built or run.
+
+; [dune build] builds the instrumented tests, without running them.
+(alias
+ (name default)
+ (deps
+  (alias_rec check)
+  (glob_files *.exe)))
+
+(copy_files#
+ (files
+  ../../ocst/{ocst,cst,doc_comments,parser,printer,same_ast,syntax_error,to_ast,token,token_position,token_stream}.{ml,mli}))
+
+; The lexer, without its refill branches, which no test can reach.
+(rule
+ (with-stdout-to cst_lexer.ml
+  (run ./exclude_refill.exe %{dep:../../ocst/cst_lexer.ml})))
+
+(executable
+ (name exclude_refill)
+ (modules exclude_refill)
+ (libraries str))
+
+(copy_files# (files ../{roundtrip,random_token}.{ml,mli}))
+
+; The lexer round-trip, with the compiler's [Parser] rather than OCST's.
+(copy_files# (files ../lexer_check.{ml,mli}))
+
+(copy_files#
+ (files
+  ../{fuzz_roundtrip,codebase_roundtrip,parser_test,random_test}.ml))
+
+(copy_files# (files ../errors/errors.ml))
+
+(library
+ (name ocst_coverage)
+ (optional)
+ (modules
+  ocst cst doc_comments cst_lexer parser printer same_ast syntax_error to_ast
+  token token_position token_stream roundtrip random_token coverage_open)
+ (preprocess
+  (per_module
+   ((pps bisect_ppx)
+    ocst cst doc_comments cst_lexer parser printer syntax_error to_ast token
+    token_position token_stream)))
+ (libraries compiler-libs.common unix))
+
+(executables
+ (names
+  fuzz_roundtrip codebase_roundtrip parser_test random_test
+  errors doc_comments_test)
+ (modules
+  fuzz_roundtrip codebase_roundtrip parser_test random_test
+  errors doc_comments_test lexer_check)
+ (optional)
+ (flags (:standard -open Ocst_coverage.Coverage_open))
+ (libraries ocst_coverage str unix compiler-libs.common))
+
+(rule
+ (copy ../doc_comments/doc_comments.ml doc_comments_test.ml))
+
+(executable
+ (name uncovered)
+ (modules uncovered)
+ (libraries str))
+
+; The tests write their coverage in this directory ([BISECT_FILE]); their
+; outputs are checked by the tests of the parent directory. The report of the
+; lines covered is in _build/default/test/coverage/html/index.html.
+(rule
+ (alias runtest-full)
+ (enabled_if %{lib-available:bisect_ppx})
+ (targets coverage.actual)
+ (deps
+  fuzz_roundtrip.exe codebase_roundtrip.exe
+  parser_test.exe random_test.exe errors.exe uncovered.exe
+  doc_comments_test.exe
+  (source_tree ../errors/cases) (source_tree ../doc_comments/cases)
+  (source_tree ../examples) (source_tree ../ocamlformat_tests)
+  %{project_root}/ocst/parser.ml)
+ (action
+  (progn
+   (system "rm -f bisect*.coverage")
+   (setenv BISECT_FILE bisect
+    (progn
+     (ignore-stdout (run ./parser_test.exe))
+     (ignore-stdout (run ./random_test.exe))
+     (ignore-stdout (run ./errors.exe))
+     (ignore-stdout (run ./doc_comments_test.exe))
+     (ignore-stdout (run ./codebase_roundtrip.exe))
+     (ignore-stdout
+      (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer}))))
+   ; The covered and uncovered points, in html/index.html.
+   (run %{bin:bisect-ppx-report} html --coverage-path . --source-path
+    %{workspace_root} -o html)
+   (with-stdout-to %{targets}
+    (progn
+     (run %{bin:bisect-ppx-report} summary --per-file --coverage-path .)
+     (echo "\nUncovered points (\226\150\178):\n")
+     (run ./uncovered.exe html/test/coverage)))
+   (diff coverage.expected %{targets}))))

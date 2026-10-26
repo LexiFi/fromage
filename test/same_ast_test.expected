@@ -1,0 +1,30 @@
+== other line breaks
+same AST
+== a doc comment detached by a blank line
+summary: the item at line 1 (line 1 once formatted): its doc comments change from [" Doc. "] to []
+details:
+The item:
+val y : int[@@ocaml.doc " Doc. "]
+once formatted:
+val y : int
+The formatted source:
+    1 val y : int
+    2 
+    3 (** Doc. *)
+    4 val x : int
+    5 
+== other code
+summary: the item at line 1 (line 1 once formatted): its code changes
+details:
+The item:
+let x = 1
+once formatted:
+let x = 2
+The formatted source:
+    1 let x = 2
+    2 
+== a formatted source which does not parse
+summary: the compiler's parser rejects the formatted source
+details:
+let x =
+

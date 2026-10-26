@@ -1,0 +1,2 @@
+interface --seed 62 --count 100 --length 20000 --avoid let_binding_body: val_ident --avoid fun_expr: UNDERSCORE --avoid _: _* NONREC _* PLUSEQ _* --avoid _: _* NONREC _* COLONEQUAL _* --avoid METAOCAML_ESCAPE --avoid METAOCAML_BRACKET_OPEN --avoid _: _* DOT LBRACKET _* LESSMINUS _* --avoid _: _* MODULE _* COLON module_type _* --avoid _: LPAREN MODULE _* module_type RPAREN --mutants 2: 100 sentences (71 accepted by both parsers), 800 mutants (36 accepted)
+OCST fuzzing round-trip passed.

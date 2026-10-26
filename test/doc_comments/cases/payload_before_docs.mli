@@ -1,0 +1,6 @@
+module %ext [@a let x = 1] M : S (** M. *)
+module [@a let x = 1] rec A : S (** A. *)
+and [@a let y = 2] B : S (** B. *)
+class [@a let x = 1] c : object end (** c. *)
+type [@a let x = 1] t (** t. *)
+val [@a let x = 1] x : int (** x. *)

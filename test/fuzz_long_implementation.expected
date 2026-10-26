@@ -1,0 +1,2 @@
+implementation --seed 21 --count 30000 --length 120 --avoid let_binding_body: val_ident --avoid fun_expr: UNDERSCORE --avoid _: _* NONREC _* PLUSEQ _* --avoid _: _* NONREC _* COLONEQUAL _* --mutants 10: 30000 sentences (28471 accepted by both parsers), 718003 mutants (65563 accepted)
+OCST fuzzing round-trip passed.

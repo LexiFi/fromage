@@ -1,0 +1,1 @@
+let f (module m) = ()

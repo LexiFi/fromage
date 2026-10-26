@@ -1,0 +1,7 @@
+module [@a let x = 1] M = N (** M. *)
+module [@a let x = 1] rec A : S = A (** A. *)
+and [@a let y = 2] B : S = B (** B. *)
+class [@a let x = 1] c = object end (** c. *)
+let [@a let x = 1] x = 1 (** x. *)
+type [@a let x = 1] t (** t. *)
+external [@a let x = 1] f : int -> int = "f" (** f. *)

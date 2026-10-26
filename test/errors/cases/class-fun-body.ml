@@ -1,0 +1,1 @@
+class c = fun x ->

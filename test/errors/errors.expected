@@ -1,0 +1,3994 @@
+== after-dot.ml
+  | let _ = r . 1
+OCST [after-dot]:
+File "cases/after-dot.ml", line 1, characters 12-13:
+Error: Illegal integer literal, an identifier, '(', '[' or '{' expected after '.'.
+Compiler:
+File "cases/after-dot.ml", line 1, characters 12-13:
+Error: Syntax error
+
+== after-module-dot-pattern.ml
+  | let f = function M.x -> ()
+OCST [after-module-dot-pattern]:
+File "cases/after-module-dot-pattern.ml", line 1, characters 19-20:
+Error: Illegal identifier 'x', a capitalized identifier, '(', '[', '[|' or '{' expected after 'M.'.
+Compiler:
+File "cases/after-module-dot-pattern.ml", line 1, characters 19-20:
+Error: Syntax error
+
+== after-module-dot.ml
+  | let _ = M . 1
+OCST [after-module-dot]:
+File "cases/after-module-dot.ml", line 1, characters 12-13:
+Error: Illegal integer literal, an identifier, '(', '[', '[|', '{' or '{<' expected after 'M.'.
+Compiler:
+File "cases/after-module-dot.ml", line 1, characters 12-13:
+Error: Syntax error
+
+== alias-name.ml
+  | let f = function Some x as -> ()
+OCST [alias-name]:
+File "cases/alias-name.ml", line 1, characters 27-29:
+Error: Illegal '->', 'as' in a pattern expects a lowercase identifier.
+Compiler:
+File "cases/alias-name.ml", line 1, characters 27-29:
+Error: Syntax error: identifier expected.
+
+== alias-type-variable.ml
+  | type t = int as int
+OCST [alias-type-variable]:
+File "cases/alias-type-variable.ml", line 1, characters 16-19:
+Error: Illegal identifier 'int', 'as' in a type expects a type variable.
+Compiler:
+File "cases/alias-type-variable.ml", line 1, characters 16-19:
+Error: Syntax error
+
+== annotation-newtype-names.ml
+  | let f : type . 'a -> 'a = fun x -> x
+OCST [annotation-newtype-names]:
+File "cases/annotation-newtype-names.ml", line 1, characters 13-14:
+Error: Illegal '.', 'type' in a type annotation expects lowercase identifiers.
+Compiler:
+File "cases/annotation-newtype-names.ml", line 1, characters 13-14:
+Error: Syntax error
+
+== annotation_newtype_names_method.ml
+  | class c = object method m : type . int = 1 end
+OCST [annotation-newtype-names]:
+File "cases/annotation_newtype_names_method.ml", line 1, characters 33-34:
+Error: Illegal '.', 'type' in a type annotation expects lowercase identifiers.
+Compiler:
+File "cases/annotation_newtype_names_method.ml", line 1, characters 33-34:
+Error: Syntax error
+
+== array-element.ml
+  | let _ = [| 1; ) |]
+OCST [array-element]:
+File "cases/array-element.ml", line 1, characters 14-15:
+Error: Illegal ')', an array expects an expression.
+Compiler:
+File "cases/array-element.ml", line 1, characters 14-15:
+Error: Syntax error: |] expected
+
+== array-pattern-element.ml
+  | let f = function [| x; ) |] -> ()
+OCST [array-pattern-element]:
+File "cases/array-pattern-element.ml", line 1, characters 23-24:
+Error: Illegal ')', an array pattern expects a pattern.
+Compiler:
+File "cases/array-pattern-element.ml", line 1, characters 23-24:
+Error: Syntax error: |] expected
+
+== arrow-result.ml
+  | type t = int ->
+OCST [arrow-result]:
+File "cases/arrow-result.ml", line 2, characters 0-0:
+Error: Unexpected end of input, '->' in a type expects the result type.
+Compiler:
+File "cases/arrow-result.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== assert-expr.ml
+  | let _ = assert
+OCST [assert-expr]:
+File "cases/assert-expr.ml", line 2, characters 0-0:
+Error: Unexpected end of input, 'assert' expects an argument, such as an identifier, a literal or an expression in parentheses.
+Compiler:
+File "cases/assert-expr.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== assert_application_error.ml
+  | let _ = assert f x
+OCST [structure-item]:
+File "cases/assert_application_error.ml", line 1, characters 17-18:
+Error: Illegal identifier 'x', a structure expects a definition, such as 'let x = 1', 'type t = int' or 'module M = N', or an expression.
+Compiler:
+File "cases/assert_application_error.ml", line 1, characters 17-18:
+Error: Syntax error
+
+== assignment-rhs.ml
+  | let _ = r :=
+OCST [assignment-rhs]:
+File "cases/assignment-rhs.ml", line 2, characters 0-0:
+Error: Unexpected end of input, ':=' expects an expression.
+Compiler:
+File "cases/assignment-rhs.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== assignment-value.ml
+  | let _ = r.x <-
+OCST [assignment-value]:
+File "cases/assignment-value.ml", line 2, characters 0-0:
+Error: Unexpected end of input, '<-' expects an expression.
+Compiler:
+File "cases/assignment-value.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== attribute-name.ml
+  | let x = 1 [@@]
+OCST [attribute-name]:
+File "cases/attribute-name.ml", line 1, characters 13-14:
+Error: Illegal ']', an attribute or an extension expects an identifier, as in '[@inline]'.
+Compiler:
+File "cases/attribute-name.ml", line 1, characters 13-14:
+Error: Syntax error
+
+== begin-body.ml
+  | let _ = begin ) end
+OCST [begin-body]:
+File "cases/begin-body.ml", line 1, characters 14-15:
+Error: Illegal ')', 'begin' expects an expression or 'end'.
+Compiler:
+File "cases/begin-body.ml", line 1, characters 14-15:
+Error: Syntax error
+
+== capitalized-label.ml
+  | let _ = f ~X:1
+OCST [capitalized-label]:
+File "cases/capitalized-label.ml", line 1, characters 10-13:
+Error: Illegal label '~X:', a label expects a lowercase identifier.
+Compiler:
+File "cases/capitalized-label.ml", line 1, characters 10-13:
+Error: X cannot be used as label name, it must start with a lowercase letter
+
+== capitalized-raw-identifier.ml
+  | let _ = \#Foo
+OCST [capitalized-raw-identifier]:
+File "cases/capitalized-raw-identifier.ml", line 1, characters 8-13:
+Error: Illegal raw identifier '\#Foo', a raw identifier expects a lowercase identifier.
+Compiler:
+File "cases/capitalized-raw-identifier.ml", line 1, characters 8-13:
+Error: Foo cannot be used as a raw identifier, it must start with a lowercase letter
+
+== capitalized-type-name.ml
+  | type T = int
+OCST [capitalized-type-name]:
+File "cases/capitalized-type-name.ml", line 1, characters 5-6:
+Error: Illegal identifier 'T', the name of a type expects a lowercase identifier.
+Compiler:
+File "cases/capitalized-type-name.ml", line 1, characters 7-8:
+Error: Syntax error
+
+== case-arrow.ml
+  | let f = function x
+OCST [case-arrow]:
+File "cases/case-arrow.ml", line 2, characters 0-0:
+Error: Unexpected end of input, '->' expected.
+Compiler:
+File "cases/case-arrow.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== case-body.ml
+  | let f = function x -> )
+OCST [case-body]:
+File "cases/case-body.ml", line 1, characters 22-23:
+Error: Illegal ')', '->' in a case expects an expression, or '.'.
+Compiler:
+File "cases/case-body.ml", line 1, characters 22-23:
+Error: Syntax error
+
+== case-guard.ml
+  | let f = function x when -> x
+OCST [case-guard]:
+File "cases/case-guard.ml", line 1, characters 24-26:
+Error: Illegal '->', 'when' in a case expects a condition.
+Compiler:
+File "cases/case-guard.ml", line 1, characters 24-26:
+Error: Syntax error
+
+== case-pattern.ml
+  | let f = function -> ()
+OCST [case-pattern]:
+File "cases/case-pattern.ml", line 1, characters 17-19:
+Error: Illegal '->', a case expects a pattern.
+Compiler:
+File "cases/case-pattern.ml", line 1, characters 17-19:
+Error: Syntax error
+
+== class-arguments-name.ml
+  | class c = object inherit [int] end
+OCST [class-arguments-name]:
+File "cases/class-arguments-name.ml", line 1, characters 31-34:
+Error: Illegal 'end', class type arguments in brackets expect a lowercase identifier or a path, as in '[int] c'.
+Compiler:
+File "cases/class-arguments-name.ml", line 1, characters 31-34:
+Error: Syntax error
+
+== class-arrow-domain.mli
+  | class c : x: -> object end
+OCST [class-arrow-domain]:
+File "cases/class-arrow-domain.mli", line 1, characters 13-15:
+Error: Illegal '->', a label in a class type expects the type of the argument.
+Compiler:
+File "cases/class-arrow-domain.mli", line 1, characters 13-15:
+Error: Syntax error
+
+== class-arrow-result.mli
+  | class c : int ->
+OCST [class-arrow-result]:
+File "cases/class-arrow-result.mli", line 2, characters 0-0:
+Error: Unexpected end of input, '->' in a class type expects a class type.
+Compiler:
+File "cases/class-arrow-result.mli", line 2, characters 0-0:
+Error: Syntax error
+
+== class-arrow.mli
+  | class c : x:int
+OCST [class-arrow]:
+File "cases/class-arrow.mli", line 2, characters 0-0:
+Error: Unexpected end of input, '->' expected.
+Compiler:
+File "cases/class-arrow.mli", line 2, characters 0-0:
+Error: Syntax error
+
+== class-binding-equal.ml
+  | class c : object end
+OCST [class-binding-equal]:
+File "cases/class-binding-equal.ml", line 2, characters 0-0:
+Error: Unexpected end of input, '=' expected.
+Compiler:
+File "cases/class-binding-equal.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== class-binding-type.ml
+  | class c : = object end
+OCST [class-binding-type]:
+File "cases/class-binding-type.ml", line 1, characters 10-11:
+Error: Illegal '=', ':' in a class definition expects a class type.
+Compiler:
+File "cases/class-binding-type.ml", line 1, characters 10-11:
+Error: Syntax error
+
+== class-constraint-type.ml
+  | class c = (object end : )
+OCST [class-constraint-type]:
+File "cases/class-constraint-type.ml", line 1, characters 24-25:
+Error: Illegal ')', ':' in a class expression expects a class type.
+Compiler:
+File "cases/class-constraint-type.ml", line 1, characters 24-25:
+Error: Syntax error
+
+== class-definition.ml
+  | class c =
+OCST [class-definition]:
+File "cases/class-definition.ml", line 2, characters 0-0:
+Error: Unexpected end of input, '=' in a class definition expects a class expression.
+Compiler:
+File "cases/class-definition.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== class-description-colon.mli
+  | class c = object end
+OCST [class-description-colon]:
+File "cases/class-description-colon.mli", line 1, characters 8-9:
+Error: Illegal '=', ':' expected.
+Compiler:
+File "cases/class-description-colon.mli", line 1, characters 8-9:
+Error: Syntax error
+
+== class-description-type.mli
+  | class c :
+OCST [class-description-type]:
+File "cases/class-description-type.mli", line 2, characters 0-0:
+Error: Unexpected end of input, ':' in a class description expects a class type.
+Compiler:
+File "cases/class-description-type.mli", line 2, characters 0-0:
+Error: Syntax error
+
+== class-fun-arrow.ml
+  | class c = fun x object end
+OCST [class-fun-arrow]:
+File "cases/class-fun-arrow.ml", line 1, characters 16-22:
+Error: Illegal 'object', '->' expected.
+Compiler:
+File "cases/class-fun-arrow.ml", line 1, characters 16-22:
+Error: Syntax error
+
+== class-fun-body.ml
+  | class c = fun x ->
+OCST [class-fun-body]:
+File "cases/class-fun-body.ml", line 2, characters 0-0:
+Error: Unexpected end of input, '->' in a class function expects a class expression.
+Compiler:
+File "cases/class-fun-body.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== class-fun-parameter.ml
+  | class c = fun -> object end
+OCST [class-fun-parameter]:
+File "cases/class-fun-parameter.ml", line 1, characters 14-16:
+Error: Illegal '->', 'fun' in a class expression expects a parameter.
+Compiler:
+File "cases/class-fun-parameter.ml", line 1, characters 14-16:
+Error: Syntax error
+
+== class-let-body.ml
+  | class c = let x = 1 in
+OCST [class-let-body]:
+File "cases/class-let-body.ml", line 2, characters 0-0:
+Error: Unexpected end of input, 'in' in a class expression expects a class expression.
+Compiler:
+File "cases/class-let-body.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== class-let-in.ml
+  | class c = let x = 1 object end
+OCST [class-let-in]:
+File "cases/class-let-in.ml", line 2, characters 0-0:
+Error: Unexpected end of input, 'in' expected.
+Compiler:
+File "cases/class-let-in.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== class-let-open-in.ml
+  | class c = let open M object end
+OCST [class-let-open-in]:
+File "cases/class-let-open-in.ml", line 1, characters 21-27:
+Error: Illegal 'object', 'in' expected.
+Compiler:
+File "cases/class-let-open-in.ml", line 1, characters 21-27:
+Error: Syntax error
+
+== class-name.ml
+  | class = object end
+OCST [class-name]:
+File "cases/class-name.ml", line 1, characters 6-7:
+Error: Illegal '=', 'class' or 'and' expects a lowercase identifier.
+Compiler:
+File "cases/class-name.ml", line 1, characters 6-7:
+Error: Syntax error
+
+== class-parameter.ml
+  | class c ) = object end
+OCST [class-parameter]:
+File "cases/class-parameter.ml", line 1, characters 8-9:
+Error: Illegal ')', a parameter, ':' or '=' expected.
+Compiler:
+File "cases/class-parameter.ml", line 1, characters 8-9:
+Error: Syntax error
+
+== class-self-type.mli
+  | class c : object ( ) end
+OCST [class-self-type]:
+File "cases/class-self-type.mli", line 1, characters 19-20:
+Error: Illegal ')', '(' after 'object' expects the type of self.
+Compiler:
+File "cases/class-self-type.mli", line 1, characters 19-20:
+Error: Syntax error
+
+== class-type-argument.mli
+  | class c : [ ) ] d
+OCST [class-type-argument]:
+File "cases/class-type-argument.mli", line 1, characters 12-13:
+Error: Illegal ')', '[' or ',' in class arguments expects a type.
+Compiler:
+File "cases/class-type-argument.mli", line 1, characters 12-13:
+Error: Syntax error
+
+== class-type-arguments-name.mli
+  | class c : [int]
+OCST [class-type-arguments-name]:
+File "cases/class-type-arguments-name.mli", line 2, characters 0-0:
+Error: Unexpected end of input, class type arguments in brackets expect a lowercase identifier or a path, as in '[int] c'.
+Compiler:
+File "cases/class-type-arguments-name.mli", line 2, characters 0-0:
+Error: Syntax error
+
+== class-type-definition.ml
+  | class type c =
+OCST [class-type-definition]:
+File "cases/class-type-definition.ml", line 2, characters 0-0:
+Error: Unexpected end of input, '=' in a class type declaration expects a class type.
+Compiler:
+File "cases/class-type-definition.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== class-type-equal.ml
+  | class type c object end
+OCST [class-type-equal]:
+File "cases/class-type-equal.ml", line 1, characters 13-19:
+Error: Illegal 'object', '=' expected.
+Compiler:
+File "cases/class-type-equal.ml", line 1, characters 13-19:
+Error: Syntax error
+
+== class-type-let-open-body.mli
+  | class c : let open M in
+OCST [class-type-let-open-body]:
+File "cases/class-type-let-open-body.mli", line 2, characters 0-0:
+Error: Unexpected end of input, 'in' in a class type expects a class type.
+Compiler:
+File "cases/class-type-let-open-body.mli", line 2, characters 0-0:
+Error: Syntax error
+
+== class-type-let-open-in.mli
+  | class c : let open M object end
+OCST [class-type-let-open-in]:
+File "cases/class-type-let-open-in.mli", line 1, characters 21-27:
+Error: Illegal 'object', 'in' expected.
+Compiler:
+File "cases/class-type-let-open-in.mli", line 1, characters 21-27:
+Error: Syntax error
+
+== class-type-let-open.mli
+  | class c : let x = 1 in object end
+OCST [class-type-let-open]:
+File "cases/class-type-let-open.mli", line 1, characters 14-15:
+Error: Illegal identifier 'x', 'open' expected.
+Compiler:
+File "cases/class-type-let-open.mli", line 1, characters 14-15:
+Error: Syntax error
+
+== class-type-name.ml
+  | type t = #
+OCST [class-type-name]:
+File "cases/class-type-name.ml", line 2, characters 0-0:
+Error: Unexpected end of input, '#' expects a lowercase identifier or a path, as in '#c' or '#M.c'.
+Compiler:
+File "cases/class-type-name.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== class-type-parameter.ml
+  | class [ x ] c = object end
+OCST [class-type-parameter]:
+File "cases/class-type-parameter.ml", line 1, characters 8-9:
+Error: Illegal identifier 'x', a class parameter expects a type variable or '_'.
+Compiler:
+File "cases/class-type-parameter.ml", line 1, characters 8-9:
+Error: Syntax error
+
+== class_arguments_before_arrow.mli
+  | class c : [ int ] -> c
+OCST [class-type-arguments-name]:
+File "cases/class_arguments_before_arrow.mli", line 1, characters 18-20:
+Error: Illegal '->', class type arguments in brackets expect a lowercase identifier or a path, as in '[int] c'.
+Compiler:
+File "cases/class_arguments_before_arrow.mli", line 1, characters 18-20:
+Error: Syntax error
+
+== class_let_extension.ml
+  | class c = let%ext x = y in object end
+OCST [class-let-extension]:
+File "cases/class_let_extension.ml", line 1, characters 13-14:
+Error: Illegal '%', a 'let' in a class expression cannot have an extension.
+Compiler:
+File "cases/class_let_extension.ml", line 1, characters 13-17:
+Error: Syntax error: extension not expected.
+
+== class_let_open_extension.ml
+  | class c = let%ext open M in object end
+OCST [class-let-extension]:
+File "cases/class_let_open_extension.ml", line 1, characters 13-14:
+Error: Illegal '%', a 'let' in a class expression cannot have an extension.
+Compiler:
+File "cases/class_let_open_extension.ml", line 1, characters 18-22:
+Error: Syntax error
+
+== class_type_not_a_path.mli
+  | class c : int list
+  | val x : int
+OCST [class-arrow]:
+File "cases/class_type_not_a_path.mli", line 2, characters 0-3:
+Error: Illegal 'val', '->' expected.
+Compiler:
+File "cases/class_type_not_a_path.mli", line 2, characters 0-3:
+Error: Syntax error
+
+== cons-pattern-rhs.ml
+  | let f = function x :: -> ()
+OCST [cons-pattern-rhs]:
+File "cases/cons-pattern-rhs.ml", line 1, characters 22-24:
+Error: Illegal '->', '::' in a pattern expects a pattern.
+Compiler:
+File "cases/cons-pattern-rhs.ml", line 1, characters 22-24:
+Error: Syntax error: pattern expected.
+
+== cons-rhs.ml
+  | let _ = x ::
+OCST [cons-rhs]:
+File "cases/cons-rhs.ml", line 2, characters 0-0:
+Error: Unexpected end of input, '::' expects an expression.
+Compiler:
+File "cases/cons-rhs.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== constraint-equal.ml
+  | type 'a t = 'a constraint 'a
+OCST [constraint-equal]:
+File "cases/constraint-equal.ml", line 2, characters 0-0:
+Error: Unexpected end of input, '=' expected.
+Compiler:
+File "cases/constraint-equal.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== constraint-left.ml
+  | type 'a t = 'a constraint = int
+OCST [constraint-left]:
+File "cases/constraint-left.ml", line 1, characters 26-27:
+Error: Illegal '=', 'constraint' expects a type.
+Compiler:
+File "cases/constraint-left.ml", line 1, characters 26-27:
+Error: Syntax error
+
+== constraint-right.ml
+  | type 'a t = 'a constraint 'a =
+OCST [constraint-right]:
+File "cases/constraint-right.ml", line 2, characters 0-0:
+Error: Unexpected end of input, '=' in a type constraint expects a type.
+Compiler:
+File "cases/constraint-right.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== constructor-argument-type.ml
+  | type t = A of
+OCST [constructor-argument-type]:
+File "cases/constructor-argument-type.ml", line 2, characters 0-0:
+Error: Unexpected end of input, 'of' expects the types of the arguments, or a record.
+Compiler:
+File "cases/constructor-argument-type.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== constructor-name.ml
+  | type t = A | b
+OCST [constructor-name]:
+File "cases/constructor-name.ml", line 1, characters 13-14:
+Error: Illegal identifier 'b', a variant type expects a capitalized identifier.
+Compiler:
+File "cases/constructor-name.ml", line 1, characters 13-14:
+Error: Syntax error
+
+== constructor-newtypes-pattern.ml
+  | let f = function C (type a) -> ()
+OCST [constructor-newtypes-pattern]:
+File "cases/constructor-newtypes-pattern.ml", line 1, characters 28-30:
+Error: Illegal '->', the locally abstract types of a constructor pattern expect a pattern.
+Compiler:
+File "cases/constructor-newtypes-pattern.ml", line 1, characters 28-30:
+Error: Syntax error
+
+== constructor-tuple-element.ml
+  | type t = A of int *
+OCST [constructor-tuple-element]:
+File "cases/constructor-tuple-element.ml", line 2, characters 0-0:
+Error: Unexpected end of input, '*' in the arguments of a constructor expects a type.
+Compiler:
+File "cases/constructor-tuple-element.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== constructor_application_error.ml
+  | let _ = Some f x
+OCST [structure-item]:
+File "cases/constructor_application_error.ml", line 1, characters 15-16:
+Error: Illegal identifier 'x', a structure expects a definition, such as 'let x = 1', 'type t = int' or 'module M = N', or an expression.
+Compiler:
+File "cases/constructor_application_error.ml", line 1, characters 15-16:
+Error: Syntax error
+
+== effect-continuation.ml
+  | let f = function effect E, -> ()
+OCST [effect-continuation]:
+File "cases/effect-continuation.ml", line 1, characters 27-29:
+Error: Illegal '->', ',' after an effect expects a pattern.
+Compiler:
+File "cases/effect-continuation.ml", line 1, characters 27-29:
+Error: Syntax error
+
+== effect-exception-pattern.ml
+  | let f = function effect exception E, k -> ()
+OCST [effect-pattern]:
+File "cases/effect-exception-pattern.ml", line 1, characters 24-33:
+Error: Illegal 'exception', 'effect' expects a pattern.
+Compiler:
+File "cases/effect-exception-pattern.ml", line 1, characters 24-33:
+Error: Syntax error
+
+== effect-pattern-position.ml
+  | let effect x, k = ()
+OCST [effect-pattern-position]:
+File "cases/effect-pattern-position.ml", line 1, characters 4-10:
+Error: Illegal 'effect', an effect pattern is only allowed in a case, or in parentheses, as in 'let (effect e, k) = ...'.
+Compiler:
+File "cases/effect-pattern-position.ml", line 1, characters 4-10:
+Error: Syntax error
+
+== effect-pattern.ml
+  | let f = function effect -> ()
+OCST [effect-pattern]:
+File "cases/effect-pattern.ml", line 1, characters 24-26:
+Error: Illegal '->', 'effect' expects a pattern.
+Compiler:
+File "cases/effect-pattern.ml", line 1, characters 24-26:
+Error: Syntax error
+
+== else-branch.ml
+  | let _ = if c then 1 else
+OCST [else-branch]:
+File "cases/else-branch.ml", line 2, characters 0-0:
+Error: Unexpected end of input, 'else' expects an expression.
+Compiler:
+File "cases/else-branch.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== empty-character-literal.ml
+  | let c = ''
+OCST [empty-character-literal]:
+File "cases/empty-character-literal.ml", line 1, characters 8-10:
+Error: Illegal character literal '''', a character literal expects one character.
+Compiler:
+File "cases/empty-character-literal.ml", line 1, characters 8-10:
+Error: Illegal empty character literal ''
+
+== exception-name.ml
+  | exception e
+OCST [exception-name]:
+File "cases/exception-name.ml", line 1, characters 10-11:
+Error: Illegal identifier 'e', 'exception' expects a capitalized identifier.
+Compiler:
+File "cases/exception-name.ml", line 1, characters 10-11:
+Error: Syntax error
+
+== exception-pattern.ml
+  | let f = function exception -> ()
+OCST [exception-pattern]:
+File "cases/exception-pattern.ml", line 1, characters 27-29:
+Error: Illegal '->', 'exception' in a pattern expects a pattern.
+Compiler:
+File "cases/exception-pattern.ml", line 1, characters 27-29:
+Error: Syntax error
+
+== extension-constructor-rebind.ml
+  | exception E = f
+OCST [extension-constructor-rebind]:
+File "cases/extension-constructor-rebind.ml", line 1, characters 14-15:
+Error: Illegal identifier 'f', '=' after a constructor expects a capitalized identifier or a path, as in 'C' or 'M.C'.
+Compiler:
+File "cases/extension-constructor-rebind.ml", line 1, characters 14-15:
+Error: Syntax error
+
+== external-equal.ml
+  | external f : int -> int
+OCST [external-equal]:
+File "cases/external-equal.ml", line 2, characters 0-0:
+Error: Unexpected end of input, '=' expected.
+Compiler:
+File "cases/external-equal.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== external-primitive.ml
+  | external f : int -> int =
+OCST [external-primitive]:
+File "cases/external-primitive.ml", line 2, characters 0-0:
+Error: Unexpected end of input, '=' in an external declaration expects a string literal.
+Compiler:
+File "cases/external-primitive.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== external-type.ml
+  | type t = external
+OCST [external-type]:
+File "cases/external-type.ml", line 2, characters 0-0:
+Error: Unexpected end of input, 'external' in a type definition expects a string literal.
+Compiler:
+File "cases/external-type.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== field-after-module.ml
+  | let _ = r.M
+OCST [field-after-module]:
+File "cases/field-after-module.ml", line 2, characters 0-0:
+Error: Unexpected end of input, '.' and a lowercase identifier expected, as in 'r.M.x'.
+Compiler:
+File "cases/field-after-module.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== field-colon.ml
+  | type t = { x int }
+OCST [field-colon]:
+File "cases/field-colon.ml", line 1, characters 13-16:
+Error: Illegal identifier 'int', ':' expected.
+Compiler:
+File "cases/field-colon.ml", line 1, characters 13-16:
+Error: Syntax error
+
+== field-name.ml
+  | type t = { X : int }
+OCST [field-name]:
+File "cases/field-name.ml", line 1, characters 11-12:
+Error: Illegal identifier 'X', a record type expects a lowercase identifier.
+Compiler:
+File "cases/field-name.ml", line 1, characters 11-12:
+Error: Syntax error
+
+== field-type.ml
+  | type t = { x : }
+OCST [field-type]:
+File "cases/field-type.ml", line 1, characters 15-16:
+Error: Illegal '}', ':' in a record type expects the type of the field.
+Compiler:
+File "cases/field-type.ml", line 1, characters 15-16:
+Error: Syntax error
+
+== for-direction.ml
+  | let _ = for i = 0 2 do () done
+OCST [for-direction]:
+File "cases/for-direction.ml", line 1, characters 20-22:
+Error: Illegal 'do', 'to' or 'downto' expected.
+Compiler:
+File "cases/for-direction.ml", line 1, characters 20-22:
+Error: Syntax error
+
+== for-do.ml
+  | let _ = for i = 0 to 9 () done
+OCST [for-do]:
+File "cases/for-do.ml", line 1, characters 26-30:
+Error: Illegal 'done', 'do' expected.
+Compiler:
+File "cases/for-do.ml", line 1, characters 26-30:
+Error: Syntax error
+
+== for-do2.ml
+  | let _ = for i = 0 to 9 f x () done
+OCST [for-do]:
+File "cases/for-do2.ml", line 1, characters 30-34:
+Error: Illegal 'done', 'do' expected.
+Compiler:
+File "cases/for-do2.ml", line 1, characters 30-34:
+Error: Syntax error
+
+== for-equal.ml
+  | let _ = for i 0 to 9 do () done
+OCST [for-equal]:
+File "cases/for-equal.ml", line 1, characters 14-15:
+Error: Illegal integer literal, '=' expected.
+Compiler:
+File "cases/for-equal.ml", line 1, characters 14-15:
+Error: Syntax error
+
+== for-index.ml
+  | let _ = for = 0 to 9 do () done
+OCST [for-index]:
+File "cases/for-index.ml", line 1, characters 12-13:
+Error: Illegal '=', 'for' expects a lowercase identifier or '_'.
+Compiler:
+File "cases/for-index.ml", line 1, characters 12-13:
+Error: Syntax error
+
+== for-start.ml
+  | let _ = for i = to 9 do () done
+OCST [for-start]:
+File "cases/for-start.ml", line 1, characters 16-18:
+Error: Illegal 'to', '=' in a 'for' loop expects an expression.
+Compiler:
+File "cases/for-start.ml", line 1, characters 16-18:
+Error: Syntax error
+
+== for-stop.ml
+  | let _ = for i = 0 to do () done
+OCST [for-stop]:
+File "cases/for-stop.ml", line 1, characters 21-23:
+Error: Illegal 'do', 'to' or 'downto' expects an expression.
+Compiler:
+File "cases/for-stop.ml", line 1, characters 21-23:
+Error: Syntax error
+
+== fun-arrow.ml
+  | let _ = fun x x
+OCST [fun-arrow]:
+File "cases/fun-arrow.ml", line 2, characters 0-0:
+Error: Unexpected end of input, '->' expected.
+Compiler:
+File "cases/fun-arrow.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== fun-body.ml
+  | let _ = fun x ->
+OCST [fun-body]:
+File "cases/fun-body.ml", line 2, characters 0-0:
+Error: Unexpected end of input, '->' in a function expects an expression.
+Compiler:
+File "cases/fun-body.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== fun-parameter.ml
+  | let _ = fun -> 1
+OCST [fun-parameter]:
+File "cases/fun-parameter.ml", line 1, characters 12-14:
+Error: Illegal '->', 'fun' expects a parameter.
+Compiler:
+File "cases/fun-parameter.ml", line 1, characters 12-14:
+Error: Syntax error
+
+== fun-return-type.ml
+  | let _ = fun x : -> 1
+OCST [fun-return-type]:
+File "cases/fun-return-type.ml", line 1, characters 16-18:
+Error: Illegal '->', ':' after the parameters of 'fun' expects a type.
+Compiler:
+File "cases/fun-return-type.ml", line 1, characters 16-18:
+Error: Syntax error
+
+== function-body.ml
+  | let f x =
+OCST [function-body]:
+File "cases/function-body.ml", line 2, characters 0-0:
+Error: Unexpected end of input, '=' in a function definition expects an expression.
+Compiler:
+File "cases/function-body.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== function_semi_semi.ml
+  | let _ = function x -> a ; ; b
+OCST [closed-function]:
+File "cases/function_semi_semi.ml", line 1, characters 26-27:
+Error: Illegal ';', a 'function' whose last case is '.' or ends with ';' cannot be followed by more code: parentheses around it are expected, as in '(function x -> .)'.
+Compiler:
+File "cases/function_semi_semi.ml", line 1, characters 26-27:
+Error: Syntax error
+
+== function_unreachable_case_attribute.ml
+  | let _ = function x -> . [@attr], y
+OCST [closed-function]:
+File "cases/function_unreachable_case_attribute.ml", line 1, characters 24-26:
+Error: Illegal '[@', a 'function' whose last case is '.' or ends with ';' cannot be followed by more code: parentheses around it are expected, as in '(function x -> .)'.
+Compiler:
+File "cases/function_unreachable_case_attribute.ml", line 1, characters 24-26:
+Error: Syntax error
+
+== function_unreachable_case_cons.ml
+  | let _ = function x -> . :: y
+OCST [closed-function]:
+File "cases/function_unreachable_case_cons.ml", line 1, characters 24-26:
+Error: Illegal '::', a 'function' whose last case is '.' or ends with ';' cannot be followed by more code: parentheses around it are expected, as in '(function x -> .)'.
+Compiler:
+File "cases/function_unreachable_case_cons.ml", line 1, characters 24-26:
+Error: Syntax error
+
+== function_unreachable_case_semi.ml
+  | let _ = function x -> . ; y
+OCST [closed-function]:
+File "cases/function_unreachable_case_semi.ml", line 1, characters 24-25:
+Error: Illegal ';', a 'function' whose last case is '.' or ends with ';' cannot be followed by more code: parentheses around it are expected, as in '(function x -> .)'.
+Compiler:
+File "cases/function_unreachable_case_semi.ml", line 1, characters 24-25:
+Error: Syntax error
+
+== function_unreachable_case_semi_begin.ml
+  | let _ = begin function x -> . ; y end
+OCST [closed-function]:
+File "cases/function_unreachable_case_semi_begin.ml", line 1, characters 30-31:
+Error: Illegal ';', a 'function' whose last case is '.' or ends with ';' cannot be followed by more code: parentheses around it are expected, as in '(function x -> .)'.
+Compiler:
+File "cases/function_unreachable_case_semi_begin.ml", line 1, characters 30-31:
+Error: Syntax error: end expected
+
+== function_unreachable_case_semi_in_paren.ml
+  | let _ = (function x -> . ; b)
+OCST [closed-function]:
+File "cases/function_unreachable_case_semi_in_paren.ml", line 1, characters 25-26:
+Error: Illegal ';', a 'function' whose last case is '.' or ends with ';' cannot be followed by more code: parentheses around it are expected, as in '(function x -> .)'.
+Compiler:
+File "cases/function_unreachable_case_semi_in_paren.ml", line 1, characters 25-26:
+Error: Syntax error: ) expected
+
+== function_unreachable_case_semi_paren.ml
+  | let _ = (function x -> . ; y)
+OCST [closed-function]:
+File "cases/function_unreachable_case_semi_paren.ml", line 1, characters 25-26:
+Error: Illegal ';', a 'function' whose last case is '.' or ends with ';' cannot be followed by more code: parentheses around it are expected, as in '(function x -> .)'.
+Compiler:
+File "cases/function_unreachable_case_semi_paren.ml", line 1, characters 25-26:
+Error: Syntax error: ) expected
+
+== function_unreachable_case_semi_sequence.ml
+  | let _ = e; function x -> . ; y
+OCST [closed-function]:
+File "cases/function_unreachable_case_semi_sequence.ml", line 1, characters 27-28:
+Error: Illegal ';', a 'function' whose last case is '.' or ends with ';' cannot be followed by more code: parentheses around it are expected, as in '(function x -> .)'.
+Compiler:
+File "cases/function_unreachable_case_semi_sequence.ml", line 1, characters 27-28:
+Error: Syntax error
+
+== functor-application-module-type.mli
+  | module M : F(X)
+OCST [functor-application-module-type]:
+File "cases/functor-application-module-type.mli", line 2, characters 0-0:
+Error: Unexpected end of input, a functor application is not a module type: a module type of its result is expected, as in 'F(X).S'.
+Compiler:
+File "cases/functor-application-module-type.mli", line 2, characters 0-0:
+Error: Syntax error
+
+== functor-argument-type.mli
+  | module F (X : ) : S
+OCST [functor-argument-type]:
+File "cases/functor-argument-type.mli", line 1, characters 14-15:
+Error: Illegal ')', ':' in a functor argument expects a module type.
+Compiler:
+File "cases/functor-argument-type.mli", line 1, characters 14-15:
+Error: Syntax error
+
+== functor-arguments.mli
+  | module type S = functor -> T
+OCST [functor-arguments]:
+File "cases/functor-arguments.mli", line 1, characters 24-26:
+Error: Illegal '->', 'functor' expects arguments, as in 'functor (X : S) -> T'.
+Compiler:
+File "cases/functor-arguments.mli", line 1, characters 24-26:
+Error: Syntax error
+
+== functor-binding-body.ml
+  | module F (X : S) struct end
+OCST [functor-binding-body]:
+File "cases/functor-binding-body.ml", line 1, characters 17-23:
+Error: Illegal 'struct', '=' or ':' expected.
+Compiler:
+File "cases/functor-binding-body.ml", line 1, characters 17-23:
+Error: Syntax error
+
+== functor-body.ml
+  | module F = functor (X : S) ->
+OCST [functor-body]:
+File "cases/functor-body.ml", line 2, characters 0-0:
+Error: Unexpected end of input, '->' in a functor expects a module.
+Compiler:
+File "cases/functor-body.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== functor-declaration-body.mli
+  | module F (X : S) = N
+OCST [functor-declaration-body]:
+File "cases/functor-declaration-body.mli", line 1, characters 17-18:
+Error: Illegal '=', ':' expected.
+Compiler:
+File "cases/functor-declaration-body.mli", line 1, characters 17-18:
+Error: Syntax error: : expected.
+
+== functor-expr-arguments.ml
+  | module F = functor -> struct end
+OCST [functor-expr-arguments]:
+File "cases/functor-expr-arguments.ml", line 1, characters 19-21:
+Error: Illegal '->', 'functor' expects arguments, as in 'functor (X : S) -> M'.
+Compiler:
+File "cases/functor-expr-arguments.ml", line 1, characters 19-21:
+Error: Syntax error
+
+== functor-expr-arrow.ml
+  | module F = functor (X : S) struct end
+OCST [functor-expr-arrow]:
+File "cases/functor-expr-arrow.ml", line 1, characters 27-33:
+Error: Illegal 'struct', '->' expected.
+Compiler:
+File "cases/functor-expr-arrow.ml", line 1, characters 27-33:
+Error: Syntax error
+
+== functor-result-type.mli
+  | module type S = functor (X : T) ->
+OCST [functor-result-type]:
+File "cases/functor-result-type.mli", line 2, characters 0-0:
+Error: Unexpected end of input, '->' expects the module type of the result.
+Compiler:
+File "cases/functor-result-type.mli", line 2, characters 0-0:
+Error: Syntax error
+
+== functor-type-arrow-module.mli
+  | module type S = functor (X : T) U
+OCST [functor-type-arrow-module]:
+File "cases/functor-type-arrow-module.mli", line 1, characters 32-33:
+Error: Illegal identifier 'U', '->' expected.
+Compiler:
+File "cases/functor-type-arrow-module.mli", line 1, characters 32-33:
+Error: Syntax error
+
+== functor-type-arrow.ml
+  | type t = (module M : S)
+OCST [functor-type-arrow]:
+File "cases/functor-type-arrow.ml", line 2, characters 0-0:
+Error: Unexpected end of input, '->' expected.
+Compiler:
+File "cases/functor-type-arrow.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== functor-type-package.ml
+  | type t = (module M : ) -> int
+OCST [functor-type-package]:
+File "cases/functor-type-package.ml", line 1, characters 21-22:
+Error: Illegal ')', ':' in a first-class module argument expects a module type.
+Compiler:
+File "cases/functor-type-package.ml", line 1, characters 21-22:
+Error: Syntax error
+
+== gadt-arrow.ml
+  | type t = A : { x : int } t
+OCST [gadt-arrow]:
+File "cases/gadt-arrow.ml", line 1, characters 25-26:
+Error: Illegal identifier 't', '->' expected.
+Compiler:
+File "cases/gadt-arrow.ml", line 1, characters 25-26:
+Error: Syntax error
+
+== gadt-result.ml
+  | type t = A : int ->
+OCST [gadt-result]:
+File "cases/gadt-result.ml", line 2, characters 0-0:
+Error: Unexpected end of input, '->' in the type of a constructor expects the result type.
+Compiler:
+File "cases/gadt-result.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== gadt-type.ml
+  | type t = A :
+OCST [gadt-type]:
+File "cases/gadt-type.ml", line 2, characters 0-0:
+Error: Unexpected end of input, ':' after a constructor expects its type.
+Compiler:
+File "cases/gadt-type.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== hashop-rhs.ml
+  | let _ = a ## )
+OCST [hashop-rhs]:
+File "cases/hashop-rhs.ml", line 1, characters 13-14:
+Error: Illegal ')', '##' expects an argument, such as an identifier, a literal or an expression in parentheses.
+Compiler:
+File "cases/hashop-rhs.ml", line 1, characters 13-14:
+Error: Syntax error
+
+== if-condition.ml
+  | let _ = if then 1
+OCST [if-condition]:
+File "cases/if-condition.ml", line 1, characters 11-15:
+Error: Illegal 'then', 'if' expects a condition.
+Compiler:
+File "cases/if-condition.ml", line 1, characters 11-15:
+Error: Syntax error
+
+== if-then.ml
+  | let _ = if c 1
+OCST [if-then]:
+File "cases/if-then.ml", line 2, characters 0-0:
+Error: Unexpected end of input, 'then' expected.
+Compiler:
+File "cases/if-then.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== illegal-character.ml
+  | let x = 1 \ 
+OCST [illegal-character]:
+File "cases/illegal-character.ml", line 1, characters 10-11:
+Error: Illegal character '\'.
+Compiler:
+File "cases/illegal-character.ml", line 1, characters 10-11:
+Error: Illegal character (\\)
+
+== illegal-escape-decimal.ml
+  | let s = "\999"
+OCST [illegal-escape]:
+File "cases/illegal-escape-decimal.ml", line 1, characters 8-13:
+Error: Illegal escape sequence in '"\999': the escape sequences are '\\', '\"', '\'', '\n', '\t', '\b', '\r', '\ ', '\ddd', '\xhh', '\ohhh' and '\u{h...}'.
+Compiler:
+File "cases/illegal-escape-decimal.ml", line 1, characters 9-13:
+Error: Illegal backslash escape in string or character (\999): 999 is outside the range of legal characters (0-255).
+
+== illegal-escape-octal.ml
+  | let s = "\o777"
+OCST [illegal-escape]:
+File "cases/illegal-escape-octal.ml", line 1, characters 8-14:
+Error: Illegal escape sequence in '"\o777': the escape sequences are '\\', '\"', '\'', '\n', '\t', '\b', '\r', '\ ', '\ddd', '\xhh', '\ohhh' and '\u{h...}'.
+Compiler:
+File "cases/illegal-escape-octal.ml", line 1, characters 9-14:
+Error: Illegal backslash escape in string or character (\o777): o777 (=511) is outside the range of legal characters (0-255).
+
+== illegal-escape-unicode-invalid.ml
+  | let s = "\u{D800}"
+OCST [illegal-escape]:
+File "cases/illegal-escape-unicode-invalid.ml", line 1, characters 8-17:
+Error: Illegal escape sequence in '"\u{D800}': the escape sequences are '\\', '\"', '\'', '\n', '\t', '\b', '\r', '\ ', '\ddd', '\xhh', '\ohhh' and '\u{h...}'.
+Compiler:
+File "cases/illegal-escape-unicode-invalid.ml", line 1, characters 9-17:
+Error: Illegal backslash escape in string or character (\u{D800}): D800 is not a Unicode scalar value
+
+== illegal-escape-unicode-long.ml
+  | let s = "\u{1234567}"
+OCST [illegal-escape]:
+File "cases/illegal-escape-unicode-long.ml", line 1, characters 8-20:
+Error: Illegal escape sequence in '"\u{1234567}': the escape sequences are '\\', '\"', '\'', '\n', '\t', '\b', '\r', '\ ', '\ddd', '\xhh', '\ohhh' and '\u{h...}'.
+Compiler:
+File "cases/illegal-escape-unicode-long.ml", line 1, characters 9-20:
+Error: Illegal backslash escape in string or character (\u{1234567}): too many digits, expected 1 to 6 hexadecimal digits
+
+== illegal-escape.ml
+  | let c = '\q'
+OCST [illegal-escape]:
+File "cases/illegal-escape.ml", line 1, characters 8-11:
+Error: Illegal escape sequence in ''\q': the escape sequences are '\\', '\"', '\'', '\n', '\t', '\b', '\r', '\ ', '\ddd', '\xhh', '\ohhh' and '\u{h...}'.
+Compiler:
+File "cases/illegal-escape.ml", line 1, characters 8-11:
+Error: Illegal backslash escape in string or character (\q)
+
+== include-module-type.mli
+  | include
+OCST [include-module-type]:
+File "cases/include-module-type.mli", line 2, characters 0-0:
+Error: Unexpected end of input, 'include' expects a module type.
+Compiler:
+File "cases/include-module-type.mli", line 2, characters 0-0:
+Error: Syntax error
+
+== include-module.ml
+  | include
+OCST [include-module]:
+File "cases/include-module.ml", line 2, characters 0-0:
+Error: Unexpected end of input, 'include' expects a module.
+Compiler:
+File "cases/include-module.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== index-expr.ml
+  | let _ = a.( )
+OCST [index-expr]:
+File "cases/index-expr.ml", line 1, characters 12-13:
+Error: Illegal ')', an index expects an expression.
+Compiler:
+File "cases/index-expr.ml", line 1, characters 12-13:
+Error: Syntax error
+
+== index-operator-dotdot.ml
+  | let ( .%(;) ) a i = a
+OCST [index-operator-dotdot]:
+File "cases/index-operator-dotdot.ml", line 1, characters 10-11:
+Error: Illegal ')', '..' expected.
+Compiler:
+File "cases/index-operator-dotdot.ml", line 1, characters 10-11:
+Error: Syntax error
+
+== inherit-alias.ml
+  | class c = object inherit d as X end
+OCST [inherit-alias]:
+File "cases/inherit-alias.ml", line 1, characters 30-31:
+Error: Illegal identifier 'X', 'as' after 'inherit' expects a lowercase identifier.
+Compiler:
+File "cases/inherit-alias.ml", line 1, characters 30-31:
+Error: Syntax error
+
+== inherit-class-expr.ml
+  | class c = object inherit end
+OCST [inherit-class-expr]:
+File "cases/inherit-class-expr.ml", line 1, characters 25-28:
+Error: Illegal 'end', 'inherit' expects a class expression.
+Compiler:
+File "cases/inherit-class-expr.ml", line 1, characters 25-28:
+Error: Syntax error
+
+== inherit-class-type.mli
+  | class c : object inherit end
+OCST [inherit-class-type]:
+File "cases/inherit-class-type.mli", line 1, characters 25-28:
+Error: Illegal 'end', 'inherit' in an object type expects a class type.
+Compiler:
+File "cases/inherit-class-type.mli", line 1, characters 25-28:
+Error: Syntax error
+
+== initializer-body.ml
+  | class c = object initializer end
+OCST [initializer-body]:
+File "cases/initializer-body.ml", line 1, characters 29-32:
+Error: Illegal 'end', 'initializer' expects an expression.
+Compiler:
+File "cases/initializer-body.ml", line 1, characters 29-32:
+Error: Syntax error
+
+== instance-variable-colon.mli
+  | class c : object val x int end
+OCST [instance-variable-colon]:
+File "cases/instance-variable-colon.mli", line 1, characters 23-26:
+Error: Illegal identifier 'int', ':' expected.
+Compiler:
+File "cases/instance-variable-colon.mli", line 1, characters 23-26:
+Error: Syntax error
+
+== instance-variable-equal.ml
+  | class c = object val x end
+OCST [instance-variable-equal]:
+File "cases/instance-variable-equal.ml", line 1, characters 23-26:
+Error: Illegal 'end', '=' expected.
+Compiler:
+File "cases/instance-variable-equal.ml", line 1, characters 23-26:
+Error: Syntax error
+
+== instance-variable-name.ml
+  | class c = object val X = 1 end
+OCST [instance-variable-name]:
+File "cases/instance-variable-name.ml", line 1, characters 21-22:
+Error: Illegal identifier 'X', 'val' expects a lowercase identifier.
+Compiler:
+File "cases/instance-variable-name.ml", line 1, characters 21-22:
+Error: Syntax error
+
+== instance-variable-type.mli
+  | class c : object val x : end
+OCST [instance-variable-type]:
+File "cases/instance-variable-type.mli", line 1, characters 25-28:
+Error: Illegal 'end', ':' after an instance variable expects a type.
+Compiler:
+File "cases/instance-variable-type.mli", line 1, characters 25-28:
+Error: Syntax error
+
+== instance-variable-value.ml
+  | class c = object val x = end
+OCST [instance-variable-value]:
+File "cases/instance-variable-value.ml", line 1, characters 25-28:
+Error: Illegal 'end', '=' after an instance variable expects an expression.
+Compiler:
+File "cases/instance-variable-value.ml", line 1, characters 25-28:
+Error: Syntax error
+
+== interval-bound.ml
+  | let f = function 'a' .. x -> ()
+OCST [interval-bound]:
+File "cases/interval-bound.ml", line 1, characters 24-25:
+Error: Illegal identifier 'x', '..' in an interval pattern expects a literal, as in ''a'..'z''.
+Compiler:
+File "cases/interval-bound.ml", line 1, characters 24-25:
+Error: Syntax error
+
+== invalid-directive.ml
+  | # 99999999999999999999 "a.ml"
+OCST [invalid-directive]:
+File "cases/invalid-directive.ml", line 1, characters 0-29:
+Error: Illegal line directive '# 999999999999999999...', a line directive expects a line number and a file name.
+Compiler:
+File "cases/invalid-directive.ml", line 1, characters 1-29:
+Error: Invalid lexer directive "# 99999999999999999999 \"a.ml\"": line number out of range
+
+== invalid-encoding.ml
+  | let x\255 = 1\n
+OCST [invalid-encoding]:
+File "cases/invalid-encoding.ml", line 1, characters 4-6:
+Error: Illegal text, the source expects valid UTF-8.
+Compiler:
+File \"cases/invalid-encoding.ml\", line 1, characters 4-6:\nError: Invalid encoding of identifier x\255.
+
+== invalid-extension-character.ml
+  | let x = [%x€]
+OCST [invalid-identifier-character]:
+File "cases/invalid-extension-character.ml", line 1, characters 10-14:
+Error: Illegal identifier 'x€', an identifier expects letters, digits, '_' and quotes.
+Compiler:
+File "cases/invalid-extension-character.ml", line 1, characters 10-14:
+Error: Invalid character U+20AC in identifier
+
+== invalid-identifier-character.ml
+  | let x€ = 1
+OCST [invalid-identifier-character]:
+File "cases/invalid-identifier-character.ml", line 1, characters 4-8:
+Error: Illegal identifier 'x€', an identifier expects letters, digits, '_' and quotes.
+Compiler:
+File "cases/invalid-identifier-character.ml", line 1, characters 4-8:
+Error: Invalid character U+20AC in identifier
+
+== invalid-literal.ml
+  | let x = 12ab
+OCST [invalid-literal]:
+File "cases/invalid-literal.ml", line 1, characters 8-12:
+Error: Illegal number '12ab', a number expects digits and '_', possibly with a suffix 'l', 'L' or 'n'.
+Compiler:
+File "cases/invalid-literal.ml", line 1, characters 8-12:
+Error: Invalid literal 12ab
+
+== invalid-quoted-extension-character.ml
+  | let x = {%x€|s|}
+OCST [invalid-identifier-character]:
+File "cases/invalid-quoted-extension-character.ml", line 1, characters 8-15:
+Error: Illegal identifier '{%x€|', an identifier expects letters, digits, '_' and quotes.
+Compiler:
+File "cases/invalid-quoted-extension-character.ml", line 1, characters 8-15:
+Error: Invalid character U+20AC in identifier
+
+== keyword-extension-name.ml
+  | let% = 1
+OCST [keyword-extension-name]:
+File "cases/keyword-extension-name.ml", line 1, characters 5-6:
+Error: Illegal '=', '%' after a keyword expects an identifier, as in 'let%ext'.
+Compiler:
+File "cases/keyword-extension-name.ml", line 1, characters 5-6:
+Error: Syntax error
+
+== keyword-label.ml
+  | let _ = f ~let:1
+OCST [keyword-label]:
+File "cases/keyword-label.ml", line 1, characters 10-15:
+Error: Illegal label '~let:', a keyword cannot be a label.
+Compiler:
+File "cases/keyword-label.ml", line 1, characters 10-15:
+Error: let is a keyword, it cannot be used as label name
+
+== label-parameter-pattern.ml
+  | let f ~x: = x
+OCST [label-parameter-pattern]:
+File "cases/label-parameter-pattern.ml", line 1, characters 10-11:
+Error: Illegal '=', a label in a parameter expects a pattern, such as an identifier, '_', a literal or a pattern in parentheses.
+Compiler:
+File "cases/label-parameter-pattern.ml", line 1, characters 10-11:
+Error: Syntax error
+
+== label-pattern-value.ml
+  | let f = function (~x:, y) -> ()
+OCST [label-pattern-value]:
+File "cases/label-pattern-value.ml", line 1, characters 21-22:
+Error: Illegal ',', a label in a pattern expects a pattern, such as an identifier, '_', a literal or a pattern in parentheses.
+Compiler:
+File "cases/label-pattern-value.ml", line 1, characters 21-22:
+Error: Syntax error
+
+== label-value.ml
+  | let _ = f ~x:
+OCST [label-value]:
+File "cases/label-value.ml", line 2, characters 0-0:
+Error: Unexpected end of input, a label expects an argument, such as an identifier, a literal or an expression in parentheses.
+Compiler:
+File "cases/label-value.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== labelled-argument-type.ml
+  | type t = x: -> int
+OCST [labelled-argument-type]:
+File "cases/labelled-argument-type.ml", line 1, characters 12-14:
+Error: Illegal '->', a label in a type expects the type of the argument.
+Compiler:
+File "cases/labelled-argument-type.ml", line 1, characters 12-14:
+Error: Syntax error
+
+== labelled-parameter-name.ml
+  | let f ~ = 1
+OCST [labelled-parameter-name]:
+File "cases/labelled-parameter-name.ml", line 1, characters 8-9:
+Error: Illegal '=', '~' in a parameter expects a lowercase identifier.
+Compiler:
+File "cases/labelled-parameter-name.ml", line 1, characters 8-9:
+Error: Syntax error
+
+== labelled-pattern-alone.ml
+  | let f = function ~x -> ()
+OCST [labelled-pattern-alone]:
+File "cases/labelled-pattern-alone.ml", line 1, characters 20-22:
+Error: Illegal '->', ',' expected, a labelled pattern '~x:p' is an element of a tuple.
+Compiler:
+File "cases/labelled-pattern-alone.ml", line 1, characters 20-22:
+Error: Syntax error
+
+== labelled-type-arrow.ml
+  | type t = x:int
+OCST [labelled-type-arrow]:
+File "cases/labelled-type-arrow.ml", line 2, characters 0-0:
+Error: Unexpected end of input, '->' or '*' expected.
+Compiler:
+File "cases/labelled-type-arrow.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== labelled_tuple_first_operator.ml
+  | let _ = ~l:x ^ b, c
+OCST [labelled-expr-alone]:
+File "cases/labelled_tuple_first_operator.ml", line 1, characters 13-14:
+Error: Illegal operator '^', ',' expected, a labelled expression '~x:e' is an element of a tuple.
+Compiler:
+File "cases/labelled_tuple_first_operator.ml", line 1, characters 13-14:
+Error: Syntax error
+
+== labelled_tuple_pattern_effect.ml
+  | let f = function
+  |   | effect C ~x, y, k -> ()
+OCST [effect-comma]:
+File "cases/labelled_tuple_pattern_effect.ml", line 2, characters 22-24:
+Error: Illegal '->', ',' expected.
+Compiler:
+File "cases/labelled_tuple_pattern_effect.ml", line 2, characters 22-24:
+Error: Syntax error
+
+== lazy-expr.ml
+  | let _ = lazy
+OCST [lazy-expr]:
+File "cases/lazy-expr.ml", line 2, characters 0-0:
+Error: Unexpected end of input, 'lazy' expects an argument, such as an identifier, a literal or an expression in parentheses.
+Compiler:
+File "cases/lazy-expr.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== lazy-pattern.ml
+  | let f = function lazy -> ()
+OCST [lazy-pattern]:
+File "cases/lazy-pattern.ml", line 1, characters 22-24:
+Error: Illegal '->', 'lazy' in a pattern expects a pattern, such as an identifier, '_', a literal or a pattern in parentheses.
+Compiler:
+File "cases/lazy-pattern.ml", line 1, characters 22-24:
+Error: Syntax error
+
+== lazy_application_error.ml
+  | let _ = lazy f x
+OCST [structure-item]:
+File "cases/lazy_application_error.ml", line 1, characters 15-16:
+Error: Illegal identifier 'x', a structure expects a definition, such as 'let x = 1', 'type t = int' or 'module M = N', or an expression.
+Compiler:
+File "cases/lazy_application_error.ml", line 1, characters 15-16:
+Error: Syntax error
+
+== let-binding-equal.ml
+  | let x
+OCST [let-binding-equal]:
+File "cases/let-binding-equal.ml", line 2, characters 0-0:
+Error: Unexpected end of input, '=' or a parameter expected.
+Compiler:
+File "cases/let-binding-equal.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== let-body.ml
+  | let _ = let x = 1 in
+OCST [let-body]:
+File "cases/let-body.ml", line 2, characters 0-0:
+Error: Unexpected end of input, 'in' expects an expression.
+Compiler:
+File "cases/let-body.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== let-constraint-pattern.ml
+  | let C x : t = e
+OCST [let-constraint-pattern]:
+File "cases/let-constraint-pattern.ml", line 1, characters 8-9:
+Error: Illegal ':', a binding only accepts a type after a name or a pattern in parentheses.
+Compiler:
+File "cases/let-constraint-pattern.ml", line 1, characters 8-9:
+Error: Syntax error
+
+== let-function-equal.ml
+  | let f x
+OCST [let-function-equal]:
+File "cases/let-function-equal.ml", line 2, characters 0-0:
+Error: Unexpected end of input, '=' expected.
+Compiler:
+File "cases/let-function-equal.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== let-in.ml
+  | let _ = let x = 1 x
+OCST [let-in]:
+File "cases/let-in.ml", line 2, characters 0-0:
+Error: Unexpected end of input, 'in' expected.
+Compiler:
+File "cases/let-in.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== let-item-in.ml
+  | let _ = let open M x
+OCST [let-item-in]:
+File "cases/let-item-in.ml", line 1, characters 19-20:
+Error: Illegal identifier 'x', 'in' expected.
+Compiler:
+File "cases/let-item-in.ml", line 1, characters 19-20:
+Error: Syntax error
+
+== let-newtype-dot.ml
+  | let f : type a a -> a = fun x -> x
+OCST [let-newtype-dot]:
+File "cases/let-newtype-dot.ml", line 1, characters 17-19:
+Error: Illegal '->', '.' expected.
+Compiler:
+File "cases/let-newtype-dot.ml", line 1, characters 17-19:
+Error: Syntax error
+
+== let-pattern-equal.ml
+  | let (x, y) 1
+OCST [let-pattern-equal]:
+File "cases/let-pattern-equal.ml", line 1, characters 11-12:
+Error: Illegal integer literal, '=' expected.
+Compiler:
+File "cases/let-pattern-equal.ml", line 1, characters 11-12:
+Error: Syntax error
+
+== let-pattern.ml
+  | let ) = 1
+OCST [let-pattern]:
+File "cases/let-pattern.ml", line 1, characters 4-5:
+Error: Illegal ')', 'let' or 'and' expects an identifier or a pattern.
+Compiler:
+File "cases/let-pattern.ml", line 1, characters 4-5:
+Error: Syntax error
+
+== let-type.ml
+  | let (x, y) : = p
+OCST [let-type]:
+File "cases/let-type.ml", line 1, characters 13-14:
+Error: Illegal '=', ':' in a binding expects a type.
+Compiler:
+File "cases/let-type.ml", line 1, characters 13-14:
+Error: Syntax error
+
+== let-typed-equal.ml
+  | let x : int 1
+OCST [let-typed-equal]:
+File "cases/let-typed-equal.ml", line 1, characters 12-13:
+Error: Illegal integer literal, '=' expected.
+Compiler:
+File "cases/let-typed-equal.ml", line 1, characters 12-13:
+Error: Syntax error
+
+== let-value.ml
+  | let x =
+OCST [let-value]:
+File "cases/let-value.ml", line 2, characters 0-0:
+Error: Unexpected end of input, '=' in a binding expects an expression.
+Compiler:
+File "cases/let-value.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== let_constraint_pattern_attribute.ml
+  | let A [@a] : t = x
+OCST [let-constraint-pattern]:
+File "cases/let_constraint_pattern_attribute.ml", line 1, characters 11-12:
+Error: Illegal ':', a binding only accepts a type after a name or a pattern in parentheses.
+Compiler:
+File "cases/let_constraint_pattern_attribute.ml", line 1, characters 11-12:
+Error: Syntax error
+
+== let_constraint_pattern_tuple.ml
+  | let x, y : t = e
+OCST [let-constraint-pattern]:
+File "cases/let_constraint_pattern_tuple.ml", line 1, characters 9-10:
+Error: Illegal ':', a binding only accepts a type after a name or a pattern in parentheses.
+Compiler:
+File "cases/let_constraint_pattern_tuple.ml", line 1, characters 9-10:
+Error: Syntax error
+
+== letop-in.ml
+  | let _ = let* x = e x
+OCST [letop-in]:
+File "cases/letop-in.ml", line 2, characters 0-0:
+Error: Unexpected end of input, 'in' expected.
+Compiler:
+File "cases/letop-in.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== letop-pattern.ml
+  | let _ = let* ) = e in x
+OCST [letop-pattern]:
+File "cases/letop-pattern.ml", line 1, characters 13-14:
+Error: Illegal ')', 'let*' or 'and*' expects an identifier or a pattern.
+Compiler:
+File "cases/letop-pattern.ml", line 1, characters 13-14:
+Error: Syntax error
+
+== letop-value.ml
+  | let _ = let* x = in x
+OCST [letop-value]:
+File "cases/letop-value.ml", line 1, characters 17-19:
+Error: Illegal 'in', '=' in a 'let*' binding expects an expression.
+Compiler:
+File "cases/letop-value.ml", line 1, characters 17-19:
+Error: Syntax error
+
+== letop_constraint_constructor.ml
+  | let _ = let* C x : t = e in x
+OCST [letop-constraint-pattern]:
+File "cases/letop_constraint_constructor.ml", line 1, characters 17-18:
+Error: Illegal ':', a 'let*' binding only accepts a type after a name or a pattern in parentheses.
+Compiler:
+File "cases/letop_constraint_constructor.ml", line 1, characters 17-18:
+Error: Syntax error
+
+== letop_constraint_newtype.ml
+  | let _ = let* x : type a. t = e in x
+OCST [letop-constraint-poly]:
+File "cases/letop_constraint_newtype.ml", line 1, characters 17-21:
+Error: Illegal 'type', a 'let*' binding cannot have a polymorphic type or locally abstract types.
+Compiler:
+File "cases/letop_constraint_newtype.ml", line 1, characters 17-21:
+Error: Syntax error
+
+== letop_constraint_poly.ml
+  | let _ = let* x : 'a. t = e in x
+OCST [letop-constraint-poly]:
+File "cases/letop_constraint_poly.ml", line 1, characters 17-18:
+Error: Illegal ''', a 'let*' binding cannot have a polymorphic type or locally abstract types.
+Compiler:
+File "cases/letop_constraint_poly.ml", line 1, characters 19-20:
+Error: Syntax error
+
+== letop_constraint_tuple.ml
+  | let _ = let* x, y : t = e in x
+OCST [letop-constraint-pattern]:
+File "cases/letop_constraint_tuple.ml", line 1, characters 18-19:
+Error: Illegal ':', a 'let*' binding only accepts a type after a name or a pattern in parentheses.
+Compiler:
+File "cases/letop_constraint_tuple.ml", line 1, characters 18-19:
+Error: Syntax error
+
+== list-element.ml
+  | let _ = [ 1; ) ]
+OCST [list-element]:
+File "cases/list-element.ml", line 1, characters 13-14:
+Error: Illegal ')', a list expects an expression.
+Compiler:
+File "cases/list-element.ml", line 1, characters 13-14:
+Error: Syntax error: ] expected
+
+== list-pattern-element.ml
+  | let f = function [ x; ) ] -> ()
+OCST [list-pattern-element]:
+File "cases/list-pattern-element.ml", line 1, characters 22-23:
+Error: Illegal ')', a list pattern expects a pattern.
+Compiler:
+File "cases/list-pattern-element.ml", line 1, characters 22-23:
+Error: Syntax error: ] expected
+
+== local-open-empty-override.ml
+  | let _ = M.{< >}
+OCST [local-open-empty-override]:
+File "cases/local-open-empty-override.ml", line 1, characters 13-15:
+Error: Illegal '>}', a copy of an object after a module path expects a lowercase identifier.
+Compiler:
+File "cases/local-open-empty-override.ml", line 1, characters 13-15:
+Error: Syntax error
+
+== local-open-expr.ml
+  | let _ = M.( in )
+OCST [local-open-expr]:
+File "cases/local-open-expr.ml", line 1, characters 12-14:
+Error: Illegal 'in', 'M.(' expects an expression.
+Compiler:
+File "cases/local-open-expr.ml", line 1, characters 12-14:
+Error: Syntax error: operator expected.
+
+== local-open-pack-functor-without-type.ml
+  | let x = M.(module F (X))
+OCST [local-open-pack-type]:
+File "cases/local-open-pack-functor-without-type.ml", line 1, characters 23-24:
+Error: Illegal ')', ':' expected, a first-class module after 'M.' needs its module type, as in 'M.(module E : S)'.
+Compiler:
+File "cases/local-open-pack-functor-without-type.ml", line 1, characters 23-24:
+Error: Syntax error
+
+== local-open-pack-struct-without-type.ml
+  | let x = M.(module struct end)
+OCST [local-open-pack-type]:
+File "cases/local-open-pack-struct-without-type.ml", line 1, characters 28-29:
+Error: Illegal ')', ':' expected, a first-class module after 'M.' needs its module type, as in 'M.(module E : S)'.
+Compiler:
+File "cases/local-open-pack-struct-without-type.ml", line 1, characters 28-29:
+Error: Syntax error
+
+== local-open-pack-type.ml
+  | let x = M.(module E)
+OCST [local-open-pack-type]:
+File "cases/local-open-pack-type.ml", line 1, characters 19-20:
+Error: Illegal ')', ':' expected, a first-class module after 'M.' needs its module type, as in 'M.(module E : S)'.
+Compiler:
+File "cases/local-open-pack-type.ml", line 1, characters 19-20:
+Error: Syntax error
+
+== local-open-pattern.ml
+  | let f = function M.( in ) -> ()
+OCST [local-open-pattern]:
+File "cases/local-open-pattern.ml", line 1, characters 21-23:
+Error: Illegal 'in', 'M.(' in a pattern expects a pattern.
+Compiler:
+File "cases/local-open-pattern.ml", line 1, characters 21-23:
+Error: Syntax error: pattern expected.
+
+== loop-body.ml
+  | let _ = while c do ) done
+OCST [loop-body]:
+File "cases/loop-body.ml", line 1, characters 19-20:
+Error: Illegal ')', 'do' expects an expression.
+Compiler:
+File "cases/loop-body.ml", line 1, characters 19-20:
+Error: Syntax error
+
+== match-scrutinee.ml
+  | let _ = match with x -> x
+OCST [match-scrutinee]:
+File "cases/match-scrutinee.ml", line 1, characters 14-18:
+Error: Illegal 'with', 'match' expects an expression.
+Compiler:
+File "cases/match-scrutinee.ml", line 1, characters 14-18:
+Error: Syntax error
+
+== match-with.ml
+  | let _ = match x x -> x
+OCST [match-with]:
+File "cases/match-with.ml", line 1, characters 18-20:
+Error: Illegal '->', 'with' expected.
+Compiler:
+File "cases/match-with.ml", line 1, characters 18-20:
+Error: Syntax error
+
+== method-body.ml
+  | class c = object method m = end
+OCST [method-body]:
+File "cases/method-body.ml", line 1, characters 28-31:
+Error: Illegal 'end', '=' in a method expects an expression.
+Compiler:
+File "cases/method-body.ml", line 1, characters 28-31:
+Error: Syntax error
+
+== method-coercion.ml
+  | class c = object method m :> t = e end
+OCST [method-coercion]:
+File "cases/method-coercion.ml", line 1, characters 26-28:
+Error: Illegal ':>', a method without parameters cannot have a coercion ':>'.
+Compiler:
+File "cases/method-coercion.ml", line 1, characters 26-28:
+Error: Syntax error
+
+== method-colon.mli
+  | class c : object method m int end
+OCST [method-colon]:
+File "cases/method-colon.mli", line 1, characters 26-29:
+Error: Illegal identifier 'int', ':' expected.
+Compiler:
+File "cases/method-colon.mli", line 1, characters 26-29:
+Error: Syntax error
+
+== method-equal.ml
+  | class c = object method m : int end
+OCST [method-equal]:
+File "cases/method-equal.ml", line 1, characters 32-35:
+Error: Illegal 'end', '=' expected.
+Compiler:
+File "cases/method-equal.ml", line 1, characters 32-35:
+Error: Syntax error
+
+== method-name.ml
+  | class c = object method M = 1 end
+OCST [method-name]:
+File "cases/method-name.ml", line 1, characters 24-25:
+Error: Illegal identifier 'M', 'method' expects a lowercase identifier.
+Compiler:
+File "cases/method-name.ml", line 1, characters 24-25:
+Error: Syntax error
+
+== method-newtype-dot.ml
+  | class c = object method m : type a a -> a = fun x -> x end
+OCST [method-newtype-dot]:
+File "cases/method-newtype-dot.ml", line 1, characters 37-39:
+Error: Illegal '->', '.' expected.
+Compiler:
+File "cases/method-newtype-dot.ml", line 1, characters 37-39:
+Error: Syntax error
+
+== method-parameters-equal.ml
+  | class c = object method m x end
+OCST [method-parameters-equal]:
+File "cases/method-parameters-equal.ml", line 1, characters 28-31:
+Error: Illegal 'end', '=' expected.
+Compiler:
+File "cases/method-parameters-equal.ml", line 1, characters 28-31:
+Error: Syntax error
+
+== method-type.ml
+  | type t = < m : >
+OCST [method-type]:
+File "cases/method-type.ml", line 1, characters 15-16:
+Error: Illegal '>', the name of a method and ':' expect a type.
+Compiler:
+File "cases/method-type.ml", line 1, characters 15-16:
+Error: Syntax error
+
+== method_virtual_body.ml
+  | class c = object method virtual m = 1 end
+OCST [virtual-method-colon]:
+File "cases/method_virtual_body.ml", line 1, characters 34-35:
+Error: Illegal '=', ':' expected, a virtual method has no body.
+Compiler:
+File "cases/method_virtual_body.ml", line 1, characters 34-35:
+Error: Syntax error
+
+== method_virtual_parameters.ml
+  | class c = object method virtual m x = 1 end
+OCST [virtual-method-colon]:
+File "cases/method_virtual_parameters.ml", line 1, characters 34-35:
+Error: Illegal identifier 'x', ':' expected, a virtual method has no body.
+Compiler:
+File "cases/method_virtual_parameters.ml", line 1, characters 34-35:
+Error: Syntax error
+
+== module-alias-path.mli
+  | module M = x
+OCST [module-alias-path]:
+File "cases/module-alias-path.mli", line 1, characters 11-12:
+Error: Illegal identifier 'x', '=' in a module alias expects a capitalized identifier or a path, as in 'M' or 'M.N'.
+Compiler:
+File "cases/module-alias-path.mli", line 1, characters 9-10:
+Error: Syntax error: : expected.
+
+== module-binding-body.ml
+  | module M struct end
+OCST [module-binding-body]:
+File "cases/module-binding-body.ml", line 1, characters 9-15:
+Error: Illegal 'struct', '=' or ':' expected.
+Compiler:
+File "cases/module-binding-body.ml", line 1, characters 9-15:
+Error: Syntax error
+
+== module-binding-equal.ml
+  | module M : S
+OCST [module-binding-equal]:
+File "cases/module-binding-equal.ml", line 2, characters 0-0:
+Error: Unexpected end of input, '=' expected.
+Compiler:
+File "cases/module-binding-equal.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== module-binding-type.ml
+  | module M : = struct end
+OCST [module-binding-type]:
+File "cases/module-binding-type.ml", line 1, characters 11-12:
+Error: Illegal '=', ':' in a module definition expects a module type.
+Compiler:
+File "cases/module-binding-type.ml", line 1, characters 9-10:
+Error: Syntax error: = expected.
+
+== module-constraint-type.ml
+  | module M = (N : )
+OCST [module-constraint-type]:
+File "cases/module-constraint-type.ml", line 1, characters 16-17:
+Error: Illegal ')', ':' in a module expects a module type.
+Compiler:
+File "cases/module-constraint-type.ml", line 1, characters 16-17:
+Error: Syntax error
+
+== module-declaration-body.mli
+  | module M
+OCST [module-declaration-body]:
+File "cases/module-declaration-body.mli", line 2, characters 0-0:
+Error: Unexpected end of input, ':' or '=' expected.
+Compiler:
+File "cases/module-declaration-body.mli", line 2, characters 0-0:
+Error: Syntax error
+
+== module-declaration-functor-argument.mli
+  | module F (x) : S
+OCST [module-declaration-functor-argument]:
+File "cases/module-declaration-functor-argument.mli", line 1, characters 9-10:
+Error: Illegal '(', '(' expects a functor argument, as in '(X : S)' or '()'.
+Compiler:
+File "cases/module-declaration-functor-argument.mli", line 1, characters 10-11:
+Error: Syntax error
+
+== module-declaration-type.mli
+  | module M :
+OCST [module-declaration-type]:
+File "cases/module-declaration-type.mli", line 2, characters 0-0:
+Error: Unexpected end of input, ':' in a module declaration expects a module type.
+Compiler:
+File "cases/module-declaration-type.mli", line 2, characters 0-0:
+Error: Syntax error
+
+== module-definition.ml
+  | module M =
+OCST [module-definition]:
+File "cases/module-definition.ml", line 2, characters 0-0:
+Error: Unexpected end of input, '=' in a module definition expects a module.
+Compiler:
+File "cases/module-definition.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== module-name.ml
+  | module = N
+OCST [module-name]:
+File "cases/module-name.ml", line 1, characters 7-8:
+Error: Illegal '=', 'module' expects a capitalized identifier or '_'.
+Compiler:
+File "cases/module-name.ml", line 1, characters 7-8:
+Error: Syntax error
+
+== module-substitution-path.mli
+  | module M := x
+OCST [module-substitution-path]:
+File "cases/module-substitution-path.mli", line 1, characters 12-13:
+Error: Illegal identifier 'x', ':=' in a module substitution expects a capitalized identifier or a path, as in 'M' or 'M.N'.
+Compiler:
+File "cases/module-substitution-path.mli", line 1, characters 12-13:
+Error: Syntax error: module path expected.
+
+== module-type-definition.ml
+  | module type S =
+OCST [module-type-definition]:
+File "cases/module-type-definition.ml", line 2, characters 0-0:
+Error: Unexpected end of input, '=' or ':=' in a module type declaration expects a module type.
+Compiler:
+File "cases/module-type-definition.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== module-type-name.ml
+  | module type = sig end
+OCST [module-type-name]:
+File "cases/module-type-name.ml", line 1, characters 12-13:
+Error: Illegal '=', 'module type' expects an identifier.
+Compiler:
+File "cases/module-type-name.ml", line 1, characters 12-13:
+Error: Syntax error
+
+== module-type-of-module.mli
+  | module type S = module type of
+OCST [module-type-of-module]:
+File "cases/module-type-of-module.mli", line 2, characters 0-0:
+Error: Unexpected end of input, 'module type of' expects a module.
+Compiler:
+File "cases/module-type-of-module.mli", line 2, characters 0-0:
+Error: Syntax error
+
+== module-type-of.mli
+  | module type S = module of M
+OCST [module-type-of]:
+File "cases/module-type-of.mli", line 1, characters 23-25:
+Error: Illegal 'of', 'type of' expected.
+Compiler:
+File "cases/module-type-of.mli", line 1, characters 23-25:
+Error: Syntax error
+
+== module-type-substitution-in-structure.ml
+  | module type S := sig end
+OCST [module-type-substitution-in-structure]:
+File "cases/module-type-substitution-in-structure.ml", line 1, characters 14-16:
+Error: Illegal ':=', module type substitutions 'module type S := ...' are only allowed in signatures: '=' is expected.
+Compiler:
+File "cases/module-type-substitution-in-structure.ml", line 1, characters 14-16:
+Error: Syntax error
+
+== new-class.ml
+  | let _ = new
+OCST [new-class]:
+File "cases/new-class.ml", line 2, characters 0-0:
+Error: Unexpected end of input, 'new' expects a lowercase identifier or a path, as in 'c' or 'M.c'.
+Compiler:
+File "cases/new-class.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== newtype-names.ml
+  | let f (type) x = x
+OCST [newtype-names]:
+File "cases/newtype-names.ml", line 1, characters 11-12:
+Error: Illegal ')', '(type' expects lowercase identifiers.
+Compiler:
+File "cases/newtype-names.ml", line 1, characters 11-12:
+Error: Syntax error
+
+== object-type-field.ml
+  | type t = < ) >
+OCST [object-type-field]:
+File "cases/object-type-field.ml", line 1, characters 11-12:
+Error: Illegal ')', an object type expects a method 'm : t', an inherited type or '..'.
+Compiler:
+File "cases/object-type-field.ml", line 1, characters 11-12:
+Error: Syntax error
+
+== open-module.ml
+  | open
+OCST [open-module]:
+File "cases/open-module.ml", line 2, characters 0-0:
+Error: Unexpected end of input, 'open' expects a module.
+Compiler:
+File "cases/open-module.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== open-path.mli
+  | open
+OCST [open-path]:
+File "cases/open-path.mli", line 2, characters 0-0:
+Error: Unexpected end of input, 'open' expects a capitalized identifier or a path, as in 'M' or 'M.N'.
+Compiler:
+File "cases/open-path.mli", line 2, characters 0-0:
+Error: Syntax error
+
+== operator-rhs.ml
+  | let _ = 1 +
+OCST [operator-rhs]:
+File "cases/operator-rhs.ml", line 2, characters 0-0:
+Error: Unexpected end of input, '+' expects its right operand.
+Compiler:
+File "cases/operator-rhs.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== optional-argument-arrow.ml
+  | type t = ?x:int
+OCST [optional-argument-arrow]:
+File "cases/optional-argument-arrow.ml", line 2, characters 0-0:
+Error: Unexpected end of input, '->' expected.
+Compiler:
+File "cases/optional-argument-arrow.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== optional-argument-type.ml
+  | type t = ?x: -> int
+OCST [optional-argument-type]:
+File "cases/optional-argument-type.ml", line 1, characters 13-15:
+Error: Illegal '->', an optional label in a type expects the type of the argument.
+Compiler:
+File "cases/optional-argument-type.ml", line 1, characters 13-15:
+Error: Syntax error
+
+== optional-label-pattern.ml
+  | let f ?x:1 = 1
+OCST [optional-label-pattern]:
+File "cases/optional-label-pattern.ml", line 1, characters 9-10:
+Error: Illegal integer literal, an optional label in a parameter expects a lowercase identifier, '_', or a pattern with a default value in parentheses.
+Compiler:
+File "cases/optional-label-pattern.ml", line 1, characters 9-10:
+Error: Syntax error
+
+== optional-label-value.ml
+  | let _ = f ?x:
+OCST [optional-label-value]:
+File "cases/optional-label-value.ml", line 2, characters 0-0:
+Error: Unexpected end of input, an optional label expects an argument, such as an identifier, a literal or an expression in parentheses.
+Compiler:
+File "cases/optional-label-value.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== optional-parameter-name.ml
+  | let f ? = 1
+OCST [optional-parameter-name]:
+File "cases/optional-parameter-name.ml", line 1, characters 8-9:
+Error: Illegal '=', '?' expects a lowercase identifier.
+Compiler:
+File "cases/optional-parameter-name.ml", line 1, characters 8-9:
+Error: Syntax error
+
+== optional-parameter-pattern.ml
+  | let f ?x:( ) = 1
+OCST [optional-parameter-pattern]:
+File "cases/optional-parameter-pattern.ml", line 1, characters 11-12:
+Error: Illegal ')', '(' after an optional label expects a pattern.
+Compiler:
+File "cases/optional-parameter-pattern.ml", line 1, characters 11-12:
+Error: Syntax error
+
+== or-pattern-rhs.ml
+  | let f = function A | -> ()
+OCST [or-pattern-rhs]:
+File "cases/or-pattern-rhs.ml", line 1, characters 21-23:
+Error: Illegal '->', '|' in a pattern expects another pattern.
+Compiler:
+File "cases/or-pattern-rhs.ml", line 1, characters 21-23:
+Error: Syntax error: pattern expected.
+
+== override-field-name.ml
+  | let _ = {< X = 1 >}
+OCST [override-field-name]:
+File "cases/override-field-name.ml", line 1, characters 11-12:
+Error: Illegal identifier 'X', '{<' expects a lowercase identifier.
+Compiler:
+File "cases/override-field-name.ml", line 1, characters 11-12:
+Error: Syntax error
+
+== override-field-value.ml
+  | let _ = {< x = >}
+OCST [override-field-value]:
+File "cases/override-field-value.ml", line 1, characters 15-17:
+Error: Illegal '>}', '=' in '{< ... >}' expects an expression.
+Compiler:
+File "cases/override-field-value.ml", line 1, characters 15-17:
+Error: Syntax error
+
+== pack-module.ml
+  | let _ = (module )
+OCST [pack-module]:
+File "cases/pack-module.ml", line 1, characters 16-17:
+Error: Illegal ')', '(module' expects a module.
+Compiler:
+File "cases/pack-module.ml", line 1, characters 16-17:
+Error: Syntax error: module-expr expected.
+
+== pack-type.ml
+  | let _ = (module M : )
+OCST [pack-type]:
+File "cases/pack-type.ml", line 1, characters 20-21:
+Error: Illegal ')', ':' in a first-class module expects a module type.
+Compiler:
+File "cases/pack-type.ml", line 1, characters 20-21:
+Error: Syntax error: ) expected
+
+== package-type.ml
+  | type t = (module )
+OCST [package-type]:
+File "cases/package-type.ml", line 1, characters 17-18:
+Error: Illegal ')', 'module' in a type expects a module type.
+Compiler:
+File "cases/package-type.ml", line 1, characters 17-18:
+Error: Syntax error
+
+== package_type_constrained.ml
+  | type t = (module S with type t = int constraint 'a = int)
+OCST [package-type-constraint]:
+File "cases/package_type_constrained.ml", line 1, characters 17-18:
+Error: Illegal identifier 'S', a first-class module type only accepts 'with type' constraints without type parameters, 'private' or 'constraint'.
+Compiler:
+File "cases/package_type_constrained.ml", line 1, characters 24-56:
+Error: Syntax error: invalid package type: constrained types are not supported
+
+== package_type_expression.ml
+  | let m = (module M : sig end)
+OCST [package-type-path]:
+File "cases/package_type_expression.ml", line 1, characters 20-23:
+Error: Illegal 'sig', a first-class module type expects an identifier or a path, as in 'S' or 'M.S', possibly with 'with type' constraints.
+Compiler:
+File "cases/package_type_expression.ml", line 1, characters 20-27:
+Error: Syntax error: invalid package type: only module type identifier and with type constraints are supported
+
+== package_type_functor_type.ml
+  | type t = (module X : sig end) -> int
+OCST [package-type-path]:
+File "cases/package_type_functor_type.ml", line 1, characters 21-24:
+Error: Illegal 'sig', a first-class module type expects an identifier or a path, as in 'S' or 'M.S', possibly with 'with type' constraints.
+Compiler:
+File "cases/package_type_functor_type.ml", line 1, characters 21-28:
+Error: Syntax error: invalid package type: only module type identifier and with type constraints are supported
+
+== package_type_nested_with.ml
+  | type t = (module (S with type t = int) with type u = int)
+OCST [package-type-path]:
+File "cases/package_type_nested_with.ml", line 1, characters 17-18:
+Error: Illegal '(', a first-class module type expects an identifier or a path, as in 'S' or 'M.S', possibly with 'with type' constraints.
+Compiler:
+File "cases/package_type_nested_with.ml", line 1, characters 17-56:
+Error: Syntax error: invalid package type: only module type identifier and with type constraints are supported
+
+== package_type_parameterized.ml
+  | type t = (module S with type 'a t = int)
+OCST [package-type-constraint]:
+File "cases/package_type_parameterized.ml", line 1, characters 17-18:
+Error: Illegal identifier 'S', a first-class module type only accepts 'with type' constraints without type parameters, 'private' or 'constraint'.
+Compiler:
+File "cases/package_type_parameterized.ml", line 1, characters 24-39:
+Error: Syntax error: invalid package type: parametrized types are not supported
+
+== package_type_paren_signature.ml
+  | type t = (module (sig end))
+OCST [package-type-path]:
+File "cases/package_type_paren_signature.ml", line 1, characters 17-18:
+Error: Illegal '(', a first-class module type expects an identifier or a path, as in 'S' or 'M.S', possibly with 'with type' constraints.
+Compiler:
+File "cases/package_type_paren_signature.ml", line 1, characters 18-25:
+Error: Syntax error: invalid package type: only module type identifier and with type constraints are supported
+
+== package_type_paren_with_module.ml
+  | type t = (module (S with module M = N))
+OCST [package-type-constraint]:
+File "cases/package_type_paren_with_module.ml", line 1, characters 17-18:
+Error: Illegal '(', a first-class module type only accepts 'with type' constraints without type parameters, 'private' or 'constraint'.
+Compiler:
+File "cases/package_type_paren_with_module.ml", line 1, characters 18-37:
+Error: Syntax error: invalid package type: only with type t = constraints are supported
+
+== package_type_pattern.ml
+  | let f (module M : sig end) = ()
+OCST [package-type-path]:
+File "cases/package_type_pattern.ml", line 1, characters 18-21:
+Error: Illegal 'sig', a first-class module type expects an identifier or a path, as in 'S' or 'M.S', possibly with 'with type' constraints.
+Compiler:
+File "cases/package_type_pattern.ml", line 1, characters 18-25:
+Error: Syntax error: invalid package type: only module type identifier and with type constraints are supported
+
+== package_type_private.ml
+  | type t = (module S with type t = private int)
+OCST [package-type-constraint]:
+File "cases/package_type_private.ml", line 1, characters 17-18:
+Error: Illegal identifier 'S', a first-class module type only accepts 'with type' constraints without type parameters, 'private' or 'constraint'.
+Compiler:
+File "cases/package_type_private.ml", line 1, characters 24-44:
+Error: Syntax error: invalid package type: private types are not supported
+
+== package_type_signature.ml
+  | type t = (module sig end)
+OCST [package-type-path]:
+File "cases/package_type_signature.ml", line 1, characters 17-20:
+Error: Illegal 'sig', a first-class module type expects an identifier or a path, as in 'S' or 'M.S', possibly with 'with type' constraints.
+Compiler:
+File "cases/package_type_signature.ml", line 1, characters 17-24:
+Error: Syntax error: invalid package type: only module type identifier and with type constraints are supported
+
+== package_type_substitution.ml
+  | type t = (module S with type t := int)
+OCST [package-type-constraint]:
+File "cases/package_type_substitution.ml", line 1, characters 17-18:
+Error: Illegal identifier 'S', a first-class module type only accepts 'with type' constraints without type parameters, 'private' or 'constraint'.
+Compiler:
+File "cases/package_type_substitution.ml", line 1, characters 17-37:
+Error: Syntax error: invalid package type: only with type t = constraints are supported
+
+== package_type_val.ml
+  | module M = (val m : sig end)
+OCST [package-type-path]:
+File "cases/package_type_val.ml", line 1, characters 20-23:
+Error: Illegal 'sig', a first-class module type expects an identifier or a path, as in 'S' or 'M.S', possibly with 'with type' constraints.
+Compiler:
+File "cases/package_type_val.ml", line 1, characters 20-27:
+Error: Syntax error: invalid package type: only module type identifier and with type constraints are supported
+
+== package_type_val_coercion.ml
+  | module M = (val m : S :> sig end)
+OCST [package-type-path]:
+File "cases/package_type_val_coercion.ml", line 1, characters 25-28:
+Error: Illegal 'sig', a first-class module type expects an identifier or a path, as in 'S' or 'M.S', possibly with 'with type' constraints.
+Compiler:
+File "cases/package_type_val_coercion.ml", line 1, characters 25-32:
+Error: Syntax error: invalid package type: only module type identifier and with type constraints are supported
+
+== package_type_with_module.ml
+  | type t = (module S with module M = N)
+OCST [package-type-constraint]:
+File "cases/package_type_with_module.ml", line 1, characters 17-18:
+Error: Illegal identifier 'S', a first-class module type only accepts 'with type' constraints without type parameters, 'private' or 'constraint'.
+Compiler:
+File "cases/package_type_with_module.ml", line 1, characters 17-36:
+Error: Syntax error: invalid package type: only with type t = constraints are supported
+
+== parameter-default.ml
+  | let f ?(x = ) = x
+OCST [parameter-default]:
+File "cases/parameter-default.ml", line 1, characters 12-13:
+Error: Illegal ')', '=' in an optional parameter expects an expression.
+Compiler:
+File "cases/parameter-default.ml", line 1, characters 12-13:
+Error: Syntax error
+
+== parameter-type.ml
+  | let f ~(x : ) = x
+OCST [parameter-type]:
+File "cases/parameter-type.ml", line 1, characters 12-13:
+Error: Illegal ')', ':' in a parameter expects a type.
+Compiler:
+File "cases/parameter-type.ml", line 1, characters 12-13:
+Error: Syntax error
+
+== parenthesized-class-expr.ml
+  | class c = ( )
+OCST [parenthesized-class-expr]:
+File "cases/parenthesized-class-expr.ml", line 1, characters 12-13:
+Error: Illegal ')', '(' in a class expression expects a class expression.
+Compiler:
+File "cases/parenthesized-class-expr.ml", line 1, characters 12-13:
+Error: Syntax error
+
+== parenthesized-expr.ml
+  | let _ = ( in )
+OCST [parenthesized-expr]:
+File "cases/parenthesized-expr.ml", line 1, characters 10-12:
+Error: Illegal 'in', '(' expects an expression.
+Compiler:
+File "cases/parenthesized-expr.ml", line 1, characters 10-12:
+Error: Syntax error: operator expected.
+
+== parenthesized-module-expr.ml
+  | module M = ( )
+OCST [parenthesized-module-expr]:
+File "cases/parenthesized-module-expr.ml", line 1, characters 13-14:
+Error: Illegal ')', '(' in a module expects a module.
+Compiler:
+File "cases/parenthesized-module-expr.ml", line 1, characters 13-14:
+Error: Syntax error
+
+== parenthesized-module-type.mli
+  | module M : ( in )
+OCST [parenthesized-module-type]:
+File "cases/parenthesized-module-type.mli", line 1, characters 13-15:
+Error: Illegal 'in', '(' in a module type expects a module type.
+Compiler:
+File "cases/parenthesized-module-type.mli", line 1, characters 13-15:
+Error: Syntax error
+
+== parenthesized-pattern.ml
+  | let f ( in ) = ()
+OCST [parenthesized-pattern]:
+File "cases/parenthesized-pattern.ml", line 1, characters 8-10:
+Error: Illegal 'in', '(' in a pattern expects a pattern.
+Compiler:
+File "cases/parenthesized-pattern.ml", line 1, characters 8-10:
+Error: Syntax error: operator expected.
+
+== parenthesized-type.ml
+  | type t = ( in )
+OCST [parenthesized-type]:
+File "cases/parenthesized-type.ml", line 1, characters 11-13:
+Error: Illegal 'in', '(' in a type expects a type.
+Compiler:
+File "cases/parenthesized-type.ml", line 1, characters 11-13:
+Error: Syntax error
+
+== pattern-constraint-type.ml
+  | let f (x : ) = x
+OCST [pattern-constraint-type]:
+File "cases/pattern-constraint-type.ml", line 1, characters 11-12:
+Error: Illegal ')', ':' in a pattern expects a type.
+Compiler:
+File "cases/pattern-constraint-type.ml", line 1, characters 11-12:
+Error: Syntax error: type expected.
+
+== pattern-type-name.ml
+  | let f = function # -> ()
+OCST [pattern-type-name]:
+File "cases/pattern-type-name.ml", line 1, characters 19-21:
+Error: Illegal '->', '#' in a pattern expects a lowercase identifier or a path, as in '#t' or '#M.t'.
+Compiler:
+File "cases/pattern-type-name.ml", line 1, characters 19-21:
+Error: Syntax error
+
+== payload-guard.ml
+  | let x = 1 [@@a ? x when]
+OCST [payload-guard]:
+File "cases/payload-guard.ml", line 1, characters 23-24:
+Error: Illegal ']', 'when' expects a condition.
+Compiler:
+File "cases/payload-guard.ml", line 1, characters 23-24:
+Error: Syntax error
+
+== payload-pattern.ml
+  | let x = 1 [@@a ? ]
+OCST [payload-pattern]:
+File "cases/payload-pattern.ml", line 1, characters 17-18:
+Error: Illegal ']', '?' in an attribute or an extension expects a pattern.
+Compiler:
+File "cases/payload-pattern.ml", line 1, characters 17-18:
+Error: Syntax error
+
+== payload-type.ml
+  | let x = 1 [@@a : in]
+OCST [payload-type]:
+File "cases/payload-type.ml", line 1, characters 17-19:
+Error: Illegal 'in', ':' in an attribute or an extension expects a type or a signature.
+Compiler:
+File "cases/payload-type.ml", line 1, characters 17-19:
+Error: Syntax error
+
+== poly-type-arrow.ml
+  | type t = ('a. 'a)
+OCST [poly-type-arrow]:
+File "cases/poly-type-arrow.ml", line 2, characters 0-0:
+Error: Unexpected end of input, a polymorphic type in parentheses is the type of an argument, and expects '->'.
+Compiler:
+File "cases/poly-type-arrow.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== poly-type-body.ml
+  | type t = < m : 'a. >
+OCST [poly-type-body]:
+File "cases/poly-type-body.ml", line 1, characters 19-20:
+Error: Illegal '>', the type variables and '.' expect a type.
+Compiler:
+File "cases/poly-type-body.ml", line 1, characters 19-20:
+Error: Syntax error
+
+== poly_type_arrow_argument.mli
+  | val x : ('a. 'a -> 'a) list
+OCST [poly-type-arrow]:
+File "cases/poly_type_arrow_argument.mli", line 1, characters 23-27:
+Error: Illegal identifier 'list', a polymorphic type in parentheses is the type of an argument, and expects '->'.
+Compiler:
+File "cases/poly_type_arrow_argument.mli", line 1, characters 23-27:
+Error: Syntax error
+
+== prefix-operand.ml
+  | let _ = ! )
+OCST [prefix-operand]:
+File "cases/prefix-operand.ml", line 1, characters 10-11:
+Error: Illegal ')', '!' expects an argument, such as an identifier, a literal or an expression in parentheses.
+Compiler:
+File "cases/prefix-operand.ml", line 1, characters 10-11:
+Error: Syntax error
+
+== private-type.ml
+  | type t = private
+OCST [private-type]:
+File "cases/private-type.ml", line 2, characters 0-0:
+Error: Unexpected end of input, 'private' expects a type, constructors or a record.
+Compiler:
+File "cases/private-type.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== private_type_name.mli
+  | type private a = private int
+OCST [type-name]:
+File "cases/private_type_name.mli", line 1, characters 5-12:
+Error: Illegal 'private', 'type' or 'and' expects a lowercase identifier.
+Compiler:
+File "cases/private_type_name.mli", line 1, characters 5-12:
+Error: Syntax error
+
+== punned-label-constraint.ml
+  | let _ = f ~(x)
+OCST [punned-label-constraint]:
+File "cases/punned-label-constraint.ml", line 1, characters 13-14:
+Error: Illegal ')', ':' expected.
+Compiler:
+File "cases/punned-label-constraint.ml", line 1, characters 13-14:
+Error: Syntax error
+
+== punned-label-name.ml
+  | let _ = f ~( : int)
+OCST [punned-label-name]:
+File "cases/punned-label-name.ml", line 1, characters 13-14:
+Error: Illegal ':', '~(' expects a lowercase identifier.
+Compiler:
+File "cases/punned-label-name.ml", line 1, characters 13-14:
+Error: Syntax error
+
+== punned-pattern-colon.ml
+  | let f = function (~(x), y) -> ()
+OCST [punned-pattern-colon]:
+File "cases/punned-pattern-colon.ml", line 1, characters 21-22:
+Error: Illegal ')', ':' expected.
+Compiler:
+File "cases/punned-pattern-colon.ml", line 1, characters 21-22:
+Error: Syntax error
+
+== question-label-name.ml
+  | let _ = f ? 1
+OCST [question-label-name]:
+File "cases/question-label-name.ml", line 1, characters 12-13:
+Error: Illegal integer literal, '?' expects a lowercase identifier.
+Compiler:
+File "cases/question-label-name.ml", line 1, characters 12-13:
+Error: Syntax error
+
+== quoted-string-delimiter.ml
+  | let s = {A|x|A}
+OCST [quoted-string-delimiter]:
+File "cases/quoted-string-delimiter.ml", line 1, characters 8-11:
+Error: Illegal delimiter in '{A|', the delimiter of a quoted string expects lowercase letters and '_'.
+Compiler:
+File "cases/quoted-string-delimiter.ml", line 1, characters 8-11:
+Error: A cannot be used as a quoted string delimiter,
+it must contain only lowercase letters.
+
+== record-base-with.ml
+  | let _ = { 1 }
+OCST [record-base-with]:
+File "cases/record-base-with.ml", line 1, characters 12-13:
+Error: Illegal '}', 'with' expected after the base of a record, as in '{ r with x = v }'.
+Compiler:
+File "cases/record-base-with.ml", line 1, characters 12-13:
+Error: Syntax error
+
+== record-field-name.ml
+  | let _ = { X = 1 }
+OCST [record-field-name]:
+File "cases/record-field-name.ml", line 1, characters 12-13:
+Error: Illegal '=', a record expects a lowercase identifier or a path, as in 'x' or 'M.x'.
+Compiler:
+File "cases/record-field-name.ml", line 1, characters 12-13:
+Error: Syntax error
+
+== record-field-value.ml
+  | let _ = { x = }
+OCST [record-field-value]:
+File "cases/record-field-value.ml", line 1, characters 14-15:
+Error: Illegal '}', '=' in a record expects an expression.
+Compiler:
+File "cases/record-field-value.ml", line 1, characters 14-15:
+Error: Syntax error
+
+== record-pattern-field-without-separator.ml
+  | let { x _ } = r
+OCST [unclosed-record-pattern]:
+File "cases/record-pattern-field-without-separator.ml", line 1, characters 8-9:
+Error: Illegal '_', ';' or '}' expected.
+File "cases/record-pattern-field-without-separator.ml", line 1, characters 4-5:
+  This '{' is not closed.
+Compiler:
+File "cases/record-pattern-field-without-separator.ml", line 1, characters 8-9:
+Error: Syntax error: } expected
+
+== record-pattern-field.ml
+  | let f = function { X } -> ()
+OCST [record-pattern-field]:
+File "cases/record-pattern-field.ml", line 1, characters 21-22:
+Error: Illegal '}', a record pattern expects a lowercase identifier, a path or '_'.
+Compiler:
+File "cases/record-pattern-field.ml", line 1, characters 21-22:
+Error: Syntax error
+
+== record-pattern-second-field-without-separator.ml
+  | let { x; y _ } = r
+OCST [unclosed-record-pattern]:
+File "cases/record-pattern-second-field-without-separator.ml", line 1, characters 11-12:
+Error: Illegal '_', ';' or '}' expected.
+File "cases/record-pattern-second-field-without-separator.ml", line 1, characters 4-5:
+  This '{' is not closed.
+Compiler:
+File "cases/record-pattern-second-field-without-separator.ml", line 1, characters 11-12:
+Error: Syntax error: } expected
+
+== record-pattern-value-without-separator.ml
+  | let { x = a _ } = r
+OCST [unclosed-record-pattern]:
+File "cases/record-pattern-value-without-separator.ml", line 1, characters 12-13:
+Error: Illegal '_', ';' or '}' expected.
+File "cases/record-pattern-value-without-separator.ml", line 1, characters 4-5:
+  This '{' is not closed.
+Compiler:
+File "cases/record-pattern-value-without-separator.ml", line 1, characters 12-13:
+Error: Syntax error: } expected
+
+== record-pattern-value.ml
+  | let f = function { x = } -> ()
+OCST [record-pattern-value]:
+File "cases/record-pattern-value.ml", line 1, characters 23-24:
+Error: Illegal '}', '=' in a record pattern expects a pattern.
+Compiler:
+File "cases/record-pattern-value.ml", line 1, characters 23-24:
+Error: Syntax error
+
+== record_field_access_label.ml
+  | let _ = { x.y = 1 }
+OCST [record-field-name]:
+File "cases/record_field_access_label.ml", line 1, characters 14-15:
+Error: Illegal '=', a record expects a lowercase identifier or a path, as in 'x' or 'M.x'.
+Compiler:
+File "cases/record_field_access_label.ml", line 1, characters 14-15:
+Error: Syntax error
+
+== record_parenthesized_label.ml
+  | let _ = { (f x) = 1 }
+OCST [record-base-with]:
+File "cases/record_parenthesized_label.ml", line 1, characters 16-17:
+Error: Illegal '=', 'with' expected after the base of a record, as in '{ r with x = v }'.
+Compiler:
+File "cases/record_parenthesized_label.ml", line 1, characters 16-17:
+Error: Syntax error
+
+== recursive-module-colon.mli
+  | module rec M = N
+OCST [recursive-module-colon]:
+File "cases/recursive-module-colon.mli", line 1, characters 13-14:
+Error: Illegal '=', ':' expected.
+Compiler:
+File "cases/recursive-module-colon.mli", line 1, characters 13-14:
+Error: Syntax error
+
+== recursive-module-name.ml
+  | module rec = struct end
+OCST [recursive-module-name]:
+File "cases/recursive-module-name.ml", line 1, characters 11-12:
+Error: Illegal '=', 'module rec' or 'and' expects a capitalized identifier or '_'.
+Compiler:
+File "cases/recursive-module-name.ml", line 1, characters 11-12:
+Error: Syntax error
+
+== repeated-flag-class-type-value.ml
+  | class type c = object val mutable mutable x : int end
+OCST [repeated-flag]:
+File "cases/repeated-flag-class-type-value.ml", line 1, characters 34-41:
+Error: Illegal 'mutable', this flag is already given.
+Compiler:
+File "cases/repeated-flag-class-type-value.ml", line 1, characters 34-41:
+Error: Syntax error
+
+== repeated-flag-class-type.ml
+  | class type c = object method private private m : int end
+OCST [repeated-flag]:
+File "cases/repeated-flag-class-type.ml", line 1, characters 37-44:
+Error: Illegal 'private', this flag is already given.
+Compiler:
+File "cases/repeated-flag-class-type.ml", line 1, characters 37-44:
+Error: Syntax error
+
+== repeated-flag-method.ml
+  | class c = object method virtual private virtual m : int end
+OCST [repeated-flag]:
+File "cases/repeated-flag-method.ml", line 1, characters 40-47:
+Error: Illegal 'virtual', this flag is already given.
+Compiler:
+File "cases/repeated-flag-method.ml", line 1, characters 40-47:
+Error: Syntax error
+
+== repeated-flag-mutable.ml
+  | class c = object val mutable virtual mutable x : int end
+OCST [repeated-flag]:
+File "cases/repeated-flag-mutable.ml", line 1, characters 37-44:
+Error: Illegal 'mutable', this flag is already given.
+Compiler:
+File "cases/repeated-flag-mutable.ml", line 1, characters 37-44:
+Error: Syntax error
+
+== repeated-flag.ml
+  | class c = object val virtual virtual x : int end
+OCST [repeated-flag]:
+File "cases/repeated-flag.ml", line 1, characters 29-36:
+Error: Illegal 'virtual', this flag is already given.
+Compiler:
+File "cases/repeated-flag.ml", line 1, characters 29-36:
+Error: Syntax error
+
+== reserved-sequence.ml
+  | let _ = x.~y
+OCST [reserved-sequence]:
+File "cases/reserved-sequence.ml", line 1, characters 9-11:
+Error: Illegal '.~', this sequence is reserved for MetaOCaml: a space is expected between '.' and '~'.
+Compiler:
+File "cases/reserved-sequence.ml", line 1, characters 9-11:
+Error: Reserved character sequence: .~ is reserved for use in MetaOCaml
+
+== row-field.ml
+  | type t = [ `A | ) ]
+OCST [row-field]:
+File "cases/row-field.ml", line 1, characters 16-17:
+Error: Illegal ')', a polymorphic variant type expects a tag, as in '`A', or a type.
+Compiler:
+File "cases/row-field.ml", line 1, characters 16-17:
+Error: Syntax error
+
+== self-pattern.ml
+  | class c = object ( ) ) end
+OCST [self-pattern]:
+File "cases/self-pattern.ml", line 1, characters 19-20:
+Error: Illegal ')', '(' after 'object' expects a pattern for self.
+Compiler:
+File "cases/self-pattern.ml", line 1, characters 19-20:
+Error: Syntax error
+
+== self-type.ml
+  | class c = object (self : ) end
+OCST [self-type]:
+File "cases/self-type.ml", line 1, characters 25-26:
+Error: Illegal ')', ':' in the pattern of self expects a type.
+Compiler:
+File "cases/self-type.ml", line 1, characters 25-26:
+Error: Syntax error
+
+== sequence-extension-expr.ml
+  | let _ = a; %ext
+OCST [sequence-extension-expr]:
+File "cases/sequence-extension-expr.ml", line 2, characters 0-0:
+Error: Unexpected end of input, '; %ext' expects an expression.
+Compiler:
+File "cases/sequence-extension-expr.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== sequence-extension-name.ml
+  | let _ = a; %
+OCST [sequence-extension-name]:
+File "cases/sequence-extension-name.ml", line 2, characters 0-0:
+Error: Unexpected end of input, '%' in a sequence expects an identifier, as in '; %ext e'.
+Compiler:
+File "cases/sequence-extension-name.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== sign-operand.ml
+  | let _ = - )
+OCST [sign-operand]:
+File "cases/sign-operand.ml", line 1, characters 10-11:
+Error: Illegal ')', the sign '-' expects an expression.
+Compiler:
+File "cases/sign-operand.ml", line 1, characters 10-11:
+Error: Syntax error
+
+== sign_function_cases.ml
+  | let _ = - function b -> x | c -> y
+OCST [sign-function-case]:
+File "cases/sign_function_cases.ml", line 1, characters 26-27:
+Error: Illegal '|', a 'function' after a sign has a single case: parentheses around it are expected, as in '- (function A -> 1 | B -> 2)'.
+Compiler:
+File "cases/sign_function_cases.ml", line 1, characters 26-27:
+Error: Syntax error
+
+== signature-item.mli
+  | let x = 1
+OCST [signature-item]:
+File "cases/signature-item.mli", line 1, characters 0-3:
+Error: Illegal 'let', a signature expects a declaration, such as 'val x : int', 'type t' or 'module M : S'.
+Compiler:
+File "cases/signature-item.mli", line 1, characters 0-3:
+Error: Syntax error
+
+== string-assignment.ml
+  | let _ = s.[0] <- 'a'
+OCST [string-assignment]:
+File "cases/string-assignment.ml", line 1, characters 14-16:
+Error: Illegal '<-', strings are immutable and cannot be assigned: use 'Bytes.set'.
+Compiler:
+File "cases/string-assignment.ml", line 1, characters 8-20:
+Error: Syntax error: strings are immutable, there is no assignment syntax for
+them.
+
+== structure-item.ml
+  | let x = 1 )
+OCST [structure-item]:
+File "cases/structure-item.ml", line 1, characters 10-11:
+Error: Illegal ')', a structure expects a definition, such as 'let x = 1', 'type t = int' or 'module M = N', or an expression.
+Compiler:
+File "cases/structure-item.ml", line 1, characters 10-11:
+Error: Syntax error
+
+== syntax_error.ml
+  | let a = let a = let b
+OCST [let-binding-equal]:
+File "cases/syntax_error.ml", line 2, characters 0-0:
+Error: Unexpected end of input, '=' or a parameter expected.
+Compiler:
+File "cases/syntax_error.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== then-branch.ml
+  | let _ = if c then
+OCST [then-branch]:
+File "cases/then-branch.ml", line 2, characters 0-0:
+Error: Unexpected end of input, 'then' expects an expression.
+Compiler:
+File "cases/then-branch.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== tilde-label-name.ml
+  | let _ = f ~ 1
+OCST [tilde-label-name]:
+File "cases/tilde-label-name.ml", line 1, characters 12-13:
+Error: Illegal integer literal, '~' expects a lowercase identifier.
+Compiler:
+File "cases/tilde-label-name.ml", line 1, characters 12-13:
+Error: Syntax error
+
+== try-body.ml
+  | let _ = try with x -> x
+OCST [try-body]:
+File "cases/try-body.ml", line 1, characters 12-16:
+Error: Illegal 'with', 'try' expects an expression.
+Compiler:
+File "cases/try-body.ml", line 1, characters 12-16:
+Error: Syntax error
+
+== try-with.ml
+  | let _ = try x x -> x
+OCST [try-with]:
+File "cases/try-with.ml", line 1, characters 16-18:
+Error: Illegal '->', 'with' expected.
+Compiler:
+File "cases/try-with.ml", line 1, characters 16-18:
+Error: Syntax error
+
+== tuple-element.ml
+  | let _ = 1, )
+OCST [tuple-element]:
+File "cases/tuple-element.ml", line 1, characters 11-12:
+Error: Illegal ')', ',' expects another element of the tuple.
+Compiler:
+File "cases/tuple-element.ml", line 1, characters 11-12:
+Error: Syntax error
+
+== tuple-pattern-element.ml
+  | let f = function x, ) -> ()
+OCST [tuple-pattern-element]:
+File "cases/tuple-pattern-element.ml", line 1, characters 20-21:
+Error: Illegal ')', ',' in a pattern expects another element of the tuple.
+Compiler:
+File "cases/tuple-pattern-element.ml", line 1, characters 20-21:
+Error: Syntax error: pattern expected.
+
+== tuple-type-element.ml
+  | type t = int * )
+OCST [tuple-type-element]:
+File "cases/tuple-type-element.ml", line 1, characters 15-16:
+Error: Illegal ')', '*' in a type expects another type.
+Compiler:
+File "cases/tuple-type-element.ml", line 1, characters 15-16:
+Error: Syntax error
+
+== type-after-module-path.ml
+  | type t = int -> M
+OCST [type-after-module-path]:
+File "cases/type-after-module-path.ml", line 2, characters 0-0:
+Error: Unexpected end of input, '.' and a lowercase identifier expected, as in 'M.t': a module is not a type.
+Compiler:
+File "cases/type-after-module-path.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== type-argument.ml
+  | type t = (int, ) result
+OCST [type-argument]:
+File "cases/type-argument.ml", line 1, characters 15-16:
+Error: Illegal ')', ',' in type arguments expects another type.
+Compiler:
+File "cases/type-argument.ml", line 1, characters 15-16:
+Error: Syntax error
+
+== type-arguments-constructor.ml
+  | type t = (int, string)
+OCST [type-arguments-constructor]:
+File "cases/type-arguments-constructor.ml", line 2, characters 0-0:
+Error: Unexpected end of input, type arguments in parentheses expect a lowercase identifier or a path, as in '(int, string) result'.
+Compiler:
+File "cases/type-arguments-constructor.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== type-constraint-type.ml
+  | let x : = 1
+OCST [type-constraint-type]:
+File "cases/type-constraint-type.ml", line 1, characters 8-9:
+Error: Illegal '=', ':' or ':>' expects a type.
+Compiler:
+File "cases/type-constraint-type.ml", line 1, characters 8-9:
+Error: Syntax error
+
+== type-constructor-name.ml
+  | type t = int M
+OCST [type-constructor-name]:
+File "cases/type-constructor-name.ml", line 2, characters 0-0:
+Error: Unexpected end of input, '.' and a lowercase identifier expected, as in 'M.t'.
+Compiler:
+File "cases/type-constructor-name.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== type-definition.ml
+  | type t = in
+OCST [type-definition]:
+File "cases/type-definition.ml", line 1, characters 9-11:
+Error: Illegal 'in', '=' in a type definition expects a type, constructors or a record.
+Compiler:
+File "cases/type-definition.ml", line 1, characters 9-11:
+Error: Syntax error
+
+== type-extension-name.ml
+  | type M.X += A
+OCST [type-extension-name]:
+File "cases/type-extension-name.ml", line 1, characters 9-11:
+Error: Illegal '+=', a type extension expects a lowercase identifier or a path, as in 't' or 'M.t'.
+Compiler:
+File "cases/type-extension-name.ml", line 1, characters 9-11:
+Error: Syntax error
+
+== type-extension-nonrec.ml
+  | type nonrec t += A
+OCST [type-extension-nonrec]:
+File "cases/type-extension-nonrec.ml", line 1, characters 5-11:
+Error: Illegal 'nonrec', a type extension 'type t += ...' cannot be 'nonrec'.
+Compiler:
+File "cases/type-extension-nonrec.ml", line 1, characters 5-11:
+Error: Syntax error: nonrec flag not expected.
+
+== type-extension-pluseq.ml
+  | type M.t = A
+OCST [type-extension-pluseq]:
+File "cases/type-extension-pluseq.ml", line 1, characters 9-10:
+Error: Illegal '=', '+=' expected.
+Compiler:
+File "cases/type-extension-pluseq.ml", line 1, characters 9-10:
+Error: Syntax error
+
+== type-kind-after-manifest.ml
+  | type t = M.t = int
+OCST [type-kind-after-manifest]:
+File "cases/type-kind-after-manifest.ml", line 1, characters 15-18:
+Error: Illegal identifier 'int', a re-exported type 'type t = M.t = ...' expects constructors, a record or '..'.
+Compiler:
+File "cases/type-kind-after-manifest.ml", line 1, characters 15-18:
+Error: Syntax error
+
+== type-name.ml
+  | type = int
+OCST [type-name]:
+File "cases/type-name.ml", line 1, characters 5-6:
+Error: Illegal '=', 'type' or 'and' expects a lowercase identifier.
+Compiler:
+File "cases/type-name.ml", line 1, characters 5-6:
+Error: Syntax error
+
+== type-parameter.ml
+  | type (x) t = int
+OCST [type-parameter]:
+File "cases/type-parameter.ml", line 1, characters 6-7:
+Error: Illegal identifier 'x', a type parameter expects a type variable or '_', as in ''a' or '+'a'.
+Compiler:
+File "cases/type-parameter.ml", line 1, characters 6-7:
+Error: Syntax error
+
+== type-variable-name.ml
+  | type t = ' -> int
+OCST [type-variable-name]:
+File "cases/type-variable-name.ml", line 1, characters 11-13:
+Error: Illegal '->', a quote expects an identifier, as in ''a'.
+Compiler:
+File "cases/type-variable-name.ml", line 1, characters 11-13:
+Error: Syntax error
+
+== type-variance.ml
+  | type (+!! _) t
+OCST [type-variance]:
+File "cases/type-variance.ml", line 1, characters 6-9:
+Error: Illegal operator '+!!', a variance expects '+', '-', '+-' or '-+', possibly with '!' before or after it.
+Compiler:
+File "cases/type-variance.ml", line 1, characters 6-9:
+Error: Syntax error: type_variance expected.
+
+== type_abstract_then_substitution.mli
+  | type t and u := int
+OCST [type-substitution-mixed]:
+File "cases/type_abstract_then_substitution.mli", line 1, characters 13-15:
+Error: Illegal ':=', the types of a group are either all substitutions with ':=', or all definitions with '='.
+Compiler:
+File "cases/type_abstract_then_substitution.mli", line 1, characters 13-15:
+Error: Syntax error
+
+== type_definition_then_substitution.mli
+  | type t = int and u := int
+OCST [type-substitution-mixed]:
+File "cases/type_definition_then_substitution.mli", line 1, characters 19-21:
+Error: Illegal ':=', the types of a group are either all substitutions with ':=', or all definitions with '='.
+Compiler:
+File "cases/type_definition_then_substitution.mli", line 1, characters 19-21:
+Error: Syntax error
+
+== type_substitution_in_structure.ml
+  | type t := int
+OCST [type-substitution-in-structure]:
+File "cases/type_substitution_in_structure.ml", line 1, characters 7-9:
+Error: Illegal ':=', type substitutions 'type t := ...' are only allowed in signatures: '=' is expected.
+Compiler:
+File "cases/type_substitution_in_structure.ml", line 1, characters 7-9:
+Error: Syntax error
+
+== type_substitution_nonrec.mli
+  | type nonrec t := int
+OCST [type-substitution-nonrec]:
+File "cases/type_substitution_nonrec.mli", line 1, characters 5-11:
+Error: Illegal 'nonrec', a type substitution 'type t := ...' cannot be 'nonrec'.
+Compiler:
+File "cases/type_substitution_nonrec.mli", line 1, characters 5-11:
+Error: Syntax error: nonrec flag not expected.
+
+== type_substitution_nonrec_and.mli
+  | type nonrec t := int and u := int
+OCST [type-substitution-nonrec]:
+File "cases/type_substitution_nonrec_and.mli", line 1, characters 5-11:
+Error: Illegal 'nonrec', a type substitution 'type t := ...' cannot be 'nonrec'.
+Compiler:
+File "cases/type_substitution_nonrec_and.mli", line 1, characters 5-11:
+Error: Syntax error: nonrec flag not expected.
+
+== type_substitution_then_abstract.mli
+  | type t := int and u
+OCST [type-substitution-abstract]:
+File "cases/type_substitution_then_abstract.mli", line 1, characters 18-19:
+Error: Illegal identifier 'u', a type of a group of substitutions expects ':=' and a type.
+Compiler:
+File "cases/type_substitution_then_abstract.mli", line 2, characters 0-0:
+Error: Syntax error
+
+== type_substitution_then_definition.mli
+  | type t := int and u = int
+OCST [type-substitution-mixed]:
+File "cases/type_substitution_then_definition.mli", line 1, characters 20-21:
+Error: Illegal '=', the types of a group are either all substitutions with ':=', or all definitions with '='.
+Compiler:
+File "cases/type_substitution_then_definition.mli", line 1, characters 20-21:
+Error: Syntax error
+
+== unclosed-array-pattern.ml
+  | let f = function [| x; y -> ()
+OCST [unclosed-array-pattern]:
+File "cases/unclosed-array-pattern.ml", line 1, characters 25-27:
+Error: Illegal '->', ';' or '|]' expected.
+File "cases/unclosed-array-pattern.ml", line 1, characters 17-19:
+  This '[|' is not closed.
+Compiler:
+File "cases/unclosed-array-pattern.ml", line 1, characters 25-27:
+Error: Syntax error: |] expected
+
+== unclosed-array.ml
+  | let _ = [| 1; 2
+OCST [unclosed-array]:
+File "cases/unclosed-array.ml", line 2, characters 0-0:
+Error: Unexpected end of input, ';' or '|]' expected.
+File "cases/unclosed-array.ml", line 1, characters 8-10:
+  This '[|' is not closed.
+Compiler:
+File "cases/unclosed-array.ml", line 2, characters 0-0:
+Error: Syntax error: |] expected
+
+== unclosed-attribute.ml
+  | let x = 1 [@@a
+OCST [unclosed-attribute]:
+File "cases/unclosed-attribute.ml", line 2, characters 0-0:
+Error: Unexpected end of input, ']' expected.
+File "cases/unclosed-attribute.ml", line 1, characters 10-13:
+  This '[@@' is not closed.
+Compiler:
+File "cases/unclosed-attribute.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== unclosed-begin.ml
+  | let _ = begin 1
+OCST [unclosed-begin]:
+File "cases/unclosed-begin.ml", line 2, characters 0-0:
+Error: Unexpected end of input, 'end' expected.
+File "cases/unclosed-begin.ml", line 1, characters 8-13:
+  This 'begin' is not closed.
+Compiler:
+File "cases/unclosed-begin.ml", line 2, characters 0-0:
+Error: Syntax error: end expected
+
+== unclosed-class-constraint.ml
+  | class c = (object end : object end
+OCST [unclosed-class-constraint]:
+File "cases/unclosed-class-constraint.ml", line 2, characters 0-0:
+Error: Unexpected end of input, ')' expected.
+File "cases/unclosed-class-constraint.ml", line 1, characters 10-11:
+  This '(' is not closed.
+Compiler:
+File "cases/unclosed-class-constraint.ml", line 2, characters 0-0:
+Error: Syntax error: ) expected
+
+== unclosed-class-self-type.mli
+  | class c : object ('a end
+OCST [unclosed-class-self-type]:
+File "cases/unclosed-class-self-type.mli", line 1, characters 21-24:
+Error: Illegal 'end', ')' expected.
+File "cases/unclosed-class-self-type.mli", line 1, characters 17-18:
+  This '(' is not closed.
+Compiler:
+File "cases/unclosed-class-self-type.mli", line 1, characters 21-24:
+Error: Syntax error
+
+== unclosed-class-signature.mli
+  | class c : object val x : int
+OCST [unclosed-class-signature]:
+File "cases/unclosed-class-signature.mli", line 2, characters 0-0:
+Error: Unexpected end of input, this object type expects 'val', 'method', 'inherit', 'constraint' or 'end'.
+File "cases/unclosed-class-signature.mli", line 1, characters 10-16:
+  This 'object' is not closed.
+Compiler:
+File "cases/unclosed-class-signature.mli", line 2, characters 0-0:
+Error: Syntax error: end expected
+
+== unclosed-class-type-arguments.mli
+  | class c : [int d
+OCST [unclosed-class-type-arguments]:
+File "cases/unclosed-class-type-arguments.mli", line 2, characters 0-0:
+Error: Unexpected end of input, ',' or ']' expected.
+File "cases/unclosed-class-type-arguments.mli", line 1, characters 10-11:
+  This '[' is not closed.
+Compiler:
+File "cases/unclosed-class-type-arguments.mli", line 2, characters 0-0:
+Error: Syntax error
+
+== unclosed-class-type-parameters.ml
+  | class ['a c = object end
+OCST [unclosed-class-type-parameters]:
+File "cases/unclosed-class-type-parameters.ml", line 1, characters 10-11:
+Error: Illegal identifier 'c', ',' or ']' expected.
+File "cases/unclosed-class-type-parameters.ml", line 1, characters 6-7:
+  This '[' is not closed.
+Compiler:
+File "cases/unclosed-class-type-parameters.ml", line 1, characters 10-11:
+Error: Syntax error
+
+== unclosed-cons-constructor.ml
+  | exception ( :: 
+OCST [unclosed-cons-constructor]:
+File "cases/unclosed-cons-constructor.ml", line 2, characters 0-0:
+Error: Unexpected end of input, ')' expected.
+File "cases/unclosed-cons-constructor.ml", line 1, characters 10-11:
+  This '(' is not closed.
+Compiler:
+File "cases/unclosed-cons-constructor.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== unclosed-extension.ml
+  | let _ = [%ext
+OCST [unclosed-extension]:
+File "cases/unclosed-extension.ml", line 2, characters 0-0:
+Error: Unexpected end of input, ']' expected.
+File "cases/unclosed-extension.ml", line 1, characters 8-10:
+  This '[%' is not closed.
+Compiler:
+File "cases/unclosed-extension.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== unclosed-functor-application.ml
+  | type t = F(X.t
+OCST [unclosed-functor-application]:
+File "cases/unclosed-functor-application.ml", line 1, characters 12-13:
+Error: Illegal '.', ')' expected.
+File "cases/unclosed-functor-application.ml", line 1, characters 10-11:
+  This '(' is not closed.
+Compiler:
+File "cases/unclosed-functor-application.ml", line 1, characters 13-14:
+Error: Syntax error
+
+== unclosed-functor-argument.mli
+  | module F (X : S : T
+OCST [unclosed-functor-argument]:
+File "cases/unclosed-functor-argument.mli", line 1, characters 16-17:
+Error: Illegal ':', ')' expected.
+File "cases/unclosed-functor-argument.mli", line 1, characters 9-10:
+  This '(' is not closed.
+Compiler:
+File "cases/unclosed-functor-argument.mli", line 1, characters 16-17:
+Error: Syntax error
+
+== unclosed-functor-type-argument.ml
+  | type t = (module M : S int
+OCST [unclosed-functor-type-argument]:
+File "cases/unclosed-functor-type-argument.ml", line 1, characters 23-26:
+Error: Illegal identifier 'int', ')' expected.
+File "cases/unclosed-functor-type-argument.ml", line 1, characters 9-10:
+  This '(' is not closed.
+Compiler:
+File "cases/unclosed-functor-type-argument.ml", line 1, characters 23-26:
+Error: Syntax error
+
+== unclosed-functor-type-attribute.ml
+  | type t = (module [@attribute
+OCST [unclosed-attribute]:
+File "cases/unclosed-functor-type-attribute.ml", line 2, characters 0-0:
+Error: Unexpected end of input, ']' expected.
+File "cases/unclosed-functor-type-attribute.ml", line 1, characters 17-19:
+  This '[@' is not closed.
+Compiler:
+File "cases/unclosed-functor-type-attribute.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== unclosed-index-operator-bracket.ml
+  | let _ = a.%x
+OCST [unclosed-index-operator-bracket]:
+File "cases/unclosed-index-operator-bracket.ml", line 1, characters 11-12:
+Error: Illegal identifier 'x', '(', '[' or '{' expected.
+Compiler:
+File "cases/unclosed-index-operator-bracket.ml", line 1, characters 11-12:
+Error: Syntax error
+
+== unclosed-index-operator-name.ml
+  | let ( .%(x) ) a i = a
+OCST [unclosed-index]:
+File "cases/unclosed-index-operator-name.ml", line 1, characters 9-10:
+Error: Illegal identifier 'x', ')' expected.
+File "cases/unclosed-index-operator-name.ml", line 1, characters 8-9:
+  This '(' is not closed.
+Compiler:
+File "cases/unclosed-index-operator-name.ml", line 1, characters 9-10:
+Error: Syntax error
+
+== unclosed-index-operator.ml
+  | let ( .%() a i = a
+OCST [unclosed-index-operator]:
+File "cases/unclosed-index-operator.ml", line 1, characters 11-12:
+Error: Illegal identifier 'a', ')' expected.
+File "cases/unclosed-index-operator.ml", line 1, characters 4-5:
+  This '(' is not closed.
+Compiler:
+File "cases/unclosed-index-operator.ml", line 1, characters 11-12:
+Error: Syntax error: ) expected
+
+== unclosed-index.ml
+  | let _ = a.(i
+OCST [unclosed-index]:
+File "cases/unclosed-index.ml", line 2, characters 0-0:
+Error: Unexpected end of input, ')' expected.
+File "cases/unclosed-index.ml", line 1, characters 10-11:
+  This '(' is not closed.
+Compiler:
+File "cases/unclosed-index.ml", line 2, characters 0-0:
+Error: Syntax error: ) expected
+
+== unclosed-item-extension.ml
+  | [%%ext
+OCST [unclosed-item-extension]:
+File "cases/unclosed-item-extension.ml", line 2, characters 0-0:
+Error: Unexpected end of input, ']' expected.
+File "cases/unclosed-item-extension.ml", line 1, characters 0-3:
+  This '[%%' is not closed.
+Compiler:
+File "cases/unclosed-item-extension.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== unclosed-labelled-parameter.ml
+  | let f ~(x : int = x
+OCST [unclosed-labelled-parameter]:
+File "cases/unclosed-labelled-parameter.ml", line 1, characters 16-17:
+Error: Illegal '=', ')' expected.
+File "cases/unclosed-labelled-parameter.ml", line 1, characters 7-8:
+  This '(' is not closed.
+Compiler:
+File "cases/unclosed-labelled-parameter.ml", line 1, characters 16-17:
+Error: Syntax error
+
+== unclosed-list-pattern.ml
+  | let f = function [ x; y -> ()
+OCST [unclosed-list-pattern]:
+File "cases/unclosed-list-pattern.ml", line 1, characters 24-26:
+Error: Illegal '->', ';' or ']' expected.
+File "cases/unclosed-list-pattern.ml", line 1, characters 17-18:
+  This '[' is not closed.
+Compiler:
+File "cases/unclosed-list-pattern.ml", line 1, characters 24-26:
+Error: Syntax error: ] expected
+
+== unclosed-list.ml
+  | let _ = [ 1; 2
+OCST [unclosed-list]:
+File "cases/unclosed-list.ml", line 2, characters 0-0:
+Error: Unexpected end of input, ';' or ']' expected.
+File "cases/unclosed-list.ml", line 1, characters 8-9:
+  This '[' is not closed.
+Compiler:
+File "cases/unclosed-list.ml", line 2, characters 0-0:
+Error: Syntax error: ] expected
+
+== unclosed-local-open-pattern.ml
+  | let f = function M.(A -> ()
+OCST [unclosed-local-open-pattern]:
+File "cases/unclosed-local-open-pattern.ml", line 1, characters 22-24:
+Error: Illegal '->', ')' expected.
+File "cases/unclosed-local-open-pattern.ml", line 1, characters 19-20:
+  This '(' is not closed.
+Compiler:
+File "cases/unclosed-local-open-pattern.ml", line 1, characters 22-24:
+Error: Syntax error: ) expected
+
+== unclosed-local-open.ml
+  | let _ = M.(x
+OCST [unclosed-local-open]:
+File "cases/unclosed-local-open.ml", line 2, characters 0-0:
+Error: Unexpected end of input, ')' expected.
+File "cases/unclosed-local-open.ml", line 1, characters 10-11:
+  This '(' is not closed.
+Compiler:
+File "cases/unclosed-local-open.ml", line 2, characters 0-0:
+Error: Syntax error: ) expected
+
+== unclosed-loop.ml
+  | let _ = while c do x
+OCST [unclosed-loop]:
+File "cases/unclosed-loop.ml", line 2, characters 0-0:
+Error: Unexpected end of input, 'done' expected.
+File "cases/unclosed-loop.ml", line 1, characters 16-18:
+  This 'do' is not closed.
+Compiler:
+File "cases/unclosed-loop.ml", line 1, characters 19-20:
+Error: Syntax error: done expected
+
+== unclosed-newtypes.ml
+  | let f (type a = x
+OCST [unclosed-newtypes]:
+File "cases/unclosed-newtypes.ml", line 1, characters 14-15:
+Error: Illegal '=', ')' expected.
+File "cases/unclosed-newtypes.ml", line 1, characters 6-7:
+  This '(' is not closed.
+Compiler:
+File "cases/unclosed-newtypes.ml", line 1, characters 14-15:
+Error: Syntax error
+
+== unclosed-nil-constructor.ml
+  | exception [
+OCST [unclosed-nil-constructor]:
+File "cases/unclosed-nil-constructor.ml", line 2, characters 0-0:
+Error: Unexpected end of input, ']' expected.
+File "cases/unclosed-nil-constructor.ml", line 1, characters 10-11:
+  This '[' is not closed.
+Compiler:
+File "cases/unclosed-nil-constructor.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== unclosed-object-type.ml
+  | type t = < m : int
+OCST [unclosed-object-type]:
+File "cases/unclosed-object-type.ml", line 2, characters 0-0:
+Error: Unexpected end of input, ';' or '>' expected.
+File "cases/unclosed-object-type.ml", line 1, characters 9-10:
+  This '<' is not closed.
+Compiler:
+File "cases/unclosed-object-type.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== unclosed-object.ml
+  | let _ = object method m = 1
+OCST [unclosed-object]:
+File "cases/unclosed-object.ml", line 2, characters 0-0:
+Error: Unexpected end of input, this object expects 'val', 'method', 'inherit', 'initializer', 'constraint' or 'end'.
+File "cases/unclosed-object.ml", line 1, characters 8-14:
+  This 'object' is not closed.
+Compiler:
+File "cases/unclosed-object.ml", line 2, characters 0-0:
+Error: Syntax error: end expected
+
+== unclosed-optional-parameter.ml
+  | let f ?(x = 1 = x
+OCST [unclosed-optional-parameter]:
+File "cases/unclosed-optional-parameter.ml", line 2, characters 0-0:
+Error: Unexpected end of input, ')' expected.
+File "cases/unclosed-optional-parameter.ml", line 1, characters 7-8:
+  This '(' is not closed.
+Compiler:
+File "cases/unclosed-optional-parameter.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== unclosed-override.ml
+  | let _ = {< x = 1
+OCST [unclosed-override]:
+File "cases/unclosed-override.ml", line 2, characters 0-0:
+Error: Unexpected end of input, ';' or '>}' expected.
+File "cases/unclosed-override.ml", line 1, characters 8-10:
+  This '{<' is not closed.
+Compiler:
+File "cases/unclosed-override.ml", line 2, characters 0-0:
+Error: Syntax error: >} expected
+
+== unclosed-pack.ml
+  | let _ = (module M
+OCST [unclosed-pack]:
+File "cases/unclosed-pack.ml", line 2, characters 0-0:
+Error: Unexpected end of input, ')' expected.
+File "cases/unclosed-pack.ml", line 1, characters 8-9:
+  This '(' is not closed.
+Compiler:
+File "cases/unclosed-pack.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== unclosed-package-type.ml
+  | type t = (module S
+OCST [unclosed-package-type]:
+File "cases/unclosed-package-type.ml", line 2, characters 0-0:
+Error: Unexpected end of input, ')' expected.
+File "cases/unclosed-package-type.ml", line 1, characters 9-10:
+  This '(' is not closed.
+Compiler:
+File "cases/unclosed-package-type.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== unclosed-parenthesized-class-expr.ml
+  | class c = (d x
+OCST [unclosed-parenthesized-class-expr]:
+File "cases/unclosed-parenthesized-class-expr.ml", line 2, characters 0-0:
+Error: Unexpected end of input, ')' expected.
+File "cases/unclosed-parenthesized-class-expr.ml", line 1, characters 10-11:
+  This '(' is not closed.
+Compiler:
+File "cases/unclosed-parenthesized-class-expr.ml", line 2, characters 0-0:
+Error: Syntax error: ) expected
+
+== unclosed-parenthesized-expr.ml
+  | let _ = (1 + 2
+OCST [unclosed-parenthesized-expr]:
+File "cases/unclosed-parenthesized-expr.ml", line 2, characters 0-0:
+Error: Unexpected end of input, ')' expected.
+File "cases/unclosed-parenthesized-expr.ml", line 1, characters 8-9:
+  This '(' is not closed.
+Compiler:
+File "cases/unclosed-parenthesized-expr.ml", line 2, characters 0-0:
+Error: Syntax error: ) expected
+
+== unclosed-parenthesized-module-expr.ml
+  | module M = (N
+OCST [unclosed-parenthesized-module-expr]:
+File "cases/unclosed-parenthesized-module-expr.ml", line 2, characters 0-0:
+Error: Unexpected end of input, ')' expected.
+File "cases/unclosed-parenthesized-module-expr.ml", line 1, characters 11-12:
+  This '(' is not closed.
+Compiler:
+File "cases/unclosed-parenthesized-module-expr.ml", line 2, characters 0-0:
+Error: Syntax error: ) expected
+
+== unclosed-parenthesized-module-type.mli
+  | module M : (S
+OCST [unclosed-parenthesized-module-type]:
+File "cases/unclosed-parenthesized-module-type.mli", line 2, characters 0-0:
+Error: Unexpected end of input, ')' expected.
+File "cases/unclosed-parenthesized-module-type.mli", line 1, characters 11-12:
+  This '(' is not closed.
+Compiler:
+File "cases/unclosed-parenthesized-module-type.mli", line 2, characters 0-0:
+Error: Syntax error: ) expected
+
+== unclosed-parenthesized-pattern.ml
+  | let f = function (x -> ()
+OCST [unclosed-parenthesized-pattern]:
+File "cases/unclosed-parenthesized-pattern.ml", line 1, characters 20-22:
+Error: Illegal '->', ')' expected.
+File "cases/unclosed-parenthesized-pattern.ml", line 1, characters 17-18:
+  This '(' is not closed.
+Compiler:
+File "cases/unclosed-parenthesized-pattern.ml", line 1, characters 20-22:
+Error: Syntax error: ) expected
+
+== unclosed-parenthesized-type.ml
+  | type t = (int
+OCST [unclosed-parenthesized-type]:
+File "cases/unclosed-parenthesized-type.ml", line 2, characters 0-0:
+Error: Unexpected end of input, ')' expected.
+File "cases/unclosed-parenthesized-type.ml", line 1, characters 9-10:
+  This '(' is not closed.
+Compiler:
+File "cases/unclosed-parenthesized-type.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== unclosed-poly-type.ml
+  | type t = ('a. 'a -> int
+OCST [unclosed-poly-type]:
+File "cases/unclosed-poly-type.ml", line 2, characters 0-0:
+Error: Unexpected end of input, ')' expected.
+File "cases/unclosed-poly-type.ml", line 1, characters 9-10:
+  This '(' is not closed.
+Compiler:
+File "cases/unclosed-poly-type.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== unclosed-punned-label.ml
+  | let _ = f ~(x : int
+OCST [unclosed-punned-label]:
+File "cases/unclosed-punned-label.ml", line 2, characters 0-0:
+Error: Unexpected end of input, ')' expected.
+File "cases/unclosed-punned-label.ml", line 1, characters 11-12:
+  This '(' is not closed.
+Compiler:
+File "cases/unclosed-punned-label.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== unclosed-record-pattern.ml
+  | let f = function { x -> ()
+OCST [unclosed-record-pattern]:
+File "cases/unclosed-record-pattern.ml", line 1, characters 21-23:
+Error: Illegal '->', ';' or '}' expected.
+File "cases/unclosed-record-pattern.ml", line 1, characters 17-18:
+  This '{' is not closed.
+Compiler:
+File "cases/unclosed-record-pattern.ml", line 1, characters 21-23:
+Error: Syntax error: } expected
+
+== unclosed-record-type.ml
+  | type t = { x : int
+OCST [unclosed-record-type]:
+File "cases/unclosed-record-type.ml", line 2, characters 0-0:
+Error: Unexpected end of input, ';' or '}' expected.
+File "cases/unclosed-record-type.ml", line 1, characters 9-10:
+  This '{' is not closed.
+Compiler:
+File "cases/unclosed-record-type.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== unclosed-record.ml
+  | let _ = { x = 1
+OCST [unclosed-record]:
+File "cases/unclosed-record.ml", line 2, characters 0-0:
+Error: Unexpected end of input, ';' or '}' expected.
+File "cases/unclosed-record.ml", line 1, characters 8-9:
+  This '{' is not closed.
+Compiler:
+File "cases/unclosed-record.ml", line 2, characters 0-0:
+Error: Syntax error: } expected
+
+== unclosed-self.ml
+  | class c = object (self
+OCST [unclosed-self]:
+File "cases/unclosed-self.ml", line 2, characters 0-0:
+Error: Unexpected end of input, ')' expected.
+File "cases/unclosed-self.ml", line 1, characters 17-18:
+  This '(' is not closed.
+Compiler:
+File "cases/unclosed-self.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== unclosed-signature.mli
+  | module M : sig val x : int
+OCST [unclosed-signature]:
+File "cases/unclosed-signature.mli", line 2, characters 0-0:
+Error: Unexpected end of input, this signature expects a declaration, such as 'val x : int' or 'type t', or 'end'.
+File "cases/unclosed-signature.mli", line 1, characters 11-14:
+  This 'sig' is not closed.
+Compiler:
+File "cases/unclosed-signature.mli", line 2, characters 0-0:
+Error: Syntax error: end expected
+
+== unclosed-structure.ml
+  | module M = struct let x = 1
+OCST [unclosed-structure]:
+File "cases/unclosed-structure.ml", line 2, characters 0-0:
+Error: Unexpected end of input, this structure expects a definition, such as 'let x = 1' or 'type t = int', or 'end'.
+File "cases/unclosed-structure.ml", line 1, characters 11-17:
+  This 'struct' is not closed.
+Compiler:
+File "cases/unclosed-structure.ml", line 2, characters 0-0:
+Error: Syntax error: end expected
+
+== unclosed-type-arguments.ml
+  | type t = (int, string result
+OCST [unclosed-type-arguments]:
+File "cases/unclosed-type-arguments.ml", line 2, characters 0-0:
+Error: Unexpected end of input, ',' or ')' expected.
+File "cases/unclosed-type-arguments.ml", line 1, characters 9-10:
+  This '(' is not closed.
+Compiler:
+File "cases/unclosed-type-arguments.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== unclosed-type-parameters.ml
+  | type ('a, 'b t = int
+OCST [unclosed-type-parameters]:
+File "cases/unclosed-type-parameters.ml", line 1, characters 13-14:
+Error: Illegal identifier 't', ',' or ')' expected.
+File "cases/unclosed-type-parameters.ml", line 1, characters 5-6:
+  This '(' is not closed.
+Compiler:
+File "cases/unclosed-type-parameters.ml", line 1, characters 13-14:
+Error: Syntax error
+
+== unclosed-unit-constructor.ml
+  | exception (
+OCST [unclosed-unit-constructor]:
+File "cases/unclosed-unit-constructor.ml", line 2, characters 0-0:
+Error: Unexpected end of input, ')' expected.
+File "cases/unclosed-unit-constructor.ml", line 1, characters 10-11:
+  This '(' is not closed.
+Compiler:
+File "cases/unclosed-unit-constructor.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== unclosed-unpack.ml
+  | module M = (val m : S
+OCST [unclosed-unpack]:
+File "cases/unclosed-unpack.ml", line 2, characters 0-0:
+Error: Unexpected end of input, ')' expected.
+File "cases/unclosed-unpack.ml", line 1, characters 11-12:
+  This '(' is not closed.
+Compiler:
+File "cases/unclosed-unpack.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== unclosed-variant-type.ml
+  | type t = [ `A | `B
+OCST [unclosed-variant-type]:
+File "cases/unclosed-variant-type.ml", line 2, characters 0-0:
+Error: Unexpected end of input, '|' or ']' expected.
+File "cases/unclosed-variant-type.ml", line 1, characters 9-10:
+  This '[' is not closed.
+Compiler:
+File "cases/unclosed-variant-type.ml", line 2, characters 0-0:
+Error: Syntax error
+
+== unpack-expr.ml
+  | module M = (val )
+OCST [unpack-expr]:
+File "cases/unpack-expr.ml", line 1, characters 16-17:
+Error: Illegal ')', 'val' in a module expects an expression.
+Compiler:
+File "cases/unpack-expr.ml", line 1, characters 16-17:
+Error: Syntax error
+
+== unpack-pattern-name.ml
+  | let f (module m) = ()
+OCST [unpack-pattern-name]:
+File "cases/unpack-pattern-name.ml", line 1, characters 14-15:
+Error: Illegal identifier 'm', '(module' in a pattern expects a capitalized identifier or '_'.
+Compiler:
+File "cases/unpack-pattern-name.ml", line 1, characters 14-15:
+Error: Syntax error: module-expr expected.
+
+== unpack-type.ml
+  | module M = (val m : )
+OCST [unpack-type]:
+File "cases/unpack-type.ml", line 1, characters 20-21:
+Error: Illegal ')', ':' or ':>' in '(val e : S)' expects a module type.
+Compiler:
+File "cases/unpack-type.ml", line 1, characters 20-21:
+Error: Syntax error: ) expected
+
+== unreachable_case_guard.ml
+  | let _ = function x when g -> .
+OCST [unreachable-case-guard]:
+File "cases/unreachable_case_guard.ml", line 1, characters 29-30:
+Error: Illegal '.', an unreachable case 'p -> .' cannot have a guard.
+Compiler:
+File "cases/unreachable_case_guard.ml", line 1, characters 29-30:
+Error: Syntax error
+
+== unreachable_case_guard_comma.ml
+  | let _ = function x when g -> ., y
+OCST [unreachable-case-guard]:
+File "cases/unreachable_case_guard_comma.ml", line 1, characters 29-30:
+Error: Illegal '.', an unreachable case 'p -> .' cannot have a guard.
+Compiler:
+File "cases/unreachable_case_guard_comma.ml", line 1, characters 29-30:
+Error: Syntax error
+
+== unreachable_case_guard_match.ml
+  | let _ = match e with x when g -> .
+OCST [unreachable-case-guard]:
+File "cases/unreachable_case_guard_match.ml", line 1, characters 33-34:
+Error: Illegal '.', an unreachable case 'p -> .' cannot have a guard.
+Compiler:
+File "cases/unreachable_case_guard_match.ml", line 1, characters 33-34:
+Error: Syntax error
+
+== unterminated-comment-star.ml
+  | (* *
+OCST [unterminated-comment]:
+File "cases/unterminated-comment-star.ml", line 1, characters 0-2:
+Error: Unterminated comment, '(*' expects '*)' (a '"' in a comment starts a string, which expects '"' too).
+Compiler:
+File "cases/unterminated-comment-star.ml", line 1, characters 0-2:
+Error: Comment not terminated
+
+== unterminated-comment.ml
+  | let x = 1 (* comment
+OCST [unterminated-comment]:
+File "cases/unterminated-comment.ml", line 1, characters 10-12:
+Error: Unterminated comment, '(*' expects '*)' (a '"' in a comment starts a string, which expects '"' too).
+Compiler:
+File "cases/unterminated-comment.ml", line 1, characters 10-12:
+Error: Comment not terminated
+
+== unterminated-quoted-string-bar.ml
+  | let s = {|abc|
+OCST [unterminated-quoted-string]:
+File "cases/unterminated-quoted-string-bar.ml", line 1, characters 8-10:
+Error: Unterminated quoted string, '{|' expects its closing delimiter followed by '}'.
+Compiler:
+File "cases/unterminated-quoted-string-bar.ml", line 1, characters 8-10:
+Error: String literal not terminated
+
+== unterminated-quoted-string-in-comment.ml
+  | (* {x| *)
+OCST [unterminated-comment]:
+File "cases/unterminated-quoted-string-in-comment.ml", line 1, characters 0-2:
+Error: Unterminated comment, '(*' expects '*)' (a '"' in a comment starts a string, which expects '"' too).
+Compiler:
+File "cases/unterminated-quoted-string-in-comment.ml", line 1, characters 0-2:
+Error: This comment contains an unterminated string literal
+
+== unterminated-quoted-string.ml
+  | let s = {id|text
+OCST [unterminated-quoted-string]:
+File "cases/unterminated-quoted-string.ml", line 1, characters 8-12:
+Error: Unterminated quoted string, '{id|' expects its closing delimiter followed by '}'.
+Compiler:
+File "cases/unterminated-quoted-string.ml", line 1, characters 8-12:
+Error: String literal not terminated
+
+== unterminated-string-backslash.ml
+  | let s = "abc\
+OCST [unterminated-string]:
+File "cases/unterminated-string-backslash.ml", line 1, characters 8-9:
+Error: Unterminated string, '"' expects '"'.
+Compiler:
+File "cases/unterminated-string-backslash.ml", line 1, characters 8-9:
+Error: String literal not terminated
+
+== unterminated-string-in-comment.ml
+  | (* " *)
+OCST [unterminated-comment]:
+File "cases/unterminated-string-in-comment.ml", line 1, characters 0-2:
+Error: Unterminated comment, '(*' expects '*)' (a '"' in a comment starts a string, which expects '"' too).
+Compiler:
+File "cases/unterminated-string-in-comment.ml", line 1, characters 0-2:
+Error: This comment contains an unterminated string literal
+
+== unterminated-string.ml
+  | let s = "text
+OCST [unterminated-string]:
+File "cases/unterminated-string.ml", line 1, characters 8-9:
+Error: Unterminated string, '"' expects '"'.
+Compiler:
+File "cases/unterminated-string.ml", line 1, characters 8-9:
+Error: String literal not terminated
+
+== value-colon.mli
+  | val x int
+OCST [value-colon]:
+File "cases/value-colon.mli", line 1, characters 6-9:
+Error: Illegal identifier 'int', ':' expected.
+Compiler:
+File "cases/value-colon.mli", line 1, characters 6-9:
+Error: Syntax error
+
+== value-name-multiline.mli
+  | val {|a
+  | b|} : int
+OCST [value-name]:
+File "cases/value-name-multiline.mli", lines 1-2, characters 4-3:
+Error: Illegal string literal, 'val' or 'external' expects a lowercase identifier or an operator in parentheses, as in 'x' or '( + )'.
+Compiler:
+File "cases/value-name-multiline.mli", lines 1-2, characters 4-3:
+Error: Syntax error
+
+== value-name.mli
+  | val : int
+OCST [value-name]:
+File "cases/value-name.mli", line 1, characters 4-5:
+Error: Illegal ':', 'val' or 'external' expects a lowercase identifier or an operator in parentheses, as in 'x' or '( + )'.
+Compiler:
+File "cases/value-name.mli", line 1, characters 4-5:
+Error: Syntax error
+
+== value-type.mli
+  | val x :
+OCST [value-type]:
+File "cases/value-type.mli", line 2, characters 0-0:
+Error: Unexpected end of input, ':' in a value declaration expects a type.
+Compiler:
+File "cases/value-type.mli", line 2, characters 0-0:
+Error: Syntax error
+
+== variance-bang-bang.ml
+  | type (! ! _) t
+OCST [type-parameter]:
+File "cases/variance-bang-bang.ml", line 1, characters 8-9:
+Error: Illegal '!', a type parameter expects a type variable or '_', as in ''a' or '+'a'.
+Compiler:
+File "cases/variance-bang-bang.ml", line 1, characters 8-9:
+Error: Syntax error
+
+== variance-injectivity-around.ml
+  | type (!+! _) t
+OCST [type-variance]:
+File "cases/variance-injectivity-around.ml", line 1, characters 6-9:
+Error: Illegal operator '!+!', a variance expects '+', '-', '+-' or '-+', possibly with '!' before or after it.
+Compiler:
+File "cases/variance-injectivity-around.ml", line 1, characters 6-9:
+Error: Syntax error: type_variance expected.
+
+== variance-injectivity-twice.ml
+  | type (+! ! _) t
+OCST [type-parameter]:
+File "cases/variance-injectivity-twice.ml", line 1, characters 9-10:
+Error: Illegal '!', a type parameter expects a type variable or '_', as in ''a' or '+'a'.
+Compiler:
+File "cases/variance-injectivity-twice.ml", line 1, characters 9-10:
+Error: Syntax error
+
+== variance-plus-minus.ml
+  | type (+ - _) t
+OCST [type-parameter]:
+File "cases/variance-plus-minus.ml", line 1, characters 8-9:
+Error: Illegal '-', a type parameter expects a type variable or '_', as in ''a' or '+'a'.
+Compiler:
+File "cases/variance-plus-minus.ml", line 1, characters 8-9:
+Error: Syntax error
+
+== variant-tag-argument.ml
+  | type t = [ `A of ]
+OCST [variant-tag-argument]:
+File "cases/variant-tag-argument.ml", line 1, characters 17-18:
+Error: Illegal ']', 'of' or '&' in a variant tag expects a type.
+Compiler:
+File "cases/variant-tag-argument.ml", line 1, characters 17-18:
+Error: Syntax error
+
+== variant-tag-name.ml
+  | type t = [ ` ]
+OCST [variant-tag-name]:
+File "cases/variant-tag-name.ml", line 1, characters 13-14:
+Error: Illegal ']', '`' expects an identifier, as in '`A'.
+Compiler:
+File "cases/variant-tag-name.ml", line 1, characters 13-14:
+Error: Syntax error
+
+== variant-type-empty.ml
+  | type t = int * [ ]
+OCST [variant-type-empty]:
+File "cases/variant-type-empty.ml", line 1, characters 17-18:
+Error: Illegal ']', a polymorphic variant type expects a tag (only '[> ]' can be empty).
+Compiler:
+File "cases/variant-type-empty.ml", line 1, characters 17-18:
+Error: Syntax error
+
+== variant-type-single-inherit.ml
+  | type t = [ u ]
+OCST [variant-type-single-inherit]:
+File "cases/variant-type-single-inherit.ml", line 1, characters 13-14:
+Error: Illegal ']', a polymorphic variant type made of a single included type expects a '|' before it.
+Compiler:
+File "cases/variant-type-single-inherit.ml", line 1, characters 13-14:
+Error: Syntax error
+
+== variant-type-tags-empty.ml
+  | type t = [< `A > ]
+OCST [variant-type-tags-empty]:
+File "cases/variant-type-tags-empty.ml", line 1, characters 17-18:
+Error: Illegal ']', '>' in a polymorphic variant type expects tags.
+Compiler:
+File "cases/variant-type-tags-empty.ml", line 1, characters 17-18:
+Error: Syntax error
+
+== variant-type-tags.ml
+  | type t = [ `A > `A ]
+OCST [variant-type-tags]:
+File "cases/variant-type-tags.ml", line 1, characters 14-15:
+Error: Illegal '>', only a type '[< ...]' can list its present tags after '>'.
+Compiler:
+File "cases/variant-type-tags.ml", line 1, characters 14-15:
+Error: Syntax error
+
+== variant_type_empty_bar.ml
+  | type t = [ | ]
+OCST [variant-type-empty]:
+File "cases/variant_type_empty_bar.ml", line 1, characters 13-14:
+Error: Illegal ']', a polymorphic variant type expects a tag (only '[> ]' can be empty).
+Compiler:
+File "cases/variant_type_empty_bar.ml", line 1, characters 13-14:
+Error: Syntax error
+
+== variant_type_empty_greater_bar.ml
+  | type t = [> | ]
+OCST [variant-type-empty]:
+File "cases/variant_type_empty_greater_bar.ml", line 1, characters 14-15:
+Error: Illegal ']', a polymorphic variant type expects a tag (only '[> ]' can be empty).
+Compiler:
+File "cases/variant_type_empty_greater_bar.ml", line 1, characters 14-15:
+Error: Syntax error
+
+== variant_type_empty_less.ml
+  | type t = [< ]
+OCST [variant-type-empty]:
+File "cases/variant_type_empty_less.ml", line 1, characters 12-13:
+Error: Illegal ']', a polymorphic variant type expects a tag (only '[> ]' can be empty).
+Compiler:
+File "cases/variant_type_empty_less.ml", line 1, characters 12-13:
+Error: Syntax error
+
+== virtual-instance-variable-colon.ml
+  | class virtual c = object val virtual x = 1 end
+OCST [virtual-instance-variable-colon]:
+File "cases/virtual-instance-variable-colon.ml", line 1, characters 39-40:
+Error: Illegal '=', ':' expected, a virtual instance variable has no value.
+Compiler:
+File "cases/virtual-instance-variable-colon.ml", line 1, characters 39-40:
+Error: Syntax error
+
+== virtual-override-mutable-value.ml
+  | class c = object val! mutable virtual x : int end
+OCST [virtual-override]:
+File "cases/virtual-override-mutable-value.ml", line 1, characters 30-37:
+Error: Illegal 'virtual', a definition overridden with '!' cannot be virtual.
+Compiler:
+File "cases/virtual-override-mutable-value.ml", line 1, characters 30-37:
+Error: Syntax error
+
+== virtual-override-private.ml
+  | class c = object method! private virtual x : int end
+OCST [virtual-override]:
+File "cases/virtual-override-private.ml", line 1, characters 33-40:
+Error: Illegal 'virtual', a definition overridden with '!' cannot be virtual.
+Compiler:
+File "cases/virtual-override-private.ml", line 1, characters 33-40:
+Error: Syntax error
+
+== virtual-override-value.ml
+  | class c = object val! virtual x : int end
+OCST [virtual-override]:
+File "cases/virtual-override-value.ml", line 1, characters 22-29:
+Error: Illegal 'virtual', a definition overridden with '!' cannot be virtual.
+Compiler:
+File "cases/virtual-override-value.ml", line 1, characters 22-29:
+Error: Syntax error
+
+== virtual-override.ml
+  | class c = object method! virtual x : int end
+OCST [virtual-override]:
+File "cases/virtual-override.ml", line 1, characters 25-32:
+Error: Illegal 'virtual', a definition overridden with '!' cannot be virtual.
+Compiler:
+File "cases/virtual-override.ml", line 1, characters 25-32:
+Error: Syntax error
+
+== while-condition.ml
+  | let _ = while do () done
+OCST [while-condition]:
+File "cases/while-condition.ml", line 1, characters 14-16:
+Error: Illegal 'do', 'while' expects a condition.
+Compiler:
+File "cases/while-condition.ml", line 1, characters 14-16:
+Error: Syntax error
+
+== while-do.ml
+  | let _ = while c () done
+OCST [while-do]:
+File "cases/while-do.ml", line 1, characters 19-23:
+Error: Illegal 'done', 'do' expected.
+Compiler:
+File "cases/while-do.ml", line 1, characters 19-23:
+Error: Syntax error
+
+== with-constraint.mli
+  | module M : S with x
+OCST [with-constraint]:
+File "cases/with-constraint.mli", line 1, characters 18-19:
+Error: Illegal identifier 'x', 'with' or 'and' expects a constraint, such as 'type t = int' or 'module M = N'.
+Compiler:
+File "cases/with-constraint.mli", line 1, characters 18-19:
+Error: Syntax error
+
+== with-module-equal.mli
+  | module M : S with module N N
+OCST [with-module-equal]:
+File "cases/with-module-equal.mli", line 1, characters 27-28:
+Error: Illegal identifier 'N', '=' or ':=' expected.
+Compiler:
+File "cases/with-module-equal.mli", line 1, characters 27-28:
+Error: Syntax error
+
+== with-module-name.mli
+  | module M : S with module = N
+OCST [with-module-name]:
+File "cases/with-module-name.mli", line 1, characters 25-26:
+Error: Illegal '=', 'with module' expects a capitalized identifier or a path, as in 'M' or 'M.N'.
+Compiler:
+File "cases/with-module-name.mli", line 1, characters 25-26:
+Error: Syntax error
+
+== with-module-path.mli
+  | module M : S with module N =
+OCST [with-module-path]:
+File "cases/with-module-path.mli", line 2, characters 0-0:
+Error: Unexpected end of input, '=' or ':=' in a 'with module' constraint expects a capitalized identifier or a path, as in 'M' or 'M.N'.
+Compiler:
+File "cases/with-module-path.mli", line 2, characters 0-0:
+Error: Syntax error
+
+== with-module-type-definition.mli
+  | module M : S with module type T =
+OCST [with-module-type-definition]:
+File "cases/with-module-type-definition.mli", line 2, characters 0-0:
+Error: Unexpected end of input, '=' or ':=' in a 'with module type' constraint expects a module type.
+Compiler:
+File "cases/with-module-type-definition.mli", line 2, characters 0-0:
+Error: Syntax error
+
+== with-module-type-equal.mli
+  | module M : S with module type T U
+OCST [with-module-type-equal]:
+File "cases/with-module-type-equal.mli", line 1, characters 32-33:
+Error: Illegal identifier 'U', '=' or ':=' expected.
+Compiler:
+File "cases/with-module-type-equal.mli", line 1, characters 32-33:
+Error: Syntax error
+
+== with-module-type-name.mli
+  | module M : S with module type = U
+OCST [with-module-type-name]:
+File "cases/with-module-type-name.mli", line 1, characters 30-31:
+Error: Illegal '=', 'with module type' expects an identifier or a path, as in 'S' or 'M.S'.
+Compiler:
+File "cases/with-module-type-name.mli", line 1, characters 30-31:
+Error: Syntax error
+
+== with-type-definition.mli
+  | module M : S with type t =
+OCST [with-type-definition]:
+File "cases/with-type-definition.mli", line 2, characters 0-0:
+Error: Unexpected end of input, '=' or ':=' in a 'with type' constraint expects a type.
+Compiler:
+File "cases/with-type-definition.mli", line 2, characters 0-0:
+Error: Syntax error
+
+== with-type-equal.mli
+  | module M : S with type t int
+OCST [with-type-equal]:
+File "cases/with-type-equal.mli", line 1, characters 25-28:
+Error: Illegal identifier 'int', '=' or ':=' expected.
+Compiler:
+File "cases/with-type-equal.mli", line 1, characters 25-28:
+Error: Syntax error
+
+== with-type-name.mli
+  | module M : S with type = int
+OCST [with-type-name]:
+File "cases/with-type-name.mli", line 1, characters 23-24:
+Error: Illegal '=', 'with type' expects a lowercase identifier or a path, as in 't' or 'M.t'.
+Compiler:
+File "cases/with-type-name.mli", line 1, characters 23-24:
+Error: Syntax error
+
+Every error has a test.

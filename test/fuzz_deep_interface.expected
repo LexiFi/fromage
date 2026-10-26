@@ -1,0 +1,2 @@
+interface --exhaust --every-token: 150229 sentences (134681 accepted by both parsers), 37802743 mutants (2936517 accepted)
+OCST fuzzing round-trip passed.

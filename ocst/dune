@@ -1,0 +1,14 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;  Copyright (C) 2000-2026 LexiFi SAS. All rights reserved.               ;
+;                                                                         ;
+;  No part of this document may be reproduced or transmitted in any       ;
+;  form or for any purpose without the express permission of LexiFi SAS.  ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(ocamllex
+ (modules cst_lexer))
+
+(library
+ (name ocst)
+ (public_name ocst.ocst)
+ (libraries compiler-libs.common))
