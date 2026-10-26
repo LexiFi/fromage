@@ -7,8 +7,17 @@
 (rule
  (alias runtest)
  (targets errors.actual)
- (deps (source_tree cases) %{project_root}/ocst/parser.ml)
+ (deps (source_tree cases))
  (action
   (progn
-   (with-stdout-to %{targets} (run ./errors.exe))
+   (with-stdout-to %{targets}
+    (run ./errors.exe cases %{dep:../../ocst/parser.ml}))
    (diff errors.expected %{targets}))))
+
+; [dune build] builds the tests, without running them: they run with
+; [dune build @runtest] or the other aliases of the tests.
+(alias
+ (name default)
+ (deps
+  (alias check)
+  (glob_files *.exe)))

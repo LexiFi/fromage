@@ -17,20 +17,24 @@ printing a CST gives back the exact source.
   locations, attributes and docstrings as the compiler's parser.
 - `pretty/`: a pretty printer for the CST (see "The pretty printer").
 
-The grammar of reference is the compiler's `ocaml/parsing/parser.mly`, not
+The grammar of reference is the compiler's `parsing/parser.mly` (copied in
+`test/parser.mly`, from OCaml 5.5.2, the version of `compiler-libs`), not
 `parser.ml`. `to_ast.ml` exists to check that ocst agrees with it: the test
 suite compares its output with `Parse.implementation`/`Parse.interface`.
 
 ## Building and testing
 
-ocst is part of the mlfi dune build (library `mlfi.ocst`). From the repository
-root:
+The dependencies come from opam (OCaml 5.5): `pretty_expressive`, `menhir`
+and `ocamlgrammarfuzzer` (pinned from
+https://github.com/shogan-ai/ocamlgrammarfuzzer), and `bisect_ppx` for the
+coverage, which is skipped without it. From the repository root:
 
 ```bash
-dune build @ocst/check                    # type-check
-dune build @ocst/runtest                  # run the quick tests (about 15 s)
-dune build @ocst/runtest-full             # run all the tests (about 3 min)
-dune build @ocst/runtest --auto-promote   # update test/*.expected
+dune build                         # build, without running the tests
+dune build @check                  # type-check
+dune build @runtest                # run the quick tests (about 15 s)
+dune build @runtest-full           # run all the tests (about 3 min)
+dune build @runtest --auto-promote # update test/*.expected
 ```
 
 `runtest` is for each change: the unit tests, the error and doc comment
@@ -40,9 +44,10 @@ random ones). `runtest-full` runs `runtest`, the round-trips on all the
 sources of the repository, the fuzzing of all the configurations, and the
 coverage: run it before a commit.
 
-The monorepo compiles with warnings as errors and
-`implicit_transitive_deps false`: each test stanza needs explicit
-`(modules ...)` and `(libraries ...)`.
+Each test stanza has explicit `(modules ...)` and `(libraries ...)`. The
+tests are dune rules, run in dune's sandbox: they take the files they read
+as arguments, and find the repository with `DUNE_SOURCEROOT`
+(`git_root` in `test/roundtrip.ml`).
 
 The main test is `test/codebase_roundtrip.ml`. For every `.ml`/`.mli`
 file of the repository, including untracked files in `test/examples` and
@@ -60,24 +65,23 @@ Sources that both parsers reject pass. To check some files only, for
 debugging:
 
 ```bash
-dune build ./ocst/test/codebase_roundtrip.exe
-_build/default/ocst/test/codebase_roundtrip.exe FILE...
+dune build ./test/codebase_roundtrip.exe
+_build/default/test/codebase_roundtrip.exe FILE...
 ```
 
-The second test is `test/fuzz_roundtrip.ml`: it compiles
-`ocaml/parsing/parser.mly` with Menhir, generates sentences from it with
-ocamlgrammarfuzzer (both vendored in `vendor/`, see `vendor/README.md`), and
-checks each sentence like a file. The fuzzer prints identifiers, labels and
+The second test is `test/fuzz_roundtrip.ml`: it compiles `test/parser.mly`
+with Menhir, generates sentences from it with ocamlgrammarfuzzer, and checks
+each sentence like a file. The fuzzer prints identifiers, labels and
 strings of about 15 characters (`names` in `test/fuzz_roundtrip.ml`), so that
 some constructs fit on one line and others need several. Its configurations
 include `--exhaust`,
 which covers all the productions of the grammar; `runtest` runs those of
 `--quick`, one rule per entry point, and `runtest-full` all of them. For larger runs, from
-`_build/default/ocst/test`:
+the repository root:
 
 ```bash
-./fuzz_roundtrip.exe ../vendor/menhir/executable/stage2/main.exe \
-  ../vendor/ocamlgrammarfuzzer/bin/main.exe interface --seed 4 --count 100000
+_build/default/test/fuzz_roundtrip.exe $(which menhir) $(which ocamlgrammarfuzzer) \
+  test/parser.mly interface --seed 4 --count 100000
 ```
 
 The fuzzing test also puts a doc comment before every token of each sentence
@@ -92,7 +96,7 @@ sentences are invalid. To see why generated sentences are rejected by the
 compiler, grouped by error, with the shortest example of each:
 
 ```bash
-./fuzz_roundtrip.exe MENHIR FUZZER --rejections implementation --seed 1 --count 2000
+./fuzz_roundtrip.exe MENHIR FUZZER GRAMMAR --rejections implementation --seed 1 --count 2000
 ```
 
 `runtest-full` also measures the coverage of OCST by its tests (not the deep
@@ -101,7 +105,7 @@ with bisect_ppx, runs the tests against this copy, and compares the coverage
 of each module, and the list of the uncovered points (each marked with `▲`
 in its line), with `test/coverage/coverage.expected`. The coverage is 100%,
 and must stay so. The report is also in
-`_build/default/ocst/test/coverage/html/index.html`.
+`_build/default/test/coverage/html/index.html`.
 
 - Cover new code with explicit cases: an example of `test/examples` (which
   must be valid: the codebase test checks it), a case of
@@ -125,13 +129,13 @@ token per mutant), checks long random sentences with more mutants, and doc
 comments before every token after each kind of separator:
 
 ```bash
-dune build @ocst/test/fuzz-deep
+dune build @test/fuzz-deep
 ```
 
 Each failure is printed on the error output as soon as it is found, with a
 smaller source failing in the same way (`minimized:`). Dune only shows the
 error output of a rule when it ends: to see the failures during the run,
-start the executable itself from `_build/default/ocst/test`, with the options
+start the executable itself (as above), with the options
 of the rules of `test/dune` (`--every-token`, `--mutants N`).
 
 Failures found by the fuzzer are LR artifacts of the grammar as often as
@@ -256,7 +260,7 @@ The sources are formatted by OCST's own pretty printer (see below):
 `make fmt` runs it on them and on `test/examples` instead of `ocp-indent`,
 except on the inputs of the tests (the `cases` of `test/errors` and
 `test/doc_comments`, whose layout is what they test, and
-`test/ocamlformat_tests`) and on `vendor`, which are left as they are. `runtest` checks their layout with
+`test/ocamlformat_tests`), which are left as they are. `runtest` checks their layout with
 `test/layout.ml` (which lexes them with OCST; `cst_lexer.mll`, which neither
 can read, follows the same rules by hand). The length of the lines is not
 checked: pretty_expressive keeps them within the width of `make fmt` (80)

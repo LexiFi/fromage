@@ -66,8 +66,11 @@ let declared_errors parser =
 
 let () =
   Warnings.parse_options false "-a" |> ignore;
-  let root = Filename.concat (git_root ()) "ocst" in
-  let directory = Filename.concat root "test/errors/cases" in
+  let directory, parser =
+    match Sys.argv with
+    | [| _; directory; parser |] -> directory, parser
+    | _ -> failwith "usage: errors.exe CASES PARSER.ML"
+  in
   let files = List.sort compare (Array.to_list (Sys.readdir directory)) in
   let raised =
     List.filter_map
@@ -87,7 +90,7 @@ let () =
   if List.mem "internal" raised then
     print_endline "Some files raise internal errors."
   ;
-  let declared = declared_errors (Filename.concat root "parser.ml") in
+  let declared = declared_errors parser in
   let rec duplicates =
     function
     | id :: (id' :: _ as rest) when id = id' ->

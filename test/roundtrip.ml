@@ -1,11 +1,17 @@
 (* The backtraces of unexpected exceptions are in the reports. *)
 let () = Printexc.record_backtrace true
 
+(** The root of the repository: the source tree of dune when a dune rule
+    runs the tests (in its sandbox, git cannot find the repository), else
+    the root of the Git repository. *)
 let git_root () =
-  let channel = Unix.open_process_in "git rev-parse --show-toplevel" in
-  match input_line channel, Unix.close_process_in channel with
-  | root, Unix.WEXITED 0 -> root
-  | _ -> failwith "could not determine the Git root"
+  match Sys.getenv_opt "DUNE_SOURCEROOT" with
+  | Some root -> root
+  | None ->
+      let channel = Unix.open_process_in "git rev-parse --show-toplevel" in
+      match input_line channel, Unix.close_process_in channel with
+      | root, Unix.WEXITED 0 -> root
+      | _ -> failwith "could not determine the Git root"
 
 (* The warnings about doc comments (warning 50) emitted by [parse], with its
    result. *)

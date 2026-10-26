@@ -10,5 +10,13 @@
  (deps (source_tree cases))
  (action
   (progn
-   (with-stdout-to %{targets} (run ./doc_comments.exe))
+   (with-stdout-to %{targets} (run ./doc_comments.exe cases))
    (diff doc_comments.expected %{targets}))))
+
+; [dune build] builds the tests, without running them: they run with
+; [dune build @runtest] or the other aliases of the tests.
+(alias
+ (name default)
+ (deps
+  (alias check)
+  (glob_files *.exe)))

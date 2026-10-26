@@ -30,7 +30,7 @@ let read_file filename =
 
 (* The examples of OCST are valid: a rejected example would test nothing. *)
 let is_example filename =
-  let marker = "ocst/test/examples/" in
+  let marker = "test/examples/" in
   let rec find index =
     index + String.length marker <= String.length filename
     &&

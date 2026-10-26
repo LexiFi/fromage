@@ -64,7 +64,7 @@
  (action
   (progn
    (with-stdout-to %{targets}
-    (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} --quick
+    (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:parser.mly} --quick
      implementation))
    (diff fuzz_quick_implementation.expected %{targets}))))
 
@@ -74,7 +74,7 @@
  (action
   (progn
    (with-stdout-to %{targets}
-    (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} --quick
+    (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:parser.mly} --quick
      interface))
    (diff fuzz_quick_interface.expected %{targets}))))
 
@@ -85,7 +85,7 @@
  (action
   (progn
    (with-stdout-to %{targets}
-    (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer}))
+    (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:parser.mly}))
    (diff fuzz_roundtrip.expected %{targets}))))
 
 ; The lexer and parser round-trips, with the formatter, on the OCaml files of
@@ -93,13 +93,15 @@
 (rule
  (alias runtest-full)
  (targets codebase_roundtrip.actual)
- (deps (source_tree ocamlformat_tests) (source_tree examples))
+ ; It reads the files of the repository from the source tree, as git lists
+ ; them: run each time.
+ (deps (universe))
  (action
   (progn
    (with-stdout-to %{targets} (run ./codebase_roundtrip.exe))
    (diff codebase_roundtrip.expected %{targets}))))
 
-; Deep fuzzing, only run with [dune build @ocst/test/fuzz-deep] (about 10
+; Deep fuzzing, only run with [dune build @test/fuzz-deep] (about 10
 ; minutes): every token inserted in every sentence of the exhaustive mode,
 ; long random sentences with more mutants (avoiding the productions which
 ; make most of them invalid, as [valid] in fuzz_roundtrip.ml), a few very long
@@ -112,7 +114,7 @@
  (action
   (progn
    (with-stdout-to %{targets}
-    (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer}
+    (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:parser.mly}
      --every-token implementation --exhaust))
    (diff fuzz_deep_implementation.expected %{targets}))))
 
@@ -122,7 +124,7 @@
  (action
   (progn
    (with-stdout-to %{targets}
-    (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer}
+    (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:parser.mly}
      --every-token interface --exhaust))
    (diff fuzz_deep_interface.expected %{targets}))))
 
@@ -132,7 +134,7 @@
  (action
   (progn
    (with-stdout-to %{targets}
-    (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer}
+    (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:parser.mly}
      --mutants 10 implementation --seed 21 --count 30000 --length 120
      --avoid "let_binding_body: val_ident" --avoid "fun_expr: UNDERSCORE"
      --avoid "_: _* NONREC _* PLUSEQ _*" --avoid "_: _* NONREC _* COLONEQUAL _*"))
@@ -144,7 +146,7 @@
  (action
   (progn
    (with-stdout-to %{targets}
-    (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer}
+    (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:parser.mly}
      --mutants 10 interface --seed 21 --count 30000 --length 120
      --avoid "let_binding_body: val_ident" --avoid "fun_expr: UNDERSCORE"
      --avoid "_: _* NONREC _* PLUSEQ _*" --avoid "_: _* NONREC _* COLONEQUAL _*"))
@@ -156,7 +158,7 @@
  (action
   (progn
    (with-stdout-to %{targets}
-    (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer}
+    (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:parser.mly}
      --doc-comments implementation --exhaust))
    (diff fuzz_docs_exhaust_implementation.expected %{targets}))))
 
@@ -166,7 +168,7 @@
  (action
   (progn
    (with-stdout-to %{targets}
-    (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer}
+    (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:parser.mly}
      --doc-comments implementation --exhaust --comments))
    (diff fuzz_docs_comments_implementation.expected %{targets}))))
 
@@ -176,7 +178,7 @@
  (action
   (progn
    (with-stdout-to %{targets}
-    (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer}
+    (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:parser.mly}
      --doc-comments interface --exhaust))
    (diff fuzz_docs_exhaust_interface.expected %{targets}))))
 
@@ -186,7 +188,7 @@
  (action
   (progn
    (with-stdout-to %{targets}
-    (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer}
+    (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:parser.mly}
      --doc-comments interface --exhaust --comments))
    (diff fuzz_docs_comments_interface.expected %{targets}))))
 
@@ -196,7 +198,7 @@
  (action
   (progn
    (with-stdout-to %{targets}
-    (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer}
+    (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:parser.mly}
      --mutants 5 implementation --seed 61 --count 1000 --length 2000
      --avoid "let_binding_body: val_ident" --avoid "fun_expr: UNDERSCORE"
      --avoid "_: _* NONREC _* PLUSEQ _*" --avoid "_: _* NONREC _* COLONEQUAL _*"
@@ -212,7 +214,7 @@
  (action
   (progn
    (with-stdout-to %{targets}
-    (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer}
+    (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:parser.mly}
      --mutants 2 implementation --seed 62 --count 100 --length 20000
      --avoid "let_binding_body: val_ident" --avoid "fun_expr: UNDERSCORE"
      --avoid "_: _* NONREC _* PLUSEQ _*" --avoid "_: _* NONREC _* COLONEQUAL _*"
@@ -228,7 +230,7 @@
  (action
   (progn
    (with-stdout-to %{targets}
-    (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer}
+    (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:parser.mly}
      --mutants 5 interface --seed 61 --count 1000 --length 2000
      --avoid "let_binding_body: val_ident" --avoid "fun_expr: UNDERSCORE"
      --avoid "_: _* NONREC _* PLUSEQ _*" --avoid "_: _* NONREC _* COLONEQUAL _*"
@@ -244,7 +246,7 @@
  (action
   (progn
    (with-stdout-to %{targets}
-    (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer}
+    (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:parser.mly}
      --mutants 2 interface --seed 62 --count 100 --length 20000
      --avoid "let_binding_body: val_ident" --avoid "fun_expr: UNDERSCORE"
      --avoid "_: _* NONREC _* PLUSEQ _*" --avoid "_: _* NONREC _* COLONEQUAL _*"
@@ -262,7 +264,7 @@
  (action
   (progn
    (with-stdout-to %{targets}
-    (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer}
+    (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:parser.mly}
      implementation --seed 71 --count 25 --length 1000000
      --avoid "let_binding_body: val_ident" --avoid "fun_expr: UNDERSCORE"
      --avoid "_: _* NONREC _* PLUSEQ _*" --avoid "_: _* NONREC _* COLONEQUAL _*"
@@ -283,7 +285,7 @@
  (action
   (progn
    (with-stdout-to %{targets}
-    (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer}
+    (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:parser.mly}
      interface --seed 71 --count 25 --length 1000000
      --avoid "let_binding_body: val_ident" --avoid "fun_expr: UNDERSCORE"
      --avoid "_: _* NONREC _* PLUSEQ _*" --avoid "_: _* NONREC _* COLONEQUAL _*"
@@ -347,3 +349,11 @@
   (progn
    (with-stdout-to %{targets} (run ./pretty_test.exe %{sources}))
    (diff pretty_test.expected %{targets}))))
+
+; [dune build] builds the tests, without running them: they run with
+; [dune build @runtest] or the other aliases of the tests.
+(alias
+ (name default)
+ (deps
+  (alias check)
+  (glob_files *.exe)))

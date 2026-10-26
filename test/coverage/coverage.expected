@@ -1,13 +1,13 @@
-100.00 %    544/544    ocst/test/coverage/cst_lexer.ml
-100.00 %    175/175    ocst/test/coverage/doc_comments.ml
-100.00 %      6/6      ocst/test/coverage/ocst.ml
-100.00 %   3670/3670   ocst/test/coverage/parser.ml
-100.00 %    996/996    ocst/test/coverage/printer.ml
-100.00 %      8/8      ocst/test/coverage/syntax_error.ml
-100.00 %   2434/2434   ocst/test/coverage/to_ast.ml
-100.00 %    489/489    ocst/test/coverage/token.ml
-100.00 %     39/39     ocst/test/coverage/token_position.ml
-100.00 %     64/64     ocst/test/coverage/token_stream.ml
-100.00 %   8425/8425   Project coverage
+100.00 %    544/544    test/coverage/cst_lexer.ml
+100.00 %    175/175    test/coverage/doc_comments.ml
+100.00 %      6/6      test/coverage/ocst.ml
+100.00 %   3670/3670   test/coverage/parser.ml
+100.00 %    998/998    test/coverage/printer.ml
+100.00 %      8/8      test/coverage/syntax_error.ml
+100.00 %   2436/2436   test/coverage/to_ast.ml
+100.00 %    501/501    test/coverage/token.ml
+100.00 %     40/40     test/coverage/token_position.ml
+100.00 %     64/64     test/coverage/token_stream.ml
+100.00 %   8442/8442   Project coverage
 
 Uncovered points (▲):

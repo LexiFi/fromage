@@ -33,7 +33,10 @@ let ocst ~filename source =
     Format.asprintf "%a" Pprintast.structure ast, warnings
 
 let () =
-  let directory = Filename.concat (git_root ()) "ocst/test/doc_comments/cases"
+  let directory =
+    match Sys.argv with
+    | [| _; directory |] -> directory
+    | _ -> failwith "usage: doc_comments.exe CASES"
   in
   let files = List.sort compare (Array.to_list (Sys.readdir directory)) in
   List.iter
