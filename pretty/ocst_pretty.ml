@@ -1950,6 +1950,4 @@ let interface ?(width = default_width) ((items, eof) as value : interface) =
   Trivia.set (Printer.interface_tokens value);
   Fun.protect
     ~finally:Trivia.clear
-    ( fun () ->
-        Layout.D.to_string (Layout.signature items) eof
-    )
+    (fun () -> Layout.D.to_string (Layout.signature items) eof)
