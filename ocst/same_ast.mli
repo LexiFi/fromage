@@ -20,7 +20,3 @@ val implementation :
 
 val interface : filename:string -> string -> string -> (unit, difference) result
 (** As [implementation], for interfaces. *)
-
-val equal_modulo_locations : 'a -> 'a -> bool
-(** Structural equality, where any two locations ([Location.t]) are equal:
-    their positions, their ghost flags. *)
