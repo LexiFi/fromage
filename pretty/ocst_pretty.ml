@@ -1944,7 +1944,6 @@ let implementation
     Fun.protect
       ~finally:Trivia.clear
       (fun () -> Layout.D.to_string (Layout.structure items) eof)
-[@@ocaml.doc "a"]
 
 let interface ?(width = default_width) ((items, eof) as value : interface) =
   let module Layout = Make (struct let page_width = width end) in
@@ -1952,5 +1951,5 @@ let interface ?(width = default_width) ((items, eof) as value : interface) =
   Fun.protect
     ~finally:Trivia.clear
     ( fun () ->
-        (Layout.D.to_string [@ocaml.doc "a"]) (Layout.signature items) eof
+        Layout.D.to_string (Layout.signature items) eof
     )
