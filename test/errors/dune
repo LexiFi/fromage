@@ -4,19 +4,23 @@
  (libraries roundtrip ocst str compiler-libs.common))
 
 ; The syntax errors on the files of cases, and the untested errors.
+
 (rule
  (alias runtest)
  (package ocst)
  (targets errors.actual)
- (deps (source_tree cases))
+ (deps
+  (source_tree cases))
  (action
   (progn
-   (with-stdout-to %{targets}
+   (with-stdout-to
+    %{targets}
     (run ./errors.exe cases %{dep:../../ocst/parser.ml}))
    (diff errors.expected %{targets}))))
 
 ; [dune build] builds the tests, without running them: they run with
 ; [dune build @runtest] or the other aliases of the tests.
+
 (alias
  (name default)
  (deps
