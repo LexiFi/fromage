@@ -1,91 +1,102 @@
-(* The comments and the blank lines before the tokens of a file. The
-   comments on the line of the previous token are printed after it; the
-   others are printed before the token, each on its line, with the blank
-   lines before them. *)
+(* The comments and the blank lines before a token, from its trivia: see
+   trivia.mli. *)
 
 open Ocst
 
-module Physical_token =
-  struct
-    type t = Token.any_token
+type elt =
+  | Newline of int | Space of int | Comment of string | Directive of string
 
-    let equal = ( == )
-    let hash = Hashtbl.hash
-  end
+type t = elt list
 
-module Tokens = Hashtbl.Make (Physical_token)
+(** The blanks and newlines of [text]: [Space] without newlines, else the
+    newlines and the indentation after them; the blanks before a newline
+    end their line, and are not kept. *)
+let whitespace text =
+  let newlines = ref 0
+  and spaces = ref 0
+  in
+  String.iter
+    ( function
+      | '\n' -> incr newlines; spaces := 0
+      | '\r' -> ()
+      | _ -> incr spaces
+    )
+    text
+  ;
+  (if !newlines > 0 then [ Newline !newlines ] else [])
+  @ if !spaces > 0 then [ Space !spaces ] else []
 
-type comment = Plain of string | Directive of string
+let of_token (token : Token.any_token) =
+  List.concat_map
+    ( function
+      | Token.Whitespace text -> whitespace text
+      | Token.Comment text | Token.Warning (_, text) -> [ Comment text ]
+      | Token.Line_directive text -> [ Directive text ]
+    )
+    token.leading
 
 type info =
-  { mutable trailing : string list;
-    (** The comments after the token, on its line, in reverse order. *)
-    before : (int * comment) list;
-    (** The comments before the token, with the number of newlines before each. *)
+  { previous_line : string list;
+    (** The comments on the line of the previous token, in order: they are
+        printed at the end of that line. *)
+    before : (int * elt) list;
+    (** The comments and the line directives before the token, with the
+        number of newlines before each. *)
     newlines : int; (** The number of newlines just before the token. *)
   }
 
-let count_newlines text =
-  String.fold_left (fun count c -> if c = '\n' then count + 1 else count) 0 text
+(** The first token of the file being printed, which has no previous line:
+    the comments before it are before it. *)
+let first = ref None
 
-let infos tokens =
-  let table = Tokens.create 4096 in
-  let previous = ref None in
-  List.iteri
-    ( fun index (token : Token.any_token) ->
-        let hanging = ref (index > 0)
-        and newlines = ref 0
-        and before = ref []
-        in
-        List.iter
-          ( fun (trivia : Token.trivia) ->
-              match trivia, !previous with
-              | Token.Whitespace text, _ ->
-                  let count = count_newlines text in
-                  if
-                    count > 0
-                  then begin hanging := false; newlines := !newlines + count end
-              | (Token.Comment text | Token.Warning (_, text)), Some info when
-                  !hanging
-              -> info.trailing <- text :: info.trailing
-              | _ ->
-                  let comment =
-                    match trivia with
-                    | Token.Line_directive text -> Directive text
-                    | _ -> Plain (Token.trivia_text trivia)
-                  in
-                  (* No blank line at the start of the file. *)
-                  let count =
-                    if index = 0 && !before = [] then 1 else max !newlines 1
-                  in
-                  hanging := false;
-                  before := (count, comment) :: !before;
-                  newlines := 0
-          )
-          token.leading
-        ;
-        let newlines = if index = 0 && !before = [] then 0 else !newlines in
-        let info = { trailing = []; before = List.rev !before; newlines } in
-        Tokens.replace table token info; previous := Some info
+let set tokens =
+  first
+  :=
+  match tokens with
+  | token :: _ -> Some token
+  | [] -> None
+
+let clear () = first := None
+
+let info (token : Token.any_token) =
+  let is_first =
+    match !first with
+    | Some first -> first == token
+    | None -> false
+  in
+  let on_previous_line = ref (not is_first)
+  and newlines = ref 0
+  and previous_line = ref []
+  and before = ref []
+  in
+  List.iter
+    ( function
+      | Newline count ->
+          on_previous_line := false; newlines := !newlines + count
+      | Space _ -> ()
+      | Comment text when !on_previous_line ->
+          previous_line := text :: !previous_line
+      | (Comment _ | Directive _) as elt ->
+          (* No blank line at the start of the file. *)
+          let count = if is_first && !before = [] then 1 else max !newlines 1 in
+          on_previous_line := false;
+          before := (count, elt) :: !before;
+          newlines := 0
     )
-    tokens
+    (of_token token)
   ;
-  table
-
-let table = ref (Tokens.create 1)
-let set tokens = table := infos tokens
-let clear () = table := Tokens.create 1
-let info (token : Token.any_token) = Tokens.find !table token
+  { previous_line = List.rev !previous_line; before = List.rev !before;
+    newlines = (if is_first && !before = [] then 0 else !newlines)
+  }
 
 (** Two tokens can be printed without a space between them when they are
     lexed as the same two tokens, without comments between them. *)
 let glued = Hashtbl.create 256
 
 let can_glue (left : Token.any_token) (right : Token.any_token) =
-  let left_info = info left
-  and right_info = info right
-  in
-  left_info.trailing = [] && right_info.before = [] && right_info.newlines < 2
+  let right_info = info right in
+  right_info.previous_line = []
+  && right_info.before = [] && right_info.newlines < 2
   &&
   let left_text = Token.text left
   and right_text = Token.text right

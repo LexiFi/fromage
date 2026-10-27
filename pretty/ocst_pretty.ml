@@ -793,7 +793,7 @@ module Make (Config : Doc.CONFIG) =
               let begins = first_kind body = Some `BEGIN in
               if
                 starts_with_keyword body && not begins
-                && not (ends_with_comment left)
+                && not (starts_with_comments_of_previous_line body)
               then
                 flat (left +- body +- right)
                 <|> (inline left (nest 2 body) +| right) <|> block

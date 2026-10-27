@@ -94,9 +94,9 @@ let lines_around source line =
     their locations), with its doc comments found by [iterate]. *)
 let compare_items
     ~dump ~location ~iterate ~without_locations
-    ~parse ~filename source formatted_source
+    ~parse ~filename original formatted_source
   =
-    match quietly parse ~filename source with
+    match original with
     | None -> Ok ()
     | Some original ->
         match quietly parse ~filename formatted_source with
@@ -165,18 +165,32 @@ let compare_items
             in
             loop original formatted
 
-let implementation ~filename source formatted =
+let compare_implementations ~filename original formatted =
   compare_items
     ~dump:(fun item -> Format.asprintf "%a" Printast.implementation [ item ])
     ~location:(fun (item : Parsetree.structure_item) -> item.pstr_loc)
     ~iterate:(fun iterator item -> iterator.structure_item iterator item)
     ~without_locations:structure_item_without_locations
-    ~parse:Parse.implementation ~filename source formatted
+    ~parse:Parse.implementation ~filename original formatted
 
-let interface ~filename source formatted =
+let compare_interfaces ~filename original formatted =
   compare_items
     ~dump:(fun item -> Format.asprintf "%a" Printast.interface [ item ])
     ~location:(fun (item : Parsetree.signature_item) -> item.psig_loc)
     ~iterate:(fun iterator item -> iterator.signature_item iterator item)
     ~without_locations:signature_item_without_locations
-    ~parse:Parse.interface ~filename source formatted
+    ~parse:Parse.interface ~filename original formatted
+
+let implementation ~filename source formatted =
+  compare_implementations
+    ~filename (quietly Parse.implementation ~filename source) formatted
+
+let interface ~filename source formatted =
+  compare_interfaces
+    ~filename (quietly Parse.interface ~filename source) formatted
+
+let implementation_of_ast ~filename original formatted =
+  compare_implementations ~filename (Some original) formatted
+
+let interface_of_ast ~filename original formatted =
+  compare_interfaces ~filename (Some original) formatted

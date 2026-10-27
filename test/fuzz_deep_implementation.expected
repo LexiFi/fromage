@@ -1,2 +1,32 @@
-implementation --exhaust --every-token: 151372 sentences (135625 accepted by both parsers), 38084252 mutants (3019572 accepted)
+implementation --exhaust --every-token --part 0/16: 9461 sentences (8483 accepted by both parsers), 2380551 mutants (188371 accepted)
+OCST fuzzing round-trip passed.
+implementation --exhaust --every-token --part 1/16: 9461 sentences (8468 accepted by both parsers), 2380452 mutants (188093 accepted)
+OCST fuzzing round-trip passed.
+implementation --exhaust --every-token --part 2/16: 9461 sentences (8511 accepted by both parsers), 2380616 mutants (188747 accepted)
+OCST fuzzing round-trip passed.
+implementation --exhaust --every-token --part 3/16: 9461 sentences (8491 accepted by both parsers), 2379978 mutants (189158 accepted)
+OCST fuzzing round-trip passed.
+implementation --exhaust --every-token --part 4/16: 9461 sentences (8435 accepted by both parsers), 2379985 mutants (187912 accepted)
+OCST fuzzing round-trip passed.
+implementation --exhaust --every-token --part 5/16: 9461 sentences (8487 accepted by both parsers), 2380373 mutants (189042 accepted)
+OCST fuzzing round-trip passed.
+implementation --exhaust --every-token --part 6/16: 9461 sentences (8473 accepted by both parsers), 2380279 mutants (188679 accepted)
+OCST fuzzing round-trip passed.
+implementation --exhaust --every-token --part 7/16: 9461 sentences (8454 accepted by both parsers), 2380222 mutants (187529 accepted)
+OCST fuzzing round-trip passed.
+implementation --exhaust --every-token --part 8/16: 9461 sentences (8496 accepted by both parsers), 2380032 mutants (189053 accepted)
+OCST fuzzing round-trip passed.
+implementation --exhaust --every-token --part 9/16: 9461 sentences (8466 accepted by both parsers), 2380276 mutants (188479 accepted)
+OCST fuzzing round-trip passed.
+implementation --exhaust --every-token --part 10/16: 9461 sentences (8446 accepted by both parsers), 2380398 mutants (187538 accepted)
+OCST fuzzing round-trip passed.
+implementation --exhaust --every-token --part 11/16: 9461 sentences (8561 accepted by both parsers), 2380210 mutants (191009 accepted)
+OCST fuzzing round-trip passed.
+implementation --exhaust --every-token --part 12/16: 9460 sentences (8451 accepted by both parsers), 2380345 mutants (188099 accepted)
+OCST fuzzing round-trip passed.
+implementation --exhaust --every-token --part 13/16: 9460 sentences (8506 accepted by both parsers), 2380224 mutants (189032 accepted)
+OCST fuzzing round-trip passed.
+implementation --exhaust --every-token --part 14/16: 9460 sentences (8444 accepted by both parsers), 2380138 mutants (188967 accepted)
+OCST fuzzing round-trip passed.
+implementation --exhaust --every-token --part 15/16: 9460 sentences (8453 accepted by both parsers), 2380374 mutants (188393 accepted)
 OCST fuzzing round-trip passed.

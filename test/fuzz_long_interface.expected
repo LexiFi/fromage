@@ -1,2 +1,8 @@
-interface --seed 21 --count 30000 --length 120 --avoid let_binding_body: val_ident --avoid fun_expr: UNDERSCORE --avoid _: _* NONREC _* PLUSEQ _* --avoid _: _* NONREC _* COLONEQUAL _* --mutants 10: 30000 sentences (29393 accepted by both parsers), 715096 mutants (51116 accepted)
+interface --seed 21 --count 30000 --length 120 --avoid let_binding_body: val_ident --avoid fun_expr: UNDERSCORE --avoid _: _* NONREC _* PLUSEQ _* --avoid _: _* NONREC _* COLONEQUAL _* --mutants 10 --part 0/4: 7500 sentences (7363 accepted by both parsers), 178818 mutants (12731 accepted)
+OCST fuzzing round-trip passed.
+interface --seed 21 --count 30000 --length 120 --avoid let_binding_body: val_ident --avoid fun_expr: UNDERSCORE --avoid _: _* NONREC _* PLUSEQ _* --avoid _: _* NONREC _* COLONEQUAL _* --mutants 10 --part 1/4: 7500 sentences (7335 accepted by both parsers), 178777 mutants (12832 accepted)
+OCST fuzzing round-trip passed.
+interface --seed 21 --count 30000 --length 120 --avoid let_binding_body: val_ident --avoid fun_expr: UNDERSCORE --avoid _: _* NONREC _* PLUSEQ _* --avoid _: _* NONREC _* COLONEQUAL _* --mutants 10 --part 2/4: 7500 sentences (7365 accepted by both parsers), 178802 mutants (12724 accepted)
+OCST fuzzing round-trip passed.
+interface --seed 21 --count 30000 --length 120 --avoid let_binding_body: val_ident --avoid fun_expr: UNDERSCORE --avoid _: _* NONREC _* PLUSEQ _* --avoid _: _* NONREC _* COLONEQUAL _* --mutants 10 --part 3/4: 7500 sentences (7330 accepted by both parsers), 178710 mutants (12672 accepted)
 OCST fuzzing round-trip passed.

@@ -342,6 +342,76 @@ let quick_configurations =
     )
     configurations
 
+(* The deep fuzzing, too long for [runtest-full] ([fuzz-deep]): every token
+   inserted in every sentence of the exhaustive mode, long random sentences
+   with more mutants (avoiding the productions which make most of them
+   invalid, as [valid]), a few very long sentences (which also avoid the rare
+   causes of rejection: MetaOCaml, string assignments, package types, and
+   for a million tokens [(val e : S)] and [let%ext] in classes), and doc
+   comments before every token. Each one is compared with [NAME.expected],
+   and runs in [parts] rules. *)
+
+type deep = { name : string; parts : int; configuration : configuration }
+
+let huge_valid =
+  valid
+  @
+  [ "--avoid"; "METAOCAML_ESCAPE"; "--avoid"; "METAOCAML_BRACKET_OPEN";
+    "--avoid"; "_: _* DOT LBRACKET _* LESSMINUS _*";
+    "--avoid"; "_: _* MODULE _* COLON module_type _*";
+    "--avoid"; "_: LPAREN MODULE _* module_type RPAREN"
+  ]
+
+let million_valid =
+  huge_valid
+  @
+  [ "--avoid"; "expr_colon_package_type: _* COLON _*";
+    "--avoid"; "expr_colon_package_type: _* COLONGREATER _*";
+    "--avoid"; "let_bindings(no_ext): _* PERCENT _*"
+  ]
+
+let deep_configurations =
+  let random ~seed ~count ~length valid =
+    [ "--seed"; seed; "--count"; count; "--length"; length ] @ valid
+  in
+  let deep name parts entrypoint arguments extra =
+    { name = name ^ "_" ^ entrypoint; parts;
+      configuration = { entrypoint; arguments; extra }
+    }
+  in
+  List.concat_map
+    ( fun entrypoint ->
+        [ deep "fuzz_deep" 16 entrypoint [ "--exhaust" ] Every_token;
+          deep
+            "fuzz_long" 4 entrypoint
+            (random ~seed:"21" ~count:"30000" ~length:"120" valid) (Mutants 10)
+        ;
+          deep
+            "fuzz_docs_exhaust" 4 entrypoint
+            [ "--exhaust" ] (Doc_comments { all = true })
+        ;
+          deep
+            "fuzz_docs_comments" 4 entrypoint
+            [ "--exhaust"; "--comments" ] (Doc_comments { all = true })
+        ;
+          deep
+            "fuzz_huge_2000" 4 entrypoint
+            (random ~seed:"61" ~count:"1000" ~length:"2000" huge_valid)
+            (Mutants 5)
+        ;
+          deep
+            "fuzz_huge_20000" 4 entrypoint
+            (random ~seed:"62" ~count:"100" ~length:"20000" huge_valid)
+            (Mutants 2)
+        ;
+          deep
+            "fuzz_million" 5 entrypoint
+            (random ~seed:"71" ~count:"25" ~length:"1000000" million_valid)
+            No_extra
+        ]
+    )
+    [ "implementation"; "interface" ]
+
 (* The errors of the compiler on [sentences], by message and text at their
    location, most frequent first, with the shortest example of each. *)
 let rejections ~entrypoint sentences =
@@ -400,24 +470,227 @@ let rejections ~entrypoint sentences =
           Printf.printf "%6d  %s [%s]\n        %S\n" count message text example
     )
 
+(* {1 Dune rules}
+
+   The configurations run in parallel, each in its dune rule, the exhaustive
+   ones in [parts] (sentence [k] in part [k mod parts]); the outputs of the
+   rules of a group are concatenated, and compared with its [.expected]
+   file. [--dune-rules test] prints the rules of test/fuzz.inc,
+   [--dune-rules coverage] those of test/coverage/fuzz.inc. *)
+
+let parts { arguments; _ } = if List.mem "--exhaust" arguments then 4 else 1
+
+(** The parts of a configuration (its [index] in the list which [selection]
+    selects): the arguments and the name of each rule. *)
+let configuration_parts ~name ~selection ~mutants_only index configuration =
+  let count = parts configuration in
+  List.init
+    count
+    ( fun part ->
+        ( Printf.sprintf
+            "%s--configuration %d --part %d/%d%s" selection index part
+            count (if mutants_only then " --mutants-only" else "")
+          ,
+          Printf.sprintf "%s_%d_%d" name index part
+        )
+    )
+
+(** The rules of [parts], each writing its output in [NAME.part]. *)
+let part_rules buffer parts =
+  List.iter
+    (fun (arguments, part) -> Printf.bprintf buffer "\n(rule\n (package fromage)\n (targets %s.part)\n (action\n  (with-stdout-to\n   %%{targets}\n   (run ./fuzz_roundtrip.exe %%{bin:menhir} %%{bin:ocamlgrammarfuzzer} %%{dep:parser.mly} %s))))\n" part arguments) parts
+
+(** The rule of a group, which compares the outputs of its [parts] with
+    [NAME.expected]. *)
+let group_rule buffer ~alias ~name parts =
+  Printf.bprintf
+    buffer "\n(rule\n (alias %s)\n (package fromage)\n (targets %s.actual)\n (deps%s)\n (action\n  (progn\n   (with-stdout-to %%{targets} (cat %%{deps}))\n   (diff %s.expected %%{targets}))))\n" alias name
+    (String.concat "" (List.map (fun part -> " " ^ part ^ ".part") parts)) name
+
+let quick entrypoint =
+  List.filter
+    (fun configuration -> configuration.entrypoint = entrypoint)
+    quick_configurations
+
+let rec index_of predicate index =
+  function
+  | value :: rest ->
+      if predicate value then Some index
+      else index_of predicate (index + 1) rest
+  | [] -> None
+
+let dune_rules directory =
+  let buffer = Buffer.create 4096 in
+  let add format = Printf.bprintf buffer format in
+  add
+    "; Generated by [fuzz_roundtrip.exe --dune-rules %s] (see fuzz_roundtrip.ml):\n\
+     ; [dune build @runtest] checks it, [dune promote] updates it.\n"
+    directory
+  ;
+  begin match directory with
+  | "test" ->
+      (* The quick groups, for [runtest]. *)
+      let quick_name entrypoint = "fuzz_quick_" ^ entrypoint in
+      let quick_parts entrypoint index configuration =
+        configuration_parts
+          ~name:(quick_name entrypoint)
+          ~selection:(Printf.sprintf "--quick %s " entrypoint)
+          ~mutants_only:false index configuration
+      in
+      List.iter
+        ( fun entrypoint ->
+            let parts =
+              List.concat
+                (List.mapi (quick_parts entrypoint) (quick entrypoint))
+            in
+            part_rules buffer parts;
+            group_rule
+              buffer ~alias:"runtest"
+              ~name:(quick_name entrypoint) (List.map snd parts)
+        )
+        [ "implementation"; "interface" ]
+      ;
+      (* The full group, for [runtest-full], which also runs the quick
+         groups: it reuses their outputs for the same configurations, and
+         checks only the mutants of the configurations whose sentences they
+         check. *)
+      let included = ref [] in
+      let outputs =
+        List.concat
+          ( List.mapi
+              ( fun index configuration ->
+                  let entrypoint = configuration.entrypoint in
+                  let quick = quick entrypoint in
+                  match index_of (( = ) configuration) 0 quick with
+                  | Some quick_index ->
+                      List.map
+                        snd (quick_parts entrypoint quick_index configuration)
+                  | None ->
+                      let same_sentences =
+                        index_of
+                          ( fun quick ->
+                              quick.arguments = configuration.arguments
+                          )
+                          0 quick
+                      in
+                      let sentences =
+                        match same_sentences with
+                        | Some quick_index when
+                            not (List.mem (entrypoint, quick_index) !included)
+                        ->
+                            included := (entrypoint, quick_index) :: !included;
+                            List.map
+                              snd
+                              ( quick_parts
+                                  entrypoint quick_index
+                                  (List.nth quick quick_index)
+                              )
+                        | _ -> []
+                      in
+                      let parts =
+                        configuration_parts
+                          ~name:"fuzz_roundtrip" ~selection:""
+                          ~mutants_only:(same_sentences <> None)
+                          index configuration
+                      in
+                      part_rules buffer parts; sentences @ List.map snd parts
+              )
+              configurations
+          )
+      in
+      group_rule buffer ~alias:"runtest-full" ~name:"fuzz_roundtrip" outputs;
+      (* The deep fuzzing, each configuration in its parts. *)
+      List.iter
+        ( fun { name; parts; _ } ->
+            let parts =
+              List.init
+                parts
+                ( fun part ->
+                    ( Printf.sprintf "--deep %s --part %d/%d" name part parts,
+                      Printf.sprintf "%s_%d" name part
+                    )
+                )
+            in
+            part_rules buffer parts;
+            group_rule buffer ~alias:"fuzz-deep" ~name (List.map snd parts)
+        )
+        deep_configurations
+  | "coverage" ->
+      (* All the configurations, instrumented, those whose sentences an
+         earlier one checks with only their mutants. *)
+      let seen = ref [] in
+      List.iteri
+        ( fun index configuration ->
+            let sentences = configuration.entrypoint, configuration.arguments in
+            let mutants_only = List.mem sentences !seen in
+            seen := sentences :: !seen;
+            List.iter
+              (fun (arguments, part) -> add "\n(rule\n (package ocst)\n (enabled_if %%{lib-available:bisect_ppx})\n (targets %s.coverage)\n (action\n  (progn\n   (setenv BISECT_FILE %s_\n    (ignore-stdout\n     (run ./fuzz_roundtrip.exe %%{bin:menhir} %%{bin:ocamlgrammarfuzzer} %%{dep:../parser.mly} %s)))\n   (system \"%%{bin:bisect-ppx-report} merge %s.coverage %s_*.coverage\"))))\n" part part arguments part part)
+              ( configuration_parts
+                  ~name:"fuzz" ~selection:"" ~mutants_only index configuration
+              )
+        )
+        configurations
+  | _ -> failwith "usage: fuzz_roundtrip.exe --dune-rules (test | coverage)"
+  end;
+  Buffer.contents buffer
+
+(** [name VALUE], anywhere in [arguments]: [Some VALUE], and the other
+    arguments. *)
+let rec take_option name =
+  function
+  | option :: value :: rest when option = name ->
+      Some value, snd (take_option name rest)
+  | argument :: rest ->
+      let value, rest = take_option name rest in
+      value, argument :: rest
+  | [] -> None, []
+
 let () =
   Warnings.parse_options false "-a" |> ignore;
-  if
-    Array.length Sys.argv > 4 && Sys.argv.(4) = "--rejections"
-  then begin match Array.to_list Sys.argv with
-  | _ :: menhir :: _ :: source :: "--rejections" :: entrypoint :: arguments ->
+  (* [--timings], anywhere: the time of each configuration and of each phase,
+     on the error output. *)
+  let timings = Array.mem "--timings" Sys.argv
+  (* [--mutants-only], anywhere: only the mutants of the sentences are
+     checked, when another rule checks the sentences (see
+     {!section-dune_rules}). *)
+  and mutants_only = Array.mem "--mutants-only" Sys.argv
+  in
+  let arguments =
+    List.filter
+      (fun argument -> argument <> "--timings" && argument <> "--mutants-only")
+      (Array.to_list Sys.argv)
+  in
+  (* [--configuration I] and [--part I/N], anywhere: only the [I]th
+     configuration (from 0) of those selected, and only its sentences of
+     index [I] modulo [N] (see {!section-dune_rules}). *)
+  let only, arguments = take_option "--configuration" arguments in
+  let only = Option.map int_of_string only in
+  let part, arguments = take_option "--part" arguments in
+  (* [--deep NAME], anywhere: the configuration of the deep fuzzing [NAME]
+     (see [deep_configurations]). *)
+  let deep, arguments = take_option "--deep" arguments in
+  let part =
+    Option.map
+      (fun text -> Scanf.sscanf text "%d/%d" (fun part count -> part, count))
+      part
+  in
+  begin match take_option "--dune-rules" arguments with
+  | Some directory, _ -> print_string (dune_rules directory); exit 0
+  | None, _ -> ()
+  end;
+  begin match arguments with
+  | _ :: menhir :: fuzzer :: source :: "--rejections" :: entrypoint :: arguments
+  ->
       let cmly = grammar ~menhir source in
       rejections
         ~entrypoint
-        ( sentences
-            ~fuzzer:Sys.argv.(2) ~cmly
-            ([ "--entrypoint"; entrypoint ] @ arguments)
-        )
+        (sentences ~fuzzer ~cmly ([ "--entrypoint"; entrypoint ] @ arguments))
       ;
       exit 0
-  | _ -> failwith "usage: fuzz_roundtrip.exe MENHIR FUZZER GRAMMAR --rejections ENTRYPOINT ARGUMENTS..."
-  end
-  ;
+  | _ :: _ :: _ :: _ :: "--rejections" :: _ -> failwith "usage: fuzz_roundtrip.exe MENHIR FUZZER GRAMMAR --rejections ENTRYPOINT ARGUMENTS..."
+  | _ -> ()
+  end;
   let rec options extra =
     function
     | "--every-token" :: rest -> options Every_token rest
@@ -427,7 +700,7 @@ let () =
     | rest -> extra, rest
   in
   let menhir, fuzzer, source, configurations =
-    match Array.to_list Sys.argv with
+    match arguments with
     | _ :: menhir :: fuzzer :: source :: rest ->
         begin match options No_extra rest with
         | No_extra, [] -> menhir, fuzzer, source, configurations
@@ -450,12 +723,33 @@ let () =
           "usage: fuzz_roundtrip.exe MENHIR FUZZER GRAMMAR [--quick [ENTRYPOINT] | --every-token | --mutants N | \
            --doc-comments] [ENTRYPOINT FUZZER-ARGUMENTS...]"
   in
+  let configurations =
+    match only, deep with
+    | _, Some name ->
+        [ ( List.find (fun deep -> deep.name = name) deep_configurations
+          ).configuration
+        ]
+    | None, None -> configurations
+    | Some index, None -> [ List.nth configurations index ]
+  in
   let cmly = grammar ~menhir source in
   let failures =
     List.concat_map
       ( fun { entrypoint; arguments; extra } ->
+          let start = Unix.gettimeofday () in
           let sentences =
-            sentences ~fuzzer ~cmly ([ "--entrypoint"; entrypoint ] @ arguments)
+            Roundtrip.timed
+              "generate the sentences"
+              ( fun () ->
+                  sentences
+                    ~fuzzer ~cmly ([ "--entrypoint"; entrypoint ] @ arguments)
+              )
+          in
+          let sentences =
+            match part with
+            | None -> sentences
+            | Some (part, count) ->
+                List.filteri (fun index _ -> index mod count = part) sentences
           in
           let options =
             match extra with
@@ -465,6 +759,12 @@ let () =
             | Mutants count -> Printf.sprintf " --mutants %d" count
             | Doc_comments { all = true } -> " --doc-comments"
             | Doc_comments { all = false } -> " (doc comments)"
+          in
+          let options =
+            match part with
+            | Some (part, count) when count > 1 ->
+                Printf.sprintf "%s --part %d/%d" options part count
+            | _ -> options
           in
           (* The mutants which both parsers accept, which are compared. *)
           let checked = ref 0
@@ -522,19 +822,35 @@ let () =
           let failures =
             List.concat_map
               ( fun sentence ->
-                  Option.to_list (check_sentence ~kind:"" sentence)
+                  ( if mutants_only then []
+                    else Option.to_list (check_sentence ~kind:"" sentence)
+                  )
                   @
                   List.filter_map
-                    (check_sentence ~kind:" mutant") (mutants ~extra sentence)
+                    (check_sentence ~kind:" mutant")
+                    ( Roundtrip.timed
+                        "make the mutants" (fun () -> mutants ~extra sentence)
+                    )
               )
               sentences
           in
-          Printf.printf
-            "%s %s%s: %d sentences (%d accepted by both parsers), %d mutants (%d accepted)\n%!" entrypoint (String.concat " " arguments) options
-            (List.length sentences) !valid !checked !accepted
+          if mutants_only then
+            Printf.printf
+              "%s %s%s (mutants only): %d mutants (%d accepted)\n%!" entrypoint
+              (String.concat " " arguments) options !checked !accepted
+          else
+            Printf.printf
+              "%s %s%s: %d sentences (%d accepted by both parsers), %d mutants (%d accepted)\n%!" entrypoint (String.concat " " arguments) options
+              (List.length sentences) !valid !checked !accepted
+          ;
+          if timings then
+            Printf.eprintf
+              "%8.2fs  %s %s%s\n%!" (Unix.gettimeofday () -. start)
+              entrypoint (String.concat " " arguments) options
           ;
           failures
       )
       configurations
   in
+  if timings then Roundtrip.print_timings ();
   report ~title:"OCST fuzzing round-trip" failures

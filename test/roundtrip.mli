@@ -4,7 +4,15 @@
     (warning 50). *)
 
 val git_root : unit -> string
-(** The root of the Git repository containing the current directory. *)
+(** The root of the repository: dune's source tree when a dune rule runs the
+    tests, else the root of the Git repository of the current directory. *)
+
+val timed : string -> (unit -> 'a) -> 'a
+(** [timed phase f]: [f ()], whose time is added to [phase] (for
+    [--timings]). *)
+
+val print_timings : unit -> unit
+(** The time spent in each phase, the longest first, on the error output. *)
 
 exception Mismatch of string * string Lazy.t
 (** An AST mismatch: a one-line message, and details on the first difference. *)

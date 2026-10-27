@@ -175,8 +175,9 @@ module type S =
     (** [~label:value]: without space and [value] on one line, or with a line
       break and [value] at a level indented by 2. *)
 
-    val ends_with_comment : t -> bool
-    (** Is the document followed by comments on the line of its last token? *)
+    val starts_with_comments_of_previous_line : t -> bool
+    (** Does the document start with comments written on the line of the
+      token before it, which stay at the end of that line? *)
 
     val starts_with_keyword : t -> bool
     (** Does the document start with a keyword, as [fun] or [if]? *)

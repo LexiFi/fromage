@@ -1,2 +1,8 @@
-implementation --exhaust --doc-comments: 151372 sentences (135625 accepted by both parsers), 605385 mutants (542409 accepted)
+implementation --exhaust --doc-comments --part 0/4: 37843 sentences (33865 accepted by both parsers), 151329 mutants (135420 accepted)
+OCST fuzzing round-trip passed.
+implementation --exhaust --doc-comments --part 1/4: 37843 sentences (33927 accepted by both parsers), 151344 mutants (135686 accepted)
+OCST fuzzing round-trip passed.
+implementation --exhaust --doc-comments --part 2/4: 37843 sentences (33874 accepted by both parsers), 151349 mutants (135474 accepted)
+OCST fuzzing round-trip passed.
+implementation --exhaust --doc-comments --part 3/4: 37843 sentences (33959 accepted by both parsers), 151327 mutants (135794 accepted)
 OCST fuzzing round-trip passed.

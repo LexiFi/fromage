@@ -13,6 +13,32 @@ let git_root () =
       | root, Unix.WEXITED 0 -> root
       | _ -> failwith "could not determine the Git root"
 
+(* {1 Timings}
+
+   The time spent in each phase of the checks, for the option [--timings]
+   of the tests. *)
+
+let timings : (string, float ref) Hashtbl.t = Hashtbl.create 16
+
+(** [parse ()], its time added to [phase]. *)
+let timed phase parse =
+  let start = Unix.gettimeofday () in
+  Fun.protect
+    ~finally:
+      ( fun () ->
+          let time = Unix.gettimeofday () -. start in
+          match Hashtbl.find_opt timings phase with
+          | Some total -> total := !total +. time
+          | None -> Hashtbl.add timings phase (ref time)
+      )
+    parse
+
+(** The timings of the phases, the longest first. *)
+let print_timings () =
+  Hashtbl.fold (fun phase total all -> (phase, !total) :: all) timings []
+  |> List.sort (fun (_, left) (_, right) -> compare right left)
+  |> List.iter (fun (phase, time) -> Printf.eprintf "%8.2fs  %s\n" time phase)
+
 (* The warnings about doc comments (warning 50) emitted by [parse], with its
    result. *)
 let docstring_warnings parse =
@@ -252,7 +278,7 @@ let lines_around text line =
    AST for the compiler's parser, except for the locations ([same_ast]): the
    items documented by the doc comments too. *)
 let check_format ~name ~same_ast source format =
-  match format () with
+  match timed "format" format with
   | exception error ->
       failwith
         ( Printf.sprintf
@@ -287,8 +313,15 @@ let check_format ~name ~same_ast source format =
                   )
               )
       in
-      loop (significant source) (significant formatted);
-      match same_ast source formatted with
+      timed
+        "compare the tokens after formatting"
+        (fun () -> loop (significant source) (significant formatted))
+      ;
+      match
+        timed
+          "compare the ASTs after formatting"
+          (fun () -> same_ast source formatted)
+      with
       | Ok () -> ()
       | Error (difference : Ocst.Same_ast.difference) ->
           raise
@@ -364,14 +397,25 @@ let attempt_ocst ~name parse =
 let check_implementation ?(name = "") filename source =
   let name = if name = "" then filename else name in
   let cst =
-    attempt_ocst
-      ~name
-      (fun () -> Ocst.Parser.implementation_tokens ~filename (Ocst.lex source))
+    timed
+      "parse with OCST"
+      ( fun () ->
+          attempt_ocst
+            ~name
+            ( fun () ->
+                Ocst.Parser.implementation_tokens ~filename (Ocst.lex source)
+            )
+      )
   in
   let compiler =
-    attempt
+    timed
+      "parse with the compiler"
       ( fun () ->
-          docstring_warnings (fun () -> compiler_implementation filename source)
+          attempt
+            ( fun () ->
+                docstring_warnings
+                  (fun () -> compiler_implementation filename source)
+            )
       )
   in
   match cst, compiler with
@@ -384,19 +428,37 @@ let check_implementation ?(name = "") filename source =
       Option.iter
         ( fun formatter ->
             check_format
-              ~name ~same_ast:(Ocst.Same_ast.implementation ~filename)
+              ~name
+              ~same_ast:
+                ( fun _ formatted ->
+                    Ocst.Same_ast.implementation_of_ast
+                      ~filename compiler_ast formatted
+                )
               source (fun () -> formatter.format_implementation cst)
         )
         !formatter
       ;
-      let printed = Ocst.Printer.string_of_implementation cst in
+      let printed =
+        timed
+          "print the CST" (fun () -> Ocst.Printer.string_of_implementation cst)
+      in
       if printed <> source then failwith (name ^ ": CST printer changed source")
       ;
       let ocst_ast, ocst_warnings =
-        docstring_warnings (fun () -> Ocst.To_ast.implementation ~filename cst)
+        timed
+          "convert to the AST"
+          ( fun () ->
+              docstring_warnings
+                (fun () -> Ocst.To_ast.implementation ~filename cst)
+          )
       in
       check_warnings ~name ocst_warnings compiler_warnings;
-      if not Stdlib.(ocst_ast = compiler_ast) then
+      if
+        not
+          ( timed
+              "compare the ASTs" (fun () -> Stdlib.(ocst_ast = compiler_ast))
+          )
+      then
         raise
           ( Mismatch
               ( Printf.sprintf
@@ -418,13 +480,23 @@ let check_implementation ?(name = "") filename source =
 let check_interface ?(name = "") filename source =
   let name = if name = "" then filename else name in
   let cst =
-    attempt_ocst
-      ~name (fun () -> Ocst.Parser.interface_tokens ~filename (Ocst.lex source))
+    timed
+      "parse with OCST"
+      ( fun () ->
+          attempt_ocst
+            ~name
+            (fun () -> Ocst.Parser.interface_tokens ~filename (Ocst.lex source))
+      )
   in
   let compiler =
-    attempt
+    timed
+      "parse with the compiler"
       ( fun () ->
-          docstring_warnings (fun () -> compiler_interface filename source)
+          attempt
+            ( fun () ->
+                docstring_warnings
+                  (fun () -> compiler_interface filename source)
+            )
       )
   in
   match cst, compiler with
@@ -437,19 +509,35 @@ let check_interface ?(name = "") filename source =
       Option.iter
         ( fun formatter ->
             check_format
-              ~name ~same_ast:(Ocst.Same_ast.interface ~filename)
+              ~name
+              ~same_ast:
+                ( fun _ formatted ->
+                    Ocst.Same_ast.interface_of_ast
+                      ~filename compiler_ast formatted
+                )
               source (fun () -> formatter.format_interface cst)
         )
         !formatter
       ;
-      let printed = Ocst.Printer.string_of_interface cst in
+      let printed =
+        timed "print the CST" (fun () -> Ocst.Printer.string_of_interface cst)
+      in
       if printed <> source then failwith (name ^ ": CST printer changed source")
       ;
       let ocst_ast, ocst_warnings =
-        docstring_warnings (fun () -> Ocst.To_ast.interface ~filename cst)
+        timed
+          "convert to the AST"
+          ( fun () ->
+              docstring_warnings (fun () -> Ocst.To_ast.interface ~filename cst)
+          )
       in
       check_warnings ~name ocst_warnings compiler_warnings;
-      if not Stdlib.(ocst_ast = compiler_ast) then
+      if
+        not
+          ( timed
+              "compare the ASTs" (fun () -> Stdlib.(ocst_ast = compiler_ast))
+          )
+      then
         raise
           ( Mismatch
               ( Printf.sprintf

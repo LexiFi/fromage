@@ -1,5 +1,14 @@
-implementation --exhaust (no mutants): 151372 sentences (135625 accepted by both parsers), 0 mutants (0 accepted)
+implementation --exhaust (no mutants) --part 0/4: 37843 sentences (33865 accepted by both parsers), 0 mutants (0 accepted)
+OCST fuzzing round-trip passed.
+implementation --exhaust (no mutants) --part 1/4: 37843 sentences (33927 accepted by both parsers), 0 mutants (0 accepted)
+OCST fuzzing round-trip passed.
+implementation --exhaust (no mutants) --part 2/4: 37843 sentences (33874 accepted by both parsers), 0 mutants (0 accepted)
+OCST fuzzing round-trip passed.
+implementation --exhaust (no mutants) --part 3/4: 37843 sentences (33959 accepted by both parsers), 0 mutants (0 accepted)
+OCST fuzzing round-trip passed.
 implementation --seed 1 --count 2000 --length 60 --avoid let_binding_body: val_ident --avoid fun_expr: UNDERSCORE --avoid _: _* NONREC _* PLUSEQ _* --avoid _: _* NONREC _* COLONEQUAL _*: 2000 sentences (1968 accepted by both parsers), 7981 mutants (1273 accepted)
+OCST fuzzing round-trip passed.
 implementation --seed 2 --count 500 --length 200 --avoid let_binding_body: val_ident --avoid fun_expr: UNDERSCORE --avoid _: _* NONREC _* PLUSEQ _* --avoid _: _* NONREC _* COLONEQUAL _*: 500 sentences (442 accepted by both parsers), 2000 mutants (212 accepted)
+OCST fuzzing round-trip passed.
 implementation --seed 3 --count 1000 --length 60 --comments --avoid let_binding_body: val_ident --avoid fun_expr: UNDERSCORE --avoid _: _* NONREC _* PLUSEQ _* --avoid _: _* NONREC _* COLONEQUAL _*: 1000 sentences (981 accepted by both parsers), 3980 mutants (641 accepted)
 OCST fuzzing round-trip passed.

@@ -107,6 +107,26 @@
  (modules uncovered)
  (libraries str))
 
+; The fuzzing, in parallel: one rule per configuration and part, as in the
+; parent directory, generated in fuzz.inc (by [fuzz_roundtrip.exe
+; --dune-rules coverage]), each writing its coverage.
+
+(include fuzz.inc)
+
+(rule
+ (enabled_if %{lib-available:bisect_ppx})
+ (action
+  (with-stdout-to
+   fuzz.inc.generated
+   (run ./fuzz_roundtrip.exe --dune-rules coverage))))
+
+(rule
+ (alias runtest)
+ (package ocst)
+ (enabled_if %{lib-available:bisect_ppx})
+ (action
+  (diff fuzz.inc fuzz.inc.generated)))
+
 ; The tests write their coverage in this directory ([BISECT_FILE]); their
 ; outputs are checked by the tests of the parent directory. The report of the
 ; lines covered is in _build/default/test/coverage/html/index.html.
@@ -120,7 +140,8 @@
   (universe)
   ; The instrumented sources, which the report of bisect_ppx reads.
   (glob_files *.ml)
-  fuzz_roundtrip.exe
+  ; The coverage of the fuzzing, by the rules of fuzz.inc.
+  (glob_files fuzz_*.coverage)
   codebase_roundtrip.exe
   parser_test.exe
   random_test.exe
@@ -147,13 +168,7 @@
      (ignore-stdout
       (run ./doc_comments_test.exe ../doc_comments/cases))
      (ignore-stdout
-      (run ./codebase_roundtrip.exe))
-     (ignore-stdout
-      (run
-       ./fuzz_roundtrip.exe
-       %{bin:menhir}
-       %{bin:ocamlgrammarfuzzer}
-       %{dep:../parser.mly}))))
+      (run ./codebase_roundtrip.exe))))
    ; The covered and uncovered points, in html/index.html.
    (run
     %{bin:bisect-ppx-report}

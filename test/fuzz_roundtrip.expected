@@ -1,13 +1,76 @@
-implementation --exhaust: 151372 sentences (135625 accepted by both parsers), 605195 mutants (66181 accepted)
-implementation --exhaust --comments: 151372 sentences (135625 accepted by both parsers), 605446 mutants (66393 accepted)
+implementation --exhaust (no mutants) --part 0/4: 37843 sentences (33865 accepted by both parsers), 0 mutants (0 accepted)
+OCST fuzzing round-trip passed.
+implementation --exhaust (no mutants) --part 1/4: 37843 sentences (33927 accepted by both parsers), 0 mutants (0 accepted)
+OCST fuzzing round-trip passed.
+implementation --exhaust (no mutants) --part 2/4: 37843 sentences (33874 accepted by both parsers), 0 mutants (0 accepted)
+OCST fuzzing round-trip passed.
+implementation --exhaust (no mutants) --part 3/4: 37843 sentences (33959 accepted by both parsers), 0 mutants (0 accepted)
+OCST fuzzing round-trip passed.
+implementation --exhaust --part 0/4 (mutants only): 151290 mutants (16565 accepted)
+OCST fuzzing round-trip passed.
+implementation --exhaust --part 1/4 (mutants only): 151306 mutants (16546 accepted)
+OCST fuzzing round-trip passed.
+implementation --exhaust --part 2/4 (mutants only): 151300 mutants (16338 accepted)
+OCST fuzzing round-trip passed.
+implementation --exhaust --part 3/4 (mutants only): 151299 mutants (16732 accepted)
+OCST fuzzing round-trip passed.
+implementation --exhaust --comments --part 0/4: 37843 sentences (33865 accepted by both parsers), 151356 mutants (16775 accepted)
+OCST fuzzing round-trip passed.
+implementation --exhaust --comments --part 1/4: 37843 sentences (33927 accepted by both parsers), 151367 mutants (16649 accepted)
+OCST fuzzing round-trip passed.
+implementation --exhaust --comments --part 2/4: 37843 sentences (33874 accepted by both parsers), 151368 mutants (16464 accepted)
+OCST fuzzing round-trip passed.
+implementation --exhaust --comments --part 3/4: 37843 sentences (33959 accepted by both parsers), 151355 mutants (16505 accepted)
+OCST fuzzing round-trip passed.
 implementation --seed 1 --count 2000 --length 60 --avoid let_binding_body: val_ident --avoid fun_expr: UNDERSCORE --avoid _: _* NONREC _* PLUSEQ _* --avoid _: _* NONREC _* COLONEQUAL _*: 2000 sentences (1968 accepted by both parsers), 7981 mutants (1273 accepted)
+OCST fuzzing round-trip passed.
 implementation --seed 2 --count 500 --length 200 --avoid let_binding_body: val_ident --avoid fun_expr: UNDERSCORE --avoid _: _* NONREC _* PLUSEQ _* --avoid _: _* NONREC _* COLONEQUAL _*: 500 sentences (442 accepted by both parsers), 2000 mutants (212 accepted)
+OCST fuzzing round-trip passed.
 implementation --seed 3 --count 1000 --length 60 --comments --avoid let_binding_body: val_ident --avoid fun_expr: UNDERSCORE --avoid _: _* NONREC _* PLUSEQ _* --avoid _: _* NONREC _* COLONEQUAL _*: 1000 sentences (981 accepted by both parsers), 3980 mutants (641 accepted)
-implementation --exhaust (doc comments): 151372 sentences (135625 accepted by both parsers), 151362 mutants (135616 accepted)
-interface --exhaust: 150229 sentences (134681 accepted by both parsers), 600634 mutants (42563 accepted)
-interface --exhaust --comments: 150229 sentences (134681 accepted by both parsers), 600914 mutants (42819 accepted)
+OCST fuzzing round-trip passed.
+implementation --exhaust (doc comments) --part 0/4 (mutants only): 37839 mutants (33861 accepted)
+OCST fuzzing round-trip passed.
+implementation --exhaust (doc comments) --part 1/4 (mutants only): 37842 mutants (33927 accepted)
+OCST fuzzing round-trip passed.
+implementation --exhaust (doc comments) --part 2/4 (mutants only): 37842 mutants (33873 accepted)
+OCST fuzzing round-trip passed.
+implementation --exhaust (doc comments) --part 3/4 (mutants only): 37839 mutants (33955 accepted)
+OCST fuzzing round-trip passed.
+interface --exhaust (no mutants) --part 0/4: 37558 sentences (33748 accepted by both parsers), 0 mutants (0 accepted)
+OCST fuzzing round-trip passed.
+interface --exhaust (no mutants) --part 1/4: 37557 sentences (33623 accepted by both parsers), 0 mutants (0 accepted)
+OCST fuzzing round-trip passed.
+interface --exhaust (no mutants) --part 2/4: 37557 sentences (33612 accepted by both parsers), 0 mutants (0 accepted)
+OCST fuzzing round-trip passed.
+interface --exhaust (no mutants) --part 3/4: 37557 sentences (33698 accepted by both parsers), 0 mutants (0 accepted)
+OCST fuzzing round-trip passed.
+interface --exhaust --part 0/4 (mutants only): 150168 mutants (10627 accepted)
+OCST fuzzing round-trip passed.
+interface --exhaust --part 1/4 (mutants only): 150155 mutants (10597 accepted)
+OCST fuzzing round-trip passed.
+interface --exhaust --part 2/4 (mutants only): 150144 mutants (10651 accepted)
+OCST fuzzing round-trip passed.
+interface --exhaust --part 3/4 (mutants only): 150167 mutants (10688 accepted)
+OCST fuzzing round-trip passed.
+interface --exhaust --comments --part 0/4: 37558 sentences (33748 accepted by both parsers), 150232 mutants (10642 accepted)
+OCST fuzzing round-trip passed.
+interface --exhaust --comments --part 1/4: 37557 sentences (33623 accepted by both parsers), 150227 mutants (10706 accepted)
+OCST fuzzing round-trip passed.
+interface --exhaust --comments --part 2/4: 37557 sentences (33612 accepted by both parsers), 150228 mutants (10743 accepted)
+OCST fuzzing round-trip passed.
+interface --exhaust --comments --part 3/4: 37557 sentences (33698 accepted by both parsers), 150227 mutants (10728 accepted)
+OCST fuzzing round-trip passed.
 interface --seed 1 --count 2000 --length 60 --avoid let_binding_body: val_ident --avoid fun_expr: UNDERSCORE --avoid _: _* NONREC _* PLUSEQ _* --avoid _: _* NONREC _* COLONEQUAL _*: 2000 sentences (1990 accepted by both parsers), 7894 mutants (1261 accepted)
+OCST fuzzing round-trip passed.
 interface --seed 2 --count 500 --length 200 --avoid let_binding_body: val_ident --avoid fun_expr: UNDERSCORE --avoid _: _* NONREC _* PLUSEQ _* --avoid _: _* NONREC _* COLONEQUAL _*: 500 sentences (467 accepted by both parsers), 1995 mutants (213 accepted)
+OCST fuzzing round-trip passed.
 interface --seed 3 --count 1000 --length 60 --comments --avoid let_binding_body: val_ident --avoid fun_expr: UNDERSCORE --avoid _: _* NONREC _* PLUSEQ _* --avoid _: _* NONREC _* COLONEQUAL _*: 1000 sentences (998 accepted by both parsers), 3944 mutants (651 accepted)
-interface --exhaust (doc comments): 150229 sentences (134681 accepted by both parsers), 150229 mutants (134681 accepted)
+OCST fuzzing round-trip passed.
+interface --exhaust (doc comments) --part 0/4 (mutants only): 37558 mutants (33748 accepted)
+OCST fuzzing round-trip passed.
+interface --exhaust (doc comments) --part 1/4 (mutants only): 37557 mutants (33623 accepted)
+OCST fuzzing round-trip passed.
+interface --exhaust (doc comments) --part 2/4 (mutants only): 37557 mutants (33612 accepted)
+OCST fuzzing round-trip passed.
+interface --exhaust (doc comments) --part 3/4 (mutants only): 37557 mutants (33698 accepted)
 OCST fuzzing round-trip passed.

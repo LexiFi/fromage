@@ -20,3 +20,12 @@ val implementation :
 
 val interface : filename:string -> string -> string -> (unit, difference) result
 (** As [implementation], for interfaces. *)
+
+val implementation_of_ast :
+  filename:string -> Parsetree.structure -> string -> (unit, difference) result
+(** As [implementation], with the compiler's AST of the source, already
+    parsed. *)
+
+val interface_of_ast :
+  filename:string -> Parsetree.signature -> string -> (unit, difference) result
+(** As [interface], with the compiler's AST of the source. *)

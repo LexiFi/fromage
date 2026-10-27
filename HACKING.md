@@ -41,8 +41,8 @@ files are checked by `@runtest`: after a change of `dune-project`,
 ```bash
 dune build                         # build, without running the tests
 dune build @check                  # type-check
-dune build @runtest                # run the quick tests (about 15 s)
-dune build @runtest-full           # run all the tests (about 3 min)
+dune build @runtest                # run the quick tests (about 6 s)
+dune build @runtest-full           # run all the tests (about 50 s)
 dune build @runtest --auto-promote # update test/*.expected
 ```
 
@@ -85,8 +85,23 @@ strings of about 15 characters (`names` in `test/fuzz_roundtrip.ml`), so that
 some constructs fit on one line and others need several. Its configurations
 include `--exhaust`,
 which covers all the productions of the grammar; `runtest` runs those of
-`--quick`, one rule per entry point, and `runtest-full` all of them. For larger runs, from
-the repository root:
+`--quick`, and `runtest-full` all of them.
+
+Each configuration runs in its own dune rule, the exhaustive ones in 4
+parts (`--configuration I --part I/N`), so that they run in parallel; the
+outputs of the rules of a group are concatenated and compared with its
+`.expected` file. These rules are generated from the configurations of
+`fuzz_roundtrip.ml` in `test/fuzz.inc` and `test/coverage/fuzz.inc`
+(`fuzz_roundtrip.exe --dune-rules test|coverage`): `runtest` checks that
+they are up to date, and `dune promote` updates them after a change of the
+configurations. Each check is done once: `runtest-full` reuses the outputs
+of the quick rules for the configurations which they share, and checks only
+the mutants (`--mutants-only`) of the configurations whose sentences
+another rule checks.
+
+`--timings` prints, on the error output, the time of each configuration and
+of each phase of the checks (parsing, formatting, comparisons...). For
+larger runs, from the repository root:
 
 ```bash
 _build/default/test/fuzz_roundtrip.exe $(which menhir) $(which ocamlgrammarfuzzer) \
@@ -132,10 +147,12 @@ and must stay so. The report is also in
   reached. The refill branches which ocamllex generates are excluded in the
   instrumented copy only (`test/coverage/exclude_refill.ml`).
 
-A deeper fuzzing, too long for `runtest-full` (about 10 minutes), inserts every
-token of `test/random_token.ml` in every sentence of the exhaustive mode (one
-token per mutant), checks long random sentences with more mutants, and doc
-comments before every token after each kind of separator:
+A deeper fuzzing, too long for `runtest-full`, inserts every token of
+`test/random_token.ml` in every sentence of the exhaustive mode (one token
+per mutant), checks long random sentences with more mutants, and doc
+comments before every token after each kind of separator. Its
+configurations are `deep_configurations` in `test/fuzz_roundtrip.ml`, each
+split in parts, in the rules of `test/fuzz.inc`:
 
 ```bash
 dune build @test/fuzz-deep
@@ -145,7 +162,7 @@ Each failure is printed on the error output as soon as it is found, with a
 smaller source failing in the same way (`minimized:`). Dune only shows the
 error output of a rule when it ends: to see the failures during the run,
 start the executable itself (as above), with the options
-of the rules of `test/dune` (`--every-token`, `--mutants N`).
+of the rules of `test/fuzz.inc` (`--deep NAME`, `--part I/N`).
 
 Failures found by the fuzzer are LR artifacts of the grammar as often as
 plain bugs: read the productions and precedences of `parser.mly`, check

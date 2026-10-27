@@ -144,8 +144,9 @@ module type S =
     (** [~label:value]: without space and [value] on one line, or with a line
       break and [value] at a level indented by 2. *)
 
-    val ends_with_comment : t -> bool
-    (** Is the document followed by comments on the line of its last token? *)
+    val starts_with_comments_of_previous_line : t -> bool
+    (** Does the document start with comments written on the line of the
+      token before it, which stay at the end of that line? *)
 
     val starts_with_keyword : t -> bool
     (** Does the document start with a keyword, as [fun] or [if]? *)
@@ -382,10 +383,13 @@ module Make (Config : CONFIG) : S =
 
     (* {1 Comments} *)
 
+    (** A comment or a line directive of [Trivia.info]'s [before], which has
+      no blanks nor newlines. *)
     let comment_doc ?measured =
       function
-      | Trivia.Plain text -> verbatim ?measured text
+      | Trivia.Comment text -> verbatim ?measured text
       | Directive line -> { doc = P.text ("\001" ^ line); flat = P.fail }
+      | Newline _ | Space _ -> none
 
     (** The comments and blank lines before a token, up to its last comment.
       A comment alone on its line is not measured: whatever its length, it
@@ -413,7 +417,11 @@ module Make (Config : CONFIG) : S =
     (* {1 Documents} *)
 
     type t =
-      { leading : versions;
+      { line_end : versions;
+        (** The comments on the line before the document, from the trivia of
+            its first token: [join] prints them at the end of the document
+            before it, so that they stay on their line. *)
+        leading : versions;
         breaks : bool; (** Whether [leading] ends a line: the document then starts a line. *)
         body : versions; first : Token.any_token option;
         last : Token.any_token option;
@@ -424,8 +432,8 @@ module Make (Config : CONFIG) : S =
       }
 
     let empty =
-      { leading = none; breaks = false; body = none;
-        first = None; last = None; closed = false;
+      { line_end = none; leading = none; breaks = false;
+        body = none; first = None; last = None; closed = false;
       }
 
     let is_empty value = Option.is_none value.first
@@ -450,10 +458,10 @@ module Make (Config : CONFIG) : S =
                 ~last_followed_on_its_line:(info.newlines = 0) info
               ^^ separator
         in
-        let trailing =
+        let line_end =
           List.fold_left
-            (fun doc comment -> space ^^ verbatim comment ^^ doc)
-            none info.trailing
+            (fun doc comment -> doc ^^ space ^^ verbatim comment)
+            none info.previous_line
         in
         (* A doc comment at the start of its line stays there. *)
         let starts_line =
@@ -461,12 +469,9 @@ module Make (Config : CONFIG) : S =
           | `DOCSTRING _ -> info.newlines >= 1
           | _ -> false
         in
-        { leading;
+        { line_end; leading;
           breaks = info.before <> [] || info.newlines >= 2 || starts_line;
-          body =
-            verbatim ?measured ?measured_on_one_line (Token.text token)
-            ^^ trailing
-        ;
+          body = verbatim ?measured ?measured_on_one_line (Token.text token);
           first = Some token; last = Some token; closed = false;
         }
 
@@ -482,8 +487,14 @@ module Make (Config : CONFIG) : S =
       if is_empty left then right
       else if is_empty right then left
       else
-        { leading = left.leading; breaks = left.breaks;
-          body = separator left.body (right.leading ^^ right.body);
+        { line_end = left.line_end;
+          leading = left.leading; breaks = left.breaks;
+          (* The comments on the line of [left] stay on it, before the
+             separator. *)
+          body =
+            separator
+              (left.body ^^ right.line_end) (right.leading ^^ right.body)
+        ;
           first = left.first; last = right.last; closed = false;
         }
 
@@ -541,6 +552,7 @@ module Make (Config : CONFIG) : S =
 
     let nest indent value =
       { value with
+        line_end = nest_versions indent value.line_end;
         leading = nest_versions indent value.leading;
         body = nest_versions indent value.body
       }
@@ -636,9 +648,9 @@ module Make (Config : CONFIG) : S =
           let values = pack_list_isolating_multiline ~indent:0 values in
           flat (head +- values) <|> below ~indent head values
 
-    let ends_with_comment value =
-      match value.last with
-        Some last -> (Trivia.info last).trailing <> []
+    let starts_with_comments_of_previous_line value =
+      match value.first with
+      | Some first -> (Trivia.info first).previous_line <> []
       | None -> false
 
     let first_kind value =
@@ -684,7 +696,7 @@ module Make (Config : CONFIG) : S =
       (* After [)], [end] or [done] which close the value, at the start of
          their line, the separator follows on their line. *)
       | Some { kind = `RPAREN | `END | `DONE; _ } when
-          value.closed && not (ends_with_comment value)
+          value.closed && not (starts_with_comments_of_previous_line separator)
       -> value ++ separator
       | _ -> flat value ++ separator <|> losing_ties alone
 
@@ -806,10 +818,19 @@ module Make (Config : CONFIG) : S =
 
     let to_string value (eof : [ `EOF ] Token.token) =
       let eof = Trivia.info (eof :> Token.any_token) in
+      (* The comments on the last line of code, at its end. *)
+      let eof_line_end =
+        List.fold_left
+          (fun doc comment -> doc ^^ space ^^ verbatim comment)
+          none eof.previous_line
+      in
+      let value_doc =
+        value.line_end ^^ value.leading ^^ value.body ^^ eof_line_end
+      in
       let doc =
-        if eof.before = [] then value.leading ^^ value.body
+        if eof.before = [] then value_doc
         else if is_empty value then comments_before eof
-        else value.leading ^^ value.body ^^ line_break ^^ comments_before eof
+        else value_doc ^^ line_break ^^ comments_before eof
       in
       let text = render doc.doc in
       if text = "" then "" else text ^ "\n"
