@@ -8,6 +8,7 @@ module Token_stream = Token_stream
 module Token_position = Token_position
 module Syntax_error = Syntax_error
 module Same_ast = Same_ast
+module Text_diff = Text_diff
 
 let lex = Cst_lexer.tokenize
 

@@ -7,8 +7,8 @@ type difference =
     (** The first item which differs, its lines, and whether its doc
           comments or its code change. *)
     details : string;
-    (** The item, printed from the two ASTs, and the formatted source
-          around it. *)
+    (** The differences of the item's AST without its locations, as printed
+          by [Printast] ([Text_diff.diff]), and the formatted source around it. *)
   }
 
 val implementation :

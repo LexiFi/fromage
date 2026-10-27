@@ -607,7 +607,7 @@
  (package fromage)
  (deps
   (glob_files
-   ../ocst/{ocst,cst,doc_comments,parser,printer,same_ast,syntax_error,to_ast,token,token_position,token_stream}.{ml,mli})
+   ../ocst/{ocst,cst,doc_comments,parser,printer,same_ast,syntax_error,text_diff,to_ast,token,token_position,token_stream}.{ml,mli})
   (glob_files *.ml)
   (glob_files errors/errors.ml)
   (glob_files doc_comments/doc_comments.ml)
@@ -634,7 +634,7 @@
  (deps
   (:sources
    (glob_files
-    ../ocst/{ocst,cst,doc_comments,parser,printer,same_ast,syntax_error,to_ast,token,token_position,token_stream}.{ml,mli})
+    ../ocst/{ocst,cst,doc_comments,parser,printer,same_ast,syntax_error,text_diff,to_ast,token,token_position,token_stream}.{ml,mli})
    (glob_files ../pretty/*.ml)
    (glob_files ../pretty/{doc,ocst_pretty,syntax_layouts,trivia}.mli)
    (glob_files examples/*.{ml,mli})

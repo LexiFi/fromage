@@ -101,107 +101,29 @@ let first_difference ocst compiler =
         Printf.sprintf "line %d: OCST %s | compiler <end>" line (String.trim o)
     | [], c :: _ ->
         Printf.sprintf "line %d: OCST <end> | compiler %s" line (String.trim c)
-    | [], [] -> "identical dumps (difference not shown by Printast)"
+    | [], [] -> "identical dumps: the location stacks differ"
   in
   loop 1 ocst compiler
 
-(* {1 Structural differences}
-
-   The first difference between two ASTs, including what Printast does not
-   show (ghost flags, location stacks...): the path of block fields to it, the
-   two values, and the innermost locations around it. *)
-
-let is_position (value : Obj.t) =
-  Obj.is_block value && Obj.tag value = 0
-  && Obj.size value = 4 && Obj.is_block (Obj.field value 0)
-  && Obj.tag (Obj.field value 0) = Obj.string_tag
-  && Obj.is_int (Obj.field value 1) && Obj.is_int (Obj.field value 2)
-  && Obj.is_int (Obj.field value 3)
-
-let is_location (value : Obj.t) =
-  Obj.is_block value && Obj.tag value = 0
-  && Obj.size value = 3 && is_position (Obj.field value 0)
-  && is_position (Obj.field value 1) && Obj.is_int (Obj.field value 2)
-
-let location_text (value : Obj.t) =
-  let loc : Location.t = Obj.obj value in
-  Format.asprintf
-    "%a%s" Location.print_loc loc (if loc.loc_ghost then " (ghost)" else "")
-
-let value_text (value : Obj.t) =
-  if Obj.is_int value then string_of_int (Obj.obj value)
-  else if is_location value then location_text value
-  else if Obj.tag value = Obj.string_tag then
-    Printf.sprintf "%S" (Obj.obj value)
-  else if Obj.tag value = Obj.double_tag then string_of_float (Obj.obj value)
-  else Printf.sprintf "<block tag %d, size %d>" (Obj.tag value) (Obj.size value)
-
-let rec difference path locations (ocst : Obj.t) (compiler : Obj.t) =
-  let locations =
-    if is_location ocst && is_location compiler then Some (ocst, compiler)
-    else locations
-  in
-  let found () = Some (List.rev path, locations, ocst, compiler) in
-  if Obj.is_int ocst || Obj.is_int compiler then
-    if ocst == compiler then None else found ()
-  else if
-    Obj.tag ocst <> Obj.tag compiler || Obj.size ocst <> Obj.size compiler
-  then found ()
-  else if Obj.tag ocst = Obj.string_tag then
-    if (Obj.obj ocst : string) = Obj.obj compiler then None else found ()
-  else if Obj.tag ocst = Obj.double_tag then
-    if (Obj.obj ocst : float) = Obj.obj compiler then None else found ()
-  else if Obj.tag ocst >= Obj.no_scan_tag then None
-  else
-    let rec fields index =
-      if index = Obj.size ocst then None
-      else
-        match
-          difference
-            (index :: path) locations (Obj.field ocst index)
-            (Obj.field compiler index)
-        with
-        | None -> fields (index + 1)
-        | found -> found
-    in
-    fields 0
-
-(* The first top-level item that differs, printed by [print], and the first
-   difference in it. *)
-let item_details print ocst compiler =
+(* The first top-level item that differs, as the differences of the dumps
+   of the two items ([dump]). Printast shows everything but the location
+   stacks of the expressions, the patterns and the types. *)
+let item_details dump ocst compiler =
   let rec loop index ocst compiler =
     match ocst, compiler with
     | o :: ocst, c :: compiler when Stdlib.(o = c) ->
         loop (index + 1) ocst compiler
     | o :: _, c :: _ ->
-        let buffer = Buffer.create 256 in
-        Printf.bprintf
-          buffer "  item %d:\n%s\n" index
-          ( String.concat
-              "\n"
-              ( List.map
-                  (fun line -> "    " ^ line)
-                  (String.split_on_char '\n' (Format.asprintf "%a" print c))
-              )
-          )
-        ;
-        begin match difference [] None (Obj.repr o) (Obj.repr c) with
-        | None -> ()
-        | Some (path, locations, o, c) ->
-            Printf.bprintf
-              buffer "  at field path %s: OCST %s | compiler %s\n"
-              (String.concat "." (List.map string_of_int path))
-              (value_text o) (value_text c)
-            ;
-            Option.iter
-              ( fun (o, c) ->
-                  Printf.bprintf
-                    buffer "  in location: OCST %s | compiler %s\n"
-                    (location_text o) (location_text c)
-              )
-              locations
-        end;
-        Buffer.contents buffer
+        let ocst = dump o
+        and compiler = dump c
+        in
+        if ocst = compiler then
+          Printf.sprintf
+            "  item %d: the same dumps, so the location stacks differ\n" index
+        else
+          Printf.sprintf
+            "  item %d (- OCST, + compiler):\n%s"
+            index (Ocst.Text_diff.diff ocst compiler)
     | _ :: _, [] ->
         Printf.sprintf "  OCST has %d more items\n" (List.length ocst)
     | [], _ :: _ ->
@@ -484,7 +406,10 @@ let check_implementation ?(name = "") filename source =
                   )
                 ,
                 lazy
-                  (item_details Pprintast.structure_item ocst_ast compiler_ast)
+                  ( item_details
+                      (fun item -> structure_dump [ item ])
+                      ocst_ast compiler_ast
+                  )
               )
           )
       ;
@@ -534,7 +459,10 @@ let check_interface ?(name = "") filename source =
                   )
                 ,
                 lazy
-                  (item_details Pprintast.signature_item ocst_ast compiler_ast)
+                  ( item_details
+                      (fun item -> signature_dump [ item ])
+                      ocst_ast compiler_ast
+                  )
               )
           )
       ;

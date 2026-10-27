@@ -3,10 +3,24 @@ same AST
 == a doc comment detached by a blank line
 summary: the item at line 1 (line 1 once formatted): its doc comments change from [" Doc. "] to []
 details:
-The item:
-val y : int[@@ocaml.doc " Doc. "]
-once formatted:
-val y : int
+The AST of the item, without its locations (- before, + once formatted):
+...
+    signature_item
+      Psig_value
+      value_description "y"
+-       attribute "ocaml.doc"
+-         [
+-           structure_item
+-             Pstr_eval
+-             expression
+-               Pexp_constant
+-               constant
+-                 PConst_string(" Doc. ",(_none_[0,0+-1]..[0,0+-1]) ghost,None)
+-         ]
+        core_type
+          Ptyp_constr "int"
+          []
+
 The formatted source:
     1 val y : int
     2 
@@ -16,10 +30,17 @@ The formatted source:
 == other code
 summary: the item at line 1 (line 1 once formatted): its code changes
 details:
-The item:
-let x = 1
-once formatted:
-let x = 2
+The AST of the item, without its locations (- before, + once formatted):
+...
+          expression
+            Pexp_constant
+            constant
+-             PConst_int (1,None)
++             PConst_int (2,None)
+      ]
+  ]
+  
+
 The formatted source:
     1 let x = 2
     2 

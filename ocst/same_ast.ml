@@ -17,6 +17,22 @@ let structure_item_without_locations item =
 let signature_item_without_locations item =
   without_locations.signature_item without_locations item
 
+(** The dump of an item ([dump]) once its locations are erased ([erase]):
+    without them, which are all [Location.none], printed as [none]. *)
+let dump_without_locations erase dump item =
+  let none = " (_none_[0,0+-1]..[0,0+-1]) ghost" in
+  let dump = dump (erase item) in
+  let buffer = Buffer.create (String.length dump) in
+  let rec copy index =
+    if index < String.length dump then
+      if
+        index + String.length none <= String.length dump
+        && String.sub dump index (String.length none) = none
+      then copy (index + String.length none)
+      else begin Buffer.add_char buffer dump.[index]; copy (index + 1) end
+  in
+  copy 0; Buffer.contents buffer
+
 (* {1 Parsing} *)
 
 (** [parse source] with the compiler's parser, without its warnings (as
@@ -74,10 +90,10 @@ let lines_around source line =
   |> String.concat "\n"
 
 (** The first item which differs between two lists of items: at [line] (as
-    given by [location]), printed by [print], with its doc comments found by
-    [iterate]. *)
+    given by [location]), shown by the differences of their [dump]s (without
+    their locations), with its doc comments found by [iterate]. *)
 let compare_items
-    ~print ~location ~iterate ~without_locations
+    ~dump ~location ~iterate ~without_locations
     ~parse ~filename source formatted_source
   =
     match quietly parse ~filename source with
@@ -118,9 +134,14 @@ let compare_items
                           (line o) (line f) change
                     ;
                       details =
-                        Format.asprintf
-                          "The item:@\n%a@\nonce formatted:@\n%a@\nThe formatted source:@\n%s"
-                          print o print f
+                        Printf.sprintf
+                          "The AST of the item, without its locations (- \
+                           before, + once formatted):\n%s\nThe formatted \
+                           source:\n%s"
+                          ( Text_diff.diff
+                              (dump_without_locations without_locations dump o)
+                              (dump_without_locations without_locations dump f)
+                          )
                           (lines_around formatted_source (line f))
                     }
               | o :: _, [] ->
@@ -146,7 +167,7 @@ let compare_items
 
 let implementation ~filename source formatted =
   compare_items
-    ~print:(fun formatter item -> Pprintast.structure formatter [ item ])
+    ~dump:(fun item -> Format.asprintf "%a" Printast.implementation [ item ])
     ~location:(fun (item : Parsetree.structure_item) -> item.pstr_loc)
     ~iterate:(fun iterator item -> iterator.structure_item iterator item)
     ~without_locations:structure_item_without_locations
@@ -154,7 +175,7 @@ let implementation ~filename source formatted =
 
 let interface ~filename source formatted =
   compare_items
-    ~print:(fun formatter item -> Pprintast.signature formatter [ item ])
+    ~dump:(fun item -> Format.asprintf "%a" Printast.interface [ item ])
     ~location:(fun (item : Parsetree.signature_item) -> item.psig_loc)
     ~iterate:(fun iterator item -> iterator.signature_item iterator item)
     ~without_locations:signature_item_without_locations

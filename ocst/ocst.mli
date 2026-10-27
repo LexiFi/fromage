@@ -8,6 +8,7 @@ module Token_stream = Token_stream
 module Token_position = Token_position
 module Syntax_error = Syntax_error
 module Same_ast = Same_ast
+module Text_diff = Text_diff
 
 val lex : string -> Token.any_token list
 val source_of_tokens : Token.any_token list -> string
