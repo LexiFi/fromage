@@ -81,6 +81,8 @@ let check filename =
     ~name ~filename ~width:120 (format ~width:120 ~filename source)
 
 let () =
+  (* As in ocst_format.ml: less work for the major GC when formatting. *)
+  Gc.set { (Gc.get ()) with space_overhead = 200 };
   let files = List.tl (Array.to_list Sys.argv) in
   let problems = List.concat_map check files in
   Printf.printf "Formatted %d files.\n" (List.length files);

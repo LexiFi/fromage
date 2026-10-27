@@ -4,19 +4,18 @@ let initial ~filename =
   { Lexing.pos_fname = filename; pos_lnum = 1; pos_bol = 0; pos_cnum = 0 }
 
 let advance position text =
-  let line = ref position.Lexing.pos_lnum in
-  let bol = ref position.Lexing.pos_bol in
-  String.iteri
-    ( fun offset character ->
-        if
-          character = '\n'
-        then begin incr line; bol := position.Lexing.pos_cnum + offset + 1 end
-    )
-    text
-  ;
+  (* The line and its start after the newlines from [offset]. *)
+  let rec newlines line bol offset =
+    match String.index_from_opt text offset '\n' with
+    | Some newline ->
+        newlines
+          (line + 1) (position.Lexing.pos_cnum + newline + 1) (newline + 1)
+    | None -> line, bol
+  in
+  let line, bol = newlines position.Lexing.pos_lnum position.Lexing.pos_bol 0 in
   { position with
     Lexing.pos_cnum = position.Lexing.pos_cnum + String.length text;
-    pos_lnum = !line; pos_bol = !bol
+    pos_lnum = line; pos_bol = bol
   }
 
 (* A line directive [# num "name" ...] sets the file name and the line number of

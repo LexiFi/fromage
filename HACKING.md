@@ -97,7 +97,10 @@ they are up to date, and `dune promote` updates them after a change of the
 configurations. Each check is done once: `runtest-full` reuses the outputs
 of the quick rules for the configurations which they share, and checks only
 the mutants (`--mutants-only`) of the configurations whose sentences
-another rule checks.
+another rule checks. The fuzzer also runs once for each entry point and
+arguments: a rule saves its sentences in `_build/default/test/*.sentences`
+(`--generate`), and the rules of all the parts of the configurations with
+them, in `test` and `test/coverage`, read them (`--sentences FILE`).
 
 `--timings` prints, on the error output, the time of each configuration and
 of each phase of the checks (parsing, formatting, comparisons...). For
@@ -162,7 +165,9 @@ Each failure is printed on the error output as soon as it is found, with a
 smaller source failing in the same way (`minimized:`). Dune only shows the
 error output of a rule when it ends: to see the failures during the run,
 start the executable itself (as above), with the options
-of the rules of `test/fuzz.inc` (`--deep NAME`, `--part I/N`).
+of the rules of `test/fuzz.inc` (`--deep NAME`, `--part I/N`, and
+`--sentences FILE` with a file built by dune, or `MENHIR FUZZER GRAMMAR`
+instead to generate the sentences).
 
 Failures found by the fuzzer are LR artifacts of the grammar as often as
 plain bugs: read the productions and precedences of `parser.mly`, check

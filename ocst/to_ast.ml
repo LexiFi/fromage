@@ -10,8 +10,9 @@ type cursor =
     mutable count : int; (** The number of consumed tokens. *)
     mutable starts : Lexing.position array;
     (** The start of every consumed token, by consumption order. *)
-    locations : (Token.any_token * Docstrings.docstring) list;
-    (** The doc comments of the CST, with their locations. *)
+    locations : (string, Token.any_token * Docstrings.docstring) Hashtbl.t;
+    (** The doc comments of the CST, with their locations, by text: a doc
+        comment is found among those with its text, by physical equality. *)
     mutable docs : Docstrings.docs;
     (** The doc comments of the next item, for its conversion ({!take_docs}). *)
     mutable warnings : (Location.t * bool) list;
@@ -69,7 +70,7 @@ let location start stop =
    warnings for the doc comments in the trivia, which document nothing. *)
 let scan_docstrings ~filename tokens =
   let position = ref (Token_position.initial ~filename) in
-  let locations = ref []
+  let locations = Hashtbl.create 64
   and warnings = ref []
   in
   List.iter
@@ -93,17 +94,19 @@ let scan_docstrings ~filename tokens =
               Docstrings.docstring
                 (Token.docstring_body text) (location start !position)
             in
-            locations := (token, doc) :: !locations
+            Hashtbl.add locations text (token, doc)
         | _ -> ()
     )
     tokens
   ;
-  !locations, !warnings
+  locations, !warnings
 
 let docstring cursor (token : Cst.docstring) =
+  let (`DOCSTRING text) = token.kind in
   snd
     ( List.find
-        (fun (other, _) -> other == (token :> Token.any_token)) cursor.locations
+        (fun (other, _) -> other == (token :> Token.any_token))
+        (Hashtbl.find_all cursor.locations text)
     )
 
 (* Steps over a doc comment. *)

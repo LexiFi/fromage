@@ -362,8 +362,10 @@ let compiler_error ~interface filename source =
       | Some `Already_displayed | None ->
           Some (Location.none, Printexc.to_string error)
 
-let attempt parse =
-  try Ok (parse ()) with error -> Error (error_message error)
+(* The error is kept as an exception: its message ([error_message]), slow to
+   build, is only needed when the other parser accepts the source, while most
+   mutants are rejected by both. *)
+let attempt parse = try Ok (parse ()) with error -> Error error
 
 (* OCST's parser fails with a syntax error, never with an internal error or
    another exception, even on sources that the compiler rejects. *)
@@ -380,8 +382,7 @@ let attempt_ocst ~name parse =
               lazy ("OCST backtrace:\n" ^ backtrace)
             )
         )
-  | exception (Ocst.Syntax_error.Error _ as error) ->
-      Error (error_message error)
+  | exception (Ocst.Syntax_error.Error _ as error) -> Error error
   | exception error ->
       let backtrace = Printexc.get_backtrace () in
       raise
@@ -421,9 +422,13 @@ let check_implementation ?(name = "") filename source =
   match cst, compiler with
   | Error _, Error _ -> false
   | Error error, Ok _ ->
-      failwith (Printf.sprintf "%s: OCST parser failed: %s" name error)
+      failwith
+        (Printf.sprintf "%s: OCST parser failed: %s" name (error_message error))
   | Ok _, Error error ->
-      failwith (Printf.sprintf "%s: compiler parser failed: %s" name error)
+      failwith
+        ( Printf.sprintf
+            "%s: compiler parser failed: %s" name (error_message error)
+        )
   | Ok cst, Ok (compiler_ast, compiler_warnings) ->
       Option.iter
         ( fun formatter ->
@@ -502,9 +507,13 @@ let check_interface ?(name = "") filename source =
   match cst, compiler with
   | Error _, Error _ -> false
   | Error error, Ok _ ->
-      failwith (Printf.sprintf "%s: OCST parser failed: %s" name error)
+      failwith
+        (Printf.sprintf "%s: OCST parser failed: %s" name (error_message error))
   | Ok _, Error error ->
-      failwith (Printf.sprintf "%s: compiler parser failed: %s" name error)
+      failwith
+        ( Printf.sprintf
+            "%s: compiler parser failed: %s" name (error_message error)
+        )
   | Ok cst, Ok (compiler_ast, compiler_warnings) ->
       Option.iter
         ( fun formatter ->

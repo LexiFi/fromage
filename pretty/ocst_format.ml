@@ -36,6 +36,10 @@ let format ~debug ~width filename source =
       exit 2
 
 let () =
+  (* Formatting keeps the memo tables of the layouts alive until the end of
+     the file, and the major GC marks them again and again: it works less
+     with this space overhead (10% faster, 20% more memory). *)
+  Gc.set { (Gc.get ()) with space_overhead = 200 };
   let in_place = ref false
   and width = ref Ocst_pretty.default_width
   and debug = ref false

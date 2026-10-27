@@ -9,7 +9,7 @@
   (progn
    (setenv BISECT_FILE fuzz_0_0_
     (ignore-stdout
-     (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:../parser.mly} --configuration 0 --part 0/4)))
+     (run ./fuzz_roundtrip.exe --sentences %{dep:../fuzz_0.sentences} --configuration 0 --part 0/4)))
    (system "%{bin:bisect-ppx-report} merge fuzz_0_0.coverage fuzz_0_0_*.coverage"))))
 
 (rule
@@ -20,7 +20,7 @@
   (progn
    (setenv BISECT_FILE fuzz_0_1_
     (ignore-stdout
-     (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:../parser.mly} --configuration 0 --part 1/4)))
+     (run ./fuzz_roundtrip.exe --sentences %{dep:../fuzz_0.sentences} --configuration 0 --part 1/4)))
    (system "%{bin:bisect-ppx-report} merge fuzz_0_1.coverage fuzz_0_1_*.coverage"))))
 
 (rule
@@ -31,7 +31,7 @@
   (progn
    (setenv BISECT_FILE fuzz_0_2_
     (ignore-stdout
-     (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:../parser.mly} --configuration 0 --part 2/4)))
+     (run ./fuzz_roundtrip.exe --sentences %{dep:../fuzz_0.sentences} --configuration 0 --part 2/4)))
    (system "%{bin:bisect-ppx-report} merge fuzz_0_2.coverage fuzz_0_2_*.coverage"))))
 
 (rule
@@ -42,7 +42,7 @@
   (progn
    (setenv BISECT_FILE fuzz_0_3_
     (ignore-stdout
-     (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:../parser.mly} --configuration 0 --part 3/4)))
+     (run ./fuzz_roundtrip.exe --sentences %{dep:../fuzz_0.sentences} --configuration 0 --part 3/4)))
    (system "%{bin:bisect-ppx-report} merge fuzz_0_3.coverage fuzz_0_3_*.coverage"))))
 
 (rule
@@ -53,7 +53,7 @@
   (progn
    (setenv BISECT_FILE fuzz_1_0_
     (ignore-stdout
-     (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:../parser.mly} --configuration 1 --part 0/4)))
+     (run ./fuzz_roundtrip.exe --sentences %{dep:../fuzz_1.sentences} --configuration 1 --part 0/4)))
    (system "%{bin:bisect-ppx-report} merge fuzz_1_0.coverage fuzz_1_0_*.coverage"))))
 
 (rule
@@ -64,7 +64,7 @@
   (progn
    (setenv BISECT_FILE fuzz_1_1_
     (ignore-stdout
-     (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:../parser.mly} --configuration 1 --part 1/4)))
+     (run ./fuzz_roundtrip.exe --sentences %{dep:../fuzz_1.sentences} --configuration 1 --part 1/4)))
    (system "%{bin:bisect-ppx-report} merge fuzz_1_1.coverage fuzz_1_1_*.coverage"))))
 
 (rule
@@ -75,7 +75,7 @@
   (progn
    (setenv BISECT_FILE fuzz_1_2_
     (ignore-stdout
-     (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:../parser.mly} --configuration 1 --part 2/4)))
+     (run ./fuzz_roundtrip.exe --sentences %{dep:../fuzz_1.sentences} --configuration 1 --part 2/4)))
    (system "%{bin:bisect-ppx-report} merge fuzz_1_2.coverage fuzz_1_2_*.coverage"))))
 
 (rule
@@ -86,7 +86,7 @@
   (progn
    (setenv BISECT_FILE fuzz_1_3_
     (ignore-stdout
-     (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:../parser.mly} --configuration 1 --part 3/4)))
+     (run ./fuzz_roundtrip.exe --sentences %{dep:../fuzz_1.sentences} --configuration 1 --part 3/4)))
    (system "%{bin:bisect-ppx-report} merge fuzz_1_3.coverage fuzz_1_3_*.coverage"))))
 
 (rule
@@ -97,7 +97,7 @@
   (progn
    (setenv BISECT_FILE fuzz_2_0_
     (ignore-stdout
-     (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:../parser.mly} --configuration 2 --part 0/1)))
+     (run ./fuzz_roundtrip.exe --sentences %{dep:../fuzz_2.sentences} --configuration 2 --part 0/1)))
    (system "%{bin:bisect-ppx-report} merge fuzz_2_0.coverage fuzz_2_0_*.coverage"))))
 
 (rule
@@ -108,7 +108,7 @@
   (progn
    (setenv BISECT_FILE fuzz_3_0_
     (ignore-stdout
-     (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:../parser.mly} --configuration 3 --part 0/1)))
+     (run ./fuzz_roundtrip.exe --sentences %{dep:../fuzz_3.sentences} --configuration 3 --part 0/1)))
    (system "%{bin:bisect-ppx-report} merge fuzz_3_0.coverage fuzz_3_0_*.coverage"))))
 
 (rule
@@ -119,7 +119,7 @@
   (progn
    (setenv BISECT_FILE fuzz_4_0_
     (ignore-stdout
-     (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:../parser.mly} --configuration 4 --part 0/1)))
+     (run ./fuzz_roundtrip.exe --sentences %{dep:../fuzz_4.sentences} --configuration 4 --part 0/1)))
    (system "%{bin:bisect-ppx-report} merge fuzz_4_0.coverage fuzz_4_0_*.coverage"))))
 
 (rule
@@ -130,7 +130,7 @@
   (progn
    (setenv BISECT_FILE fuzz_5_0_
     (ignore-stdout
-     (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:../parser.mly} --configuration 5 --part 0/4 --mutants-only)))
+     (run ./fuzz_roundtrip.exe --sentences %{dep:../fuzz_0.sentences} --configuration 5 --part 0/4 --mutants-only)))
    (system "%{bin:bisect-ppx-report} merge fuzz_5_0.coverage fuzz_5_0_*.coverage"))))
 
 (rule
@@ -141,7 +141,7 @@
   (progn
    (setenv BISECT_FILE fuzz_5_1_
     (ignore-stdout
-     (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:../parser.mly} --configuration 5 --part 1/4 --mutants-only)))
+     (run ./fuzz_roundtrip.exe --sentences %{dep:../fuzz_0.sentences} --configuration 5 --part 1/4 --mutants-only)))
    (system "%{bin:bisect-ppx-report} merge fuzz_5_1.coverage fuzz_5_1_*.coverage"))))
 
 (rule
@@ -152,7 +152,7 @@
   (progn
    (setenv BISECT_FILE fuzz_5_2_
     (ignore-stdout
-     (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:../parser.mly} --configuration 5 --part 2/4 --mutants-only)))
+     (run ./fuzz_roundtrip.exe --sentences %{dep:../fuzz_0.sentences} --configuration 5 --part 2/4 --mutants-only)))
    (system "%{bin:bisect-ppx-report} merge fuzz_5_2.coverage fuzz_5_2_*.coverage"))))
 
 (rule
@@ -163,7 +163,7 @@
   (progn
    (setenv BISECT_FILE fuzz_5_3_
     (ignore-stdout
-     (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:../parser.mly} --configuration 5 --part 3/4 --mutants-only)))
+     (run ./fuzz_roundtrip.exe --sentences %{dep:../fuzz_0.sentences} --configuration 5 --part 3/4 --mutants-only)))
    (system "%{bin:bisect-ppx-report} merge fuzz_5_3.coverage fuzz_5_3_*.coverage"))))
 
 (rule
@@ -174,7 +174,7 @@
   (progn
    (setenv BISECT_FILE fuzz_6_0_
     (ignore-stdout
-     (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:../parser.mly} --configuration 6 --part 0/4)))
+     (run ./fuzz_roundtrip.exe --sentences %{dep:../fuzz_6.sentences} --configuration 6 --part 0/4)))
    (system "%{bin:bisect-ppx-report} merge fuzz_6_0.coverage fuzz_6_0_*.coverage"))))
 
 (rule
@@ -185,7 +185,7 @@
   (progn
    (setenv BISECT_FILE fuzz_6_1_
     (ignore-stdout
-     (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:../parser.mly} --configuration 6 --part 1/4)))
+     (run ./fuzz_roundtrip.exe --sentences %{dep:../fuzz_6.sentences} --configuration 6 --part 1/4)))
    (system "%{bin:bisect-ppx-report} merge fuzz_6_1.coverage fuzz_6_1_*.coverage"))))
 
 (rule
@@ -196,7 +196,7 @@
   (progn
    (setenv BISECT_FILE fuzz_6_2_
     (ignore-stdout
-     (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:../parser.mly} --configuration 6 --part 2/4)))
+     (run ./fuzz_roundtrip.exe --sentences %{dep:../fuzz_6.sentences} --configuration 6 --part 2/4)))
    (system "%{bin:bisect-ppx-report} merge fuzz_6_2.coverage fuzz_6_2_*.coverage"))))
 
 (rule
@@ -207,7 +207,7 @@
   (progn
    (setenv BISECT_FILE fuzz_6_3_
     (ignore-stdout
-     (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:../parser.mly} --configuration 6 --part 3/4)))
+     (run ./fuzz_roundtrip.exe --sentences %{dep:../fuzz_6.sentences} --configuration 6 --part 3/4)))
    (system "%{bin:bisect-ppx-report} merge fuzz_6_3.coverage fuzz_6_3_*.coverage"))))
 
 (rule
@@ -218,7 +218,7 @@
   (progn
    (setenv BISECT_FILE fuzz_7_0_
     (ignore-stdout
-     (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:../parser.mly} --configuration 7 --part 0/4)))
+     (run ./fuzz_roundtrip.exe --sentences %{dep:../fuzz_7.sentences} --configuration 7 --part 0/4)))
    (system "%{bin:bisect-ppx-report} merge fuzz_7_0.coverage fuzz_7_0_*.coverage"))))
 
 (rule
@@ -229,7 +229,7 @@
   (progn
    (setenv BISECT_FILE fuzz_7_1_
     (ignore-stdout
-     (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:../parser.mly} --configuration 7 --part 1/4)))
+     (run ./fuzz_roundtrip.exe --sentences %{dep:../fuzz_7.sentences} --configuration 7 --part 1/4)))
    (system "%{bin:bisect-ppx-report} merge fuzz_7_1.coverage fuzz_7_1_*.coverage"))))
 
 (rule
@@ -240,7 +240,7 @@
   (progn
    (setenv BISECT_FILE fuzz_7_2_
     (ignore-stdout
-     (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:../parser.mly} --configuration 7 --part 2/4)))
+     (run ./fuzz_roundtrip.exe --sentences %{dep:../fuzz_7.sentences} --configuration 7 --part 2/4)))
    (system "%{bin:bisect-ppx-report} merge fuzz_7_2.coverage fuzz_7_2_*.coverage"))))
 
 (rule
@@ -251,7 +251,7 @@
   (progn
    (setenv BISECT_FILE fuzz_7_3_
     (ignore-stdout
-     (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:../parser.mly} --configuration 7 --part 3/4)))
+     (run ./fuzz_roundtrip.exe --sentences %{dep:../fuzz_7.sentences} --configuration 7 --part 3/4)))
    (system "%{bin:bisect-ppx-report} merge fuzz_7_3.coverage fuzz_7_3_*.coverage"))))
 
 (rule
@@ -262,7 +262,7 @@
   (progn
    (setenv BISECT_FILE fuzz_8_0_
     (ignore-stdout
-     (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:../parser.mly} --configuration 8 --part 0/1)))
+     (run ./fuzz_roundtrip.exe --sentences %{dep:../fuzz_8.sentences} --configuration 8 --part 0/1)))
    (system "%{bin:bisect-ppx-report} merge fuzz_8_0.coverage fuzz_8_0_*.coverage"))))
 
 (rule
@@ -273,7 +273,7 @@
   (progn
    (setenv BISECT_FILE fuzz_9_0_
     (ignore-stdout
-     (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:../parser.mly} --configuration 9 --part 0/1)))
+     (run ./fuzz_roundtrip.exe --sentences %{dep:../fuzz_9.sentences} --configuration 9 --part 0/1)))
    (system "%{bin:bisect-ppx-report} merge fuzz_9_0.coverage fuzz_9_0_*.coverage"))))
 
 (rule
@@ -284,7 +284,7 @@
   (progn
    (setenv BISECT_FILE fuzz_10_0_
     (ignore-stdout
-     (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:../parser.mly} --configuration 10 --part 0/1)))
+     (run ./fuzz_roundtrip.exe --sentences %{dep:../fuzz_10.sentences} --configuration 10 --part 0/1)))
    (system "%{bin:bisect-ppx-report} merge fuzz_10_0.coverage fuzz_10_0_*.coverage"))))
 
 (rule
@@ -295,7 +295,7 @@
   (progn
    (setenv BISECT_FILE fuzz_11_0_
     (ignore-stdout
-     (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:../parser.mly} --configuration 11 --part 0/4 --mutants-only)))
+     (run ./fuzz_roundtrip.exe --sentences %{dep:../fuzz_6.sentences} --configuration 11 --part 0/4 --mutants-only)))
    (system "%{bin:bisect-ppx-report} merge fuzz_11_0.coverage fuzz_11_0_*.coverage"))))
 
 (rule
@@ -306,7 +306,7 @@
   (progn
    (setenv BISECT_FILE fuzz_11_1_
     (ignore-stdout
-     (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:../parser.mly} --configuration 11 --part 1/4 --mutants-only)))
+     (run ./fuzz_roundtrip.exe --sentences %{dep:../fuzz_6.sentences} --configuration 11 --part 1/4 --mutants-only)))
    (system "%{bin:bisect-ppx-report} merge fuzz_11_1.coverage fuzz_11_1_*.coverage"))))
 
 (rule
@@ -317,7 +317,7 @@
   (progn
    (setenv BISECT_FILE fuzz_11_2_
     (ignore-stdout
-     (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:../parser.mly} --configuration 11 --part 2/4 --mutants-only)))
+     (run ./fuzz_roundtrip.exe --sentences %{dep:../fuzz_6.sentences} --configuration 11 --part 2/4 --mutants-only)))
    (system "%{bin:bisect-ppx-report} merge fuzz_11_2.coverage fuzz_11_2_*.coverage"))))
 
 (rule
@@ -328,5 +328,5 @@
   (progn
    (setenv BISECT_FILE fuzz_11_3_
     (ignore-stdout
-     (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:../parser.mly} --configuration 11 --part 3/4 --mutants-only)))
+     (run ./fuzz_roundtrip.exe --sentences %{dep:../fuzz_6.sentences} --configuration 11 --part 3/4 --mutants-only)))
    (system "%{bin:bisect-ppx-report} merge fuzz_11_3.coverage fuzz_11_3_*.coverage"))))
