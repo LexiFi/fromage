@@ -24,10 +24,19 @@ suite compares its output with `Parse.implementation`/`Parse.interface`.
 
 ## Building and testing
 
-The dependencies come from opam (OCaml 5.5): `pretty_expressive`, `menhir`
-and `ocamlgrammarfuzzer` (pinned from
-https://github.com/shogan-ai/ocamlgrammarfuzzer), and `bisect_ppx` for the
-coverage, which is skipped without it. From the repository root:
+The repository has two opam packages, generated from `dune-project`:
+`ocst`, the library (in `ocst/`), and `fromage`, the pretty printer (the
+library `fromage`, module `Ocst_pretty`, in `pretty/`) and the formatter
+(the executable `fromage`). Each test belongs to one of them: the tests of
+the parser, the errors, the doc comments and the coverage to `ocst`, the
+round-trips, the fuzzing and the layout to `fromage`. The dependencies of
+the tests are `{with-test}` for `@runtest` (`menhir` and
+`ocamlgrammarfuzzer`, for `fromage`), `{with-dev-setup}` for the rest of
+`@runtest-full` (also `bisect_ppx`, for the coverage, which is skipped
+without it). `ocamlgrammarfuzzer` and the version of `bisect_ppx` which
+builds with OCaml 5.5 are pinned in the `.opam.template` files. The opam
+files are checked by `@runtest`: after a change of `dune-project`,
+`dune promote` updates them. From the repository root:
 
 ```bash
 dune build                         # build, without running the tests
@@ -353,8 +362,8 @@ the blank lines (several blank lines in a row become one). It adds a blank
 line after an item on several lines of a structure or a signature (checked
 in the round-trip: a blank line is never removed). The attributes of an
 item (`[@@...]`) or of a node (`e [@attr]`) are on its line when both fit,
-else on the next line, in its column. `ocst_format.exe FILE...` prints files
-formatted, and `ocst_format.exe -i FILE...` formats them in place (as
+else on the next line, in its column. `fromage FILE...` (`ocst_format.exe` in `_build`) prints files
+formatted, and `fromage -i FILE...` formats them in place (as
 `make fmt` does). It
 refuses to format a file when the compiler's AST of the formatted source
 differs from the original one, except for the locations (`same_ast.ml`): its
@@ -382,7 +391,7 @@ do; `--debug` also shows the item and the formatted source.
 
 pretty_expressive chooses, among the layouts of a document, the one with the
 fewest lines within the width of the page: 80 by default, set by
-`ocst_format.exe --width N` (and the optional argument `~width` of
+`fromage --width N` (and the optional argument `~width` of
 `Ocst_pretty`). Of the layouts with the same number of lines, it chooses the
 one whose lines have the most even lengths (the smallest sum of the squares
 of their lengths, in the cost factory of `doc.ml`): a packed list fills its

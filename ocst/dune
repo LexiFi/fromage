@@ -10,5 +10,5 @@
 
 (library
  (name ocst)
- (public_name ocst.ocst)
+ (public_name ocst)
  (libraries compiler-libs.common))

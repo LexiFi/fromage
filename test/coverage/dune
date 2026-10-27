@@ -73,6 +73,7 @@
 ; lines covered is in _build/default/test/coverage/html/index.html.
 (rule
  (alias runtest-full)
+ (package ocst)
  (enabled_if %{lib-available:bisect_ppx})
  (targets coverage.actual)
  (deps

@@ -6,6 +6,7 @@
 ; The syntax errors on the files of cases, and the untested errors.
 (rule
  (alias runtest)
+ (package ocst)
  (targets errors.actual)
  (deps (source_tree cases))
  (action

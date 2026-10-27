@@ -6,6 +6,7 @@
 ; The doc comments of the files of cases, with the warnings about them.
 (rule
  (alias runtest)
+ (package ocst)
  (targets doc_comments.actual)
  (deps (source_tree cases))
  (action

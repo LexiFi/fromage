@@ -1,5 +1,7 @@
 ; [dune build] builds the libraries, the formatter and the tests, without
 ; running the tests: each directory of the tests defines its default alias.
+; The opam files are generated from dune-project, and checked, by [@opam]
+; and [@runtest]: [dune promote] updates them.
 (alias
  (name default)
  (deps

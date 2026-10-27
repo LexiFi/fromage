@@ -1,0 +1,4 @@
+pin-depends: [
+  # Not in the opam repository.
+  ["ocamlgrammarfuzzer.dev" "git+https://github.com/shogan-ai/ocamlgrammarfuzzer.git#f29aaf56469c7b6ba58346165edaea515d098455"]
+]

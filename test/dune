@@ -14,17 +14,20 @@
 
 (test
  (name random_test)
+ (package ocst)
  (modules random_test)
  (libraries random_token ocst))
 
 (test
  (name parser_test)
+ (package ocst)
  (modules parser_test)
  (libraries ocst compiler-libs.common))
 
 ; The messages of Ocst.Same_ast, in same_ast_test.expected.
 (test
  (name same_ast_test)
+ (package ocst)
  (modules same_ast_test)
  (libraries ocst))
 
@@ -60,6 +63,7 @@
 ; random ones, one entry point per rule, run in parallel.
 (rule
  (alias runtest)
+ (package fromage)
  (targets fuzz_quick_implementation.actual)
  (action
   (progn
@@ -70,6 +74,7 @@
 
 (rule
  (alias runtest)
+ (package fromage)
  (targets fuzz_quick_interface.actual)
  (action
   (progn
@@ -81,6 +86,7 @@
 ; All the configurations, for [runtest-full].
 (rule
  (alias runtest-full)
+ (package fromage)
  (targets fuzz_roundtrip.actual)
  (action
   (progn
@@ -92,6 +98,7 @@
 ; the repository.
 (rule
  (alias runtest-full)
+ (package fromage)
  (targets codebase_roundtrip.actual)
  ; It reads the files of the repository from the source tree, as git lists
  ; them: run each time.
@@ -110,6 +117,7 @@
 ; before every token.
 (rule
  (alias fuzz-deep)
+ (package fromage)
  (targets fuzz_deep_implementation.actual)
  (action
   (progn
@@ -120,6 +128,7 @@
 
 (rule
  (alias fuzz-deep)
+ (package fromage)
  (targets fuzz_deep_interface.actual)
  (action
   (progn
@@ -130,6 +139,7 @@
 
 (rule
  (alias fuzz-deep)
+ (package fromage)
  (targets fuzz_long_implementation.actual)
  (action
   (progn
@@ -142,6 +152,7 @@
 
 (rule
  (alias fuzz-deep)
+ (package fromage)
  (targets fuzz_long_interface.actual)
  (action
   (progn
@@ -154,6 +165,7 @@
 
 (rule
  (alias fuzz-deep)
+ (package fromage)
  (targets fuzz_docs_exhaust_implementation.actual)
  (action
   (progn
@@ -164,6 +176,7 @@
 
 (rule
  (alias fuzz-deep)
+ (package fromage)
  (targets fuzz_docs_comments_implementation.actual)
  (action
   (progn
@@ -174,6 +187,7 @@
 
 (rule
  (alias fuzz-deep)
+ (package fromage)
  (targets fuzz_docs_exhaust_interface.actual)
  (action
   (progn
@@ -184,6 +198,7 @@
 
 (rule
  (alias fuzz-deep)
+ (package fromage)
  (targets fuzz_docs_comments_interface.actual)
  (action
   (progn
@@ -194,6 +209,7 @@
 
 (rule
  (alias fuzz-deep)
+ (package fromage)
  (targets fuzz_huge_2000_implementation.actual)
  (action
   (progn
@@ -210,6 +226,7 @@
 
 (rule
  (alias fuzz-deep)
+ (package fromage)
  (targets fuzz_huge_20000_implementation.actual)
  (action
   (progn
@@ -226,6 +243,7 @@
 
 (rule
  (alias fuzz-deep)
+ (package fromage)
  (targets fuzz_huge_2000_interface.actual)
  (action
   (progn
@@ -242,6 +260,7 @@
 
 (rule
  (alias fuzz-deep)
+ (package fromage)
  (targets fuzz_huge_20000_interface.actual)
  (action
   (progn
@@ -260,6 +279,7 @@
 ; [(val e : S)] and [let%ext] in classes.
 (rule
  (alias fuzz-deep)
+ (package fromage)
  (targets fuzz_million_implementation.actual)
  (action
   (progn
@@ -281,6 +301,7 @@
 ; [(val e : S)] and [let%ext] in classes.
 (rule
  (alias fuzz-deep)
+ (package fromage)
  (targets fuzz_million_interface.actual)
  (action
   (progn
@@ -312,6 +333,7 @@
 
 (rule
  (alias runtest)
+ (package fromage)
  (deps
   (glob_files
    ../ocst/{ocst,cst,doc_comments,parser,printer,same_ast,syntax_error,to_ast,token,token_position,token_stream}.{ml,mli})
@@ -334,6 +356,7 @@
 
 (rule
  (alias runtest)
+ (package fromage)
  (targets pretty_test.actual)
  (deps
   (:sources

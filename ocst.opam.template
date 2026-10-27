@@ -1,0 +1,6 @@
+pin-depends: [
+  # Not in the opam repository.
+  ["ocamlgrammarfuzzer.dev" "git+https://github.com/shogan-ai/ocamlgrammarfuzzer.git#f29aaf56469c7b6ba58346165edaea515d098455"]
+  # Its release does not build with ppxlib 0.36 or later (OCaml 5.5).
+  ["bisect_ppx.2.8.3" "git+https://github.com/aantron/bisect_ppx.git#4f0cb2a2e1b0b786b6b5f1c94985b201aa012f12"]
+]
