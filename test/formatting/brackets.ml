@@ -76,14 +76,14 @@ let g =
 
 type closed =
   [<
-      `Aaaaaaaaaaa | `Bbbbbbbbbbbbbbb
-    | `Cccccccccccccc | `Dddddddddddd | `Eeeeeeeeeee
+    `Aaaaaaaaaaa | `Bbbbbbbbbbbbbbb
+  | `Cccccccccccccc | `Dddddddddddd | `Eeeeeeeeeee
   ]
 
 type opened =
   [>
-      `Aaaaaaaaaaa | `Bbbbbbbbbbbbbbb
-    | `Cccccccccccccc | `Dddddddddddd | `Eeeeeeeeeee
+    `Aaaaaaaaaaa | `Bbbbbbbbbbbbbbb
+  | `Cccccccccccccc | `Dddddddddddd | `Eeeeeeeeeee
   ]
 
 type exact =
@@ -289,11 +289,11 @@ type variant_bar_one =
 
 type closed_one =
   [<
-      `A
-    | `Long of
-        aaaaaaaaaaaaaaaaaaaa * bbbbbbbbbbbbbbbbbbbbbbbb
-        * cccccccccccccccccccc * dddddddddddddddddddd * e
-    | `C
+    `A
+  | `Long of
+      aaaaaaaaaaaaaaaaaaaa * bbbbbbbbbbbbbbbbbbbbbbbb
+      * cccccccccccccccccccc * dddddddddddddddddddd * e
+  | `C
   ]
 
 type args_one =
