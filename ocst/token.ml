@@ -166,7 +166,8 @@ module Lident =
         text <> "_" && valid_plain text
         && keyword_of_string text = None && not (is_word_operator text)
       then Some text
-      else if valid_ext text then Some text else None
+      else if valid_ext text then Some text
+      else None
 
     let of_string_exn text =
       match of_string text with

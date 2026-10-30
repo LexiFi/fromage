@@ -136,6 +136,16 @@ let x3_conditions =
   then 2
   else 3
 
+(* 3d. Short parts after a long one: each part on its line, as soon as one
+   is. *)
+let x3_mixed =
+  if x = 1 then "one"
+  else if x = 2 then "two"
+  else if x = 3 then "three"
+  else if x = 4 then "four"
+  else if x = 5 then "five"
+  else "many"
+
 (* 4. Nested [if] in a [then] branch. *)
 let x4 =
   if a then

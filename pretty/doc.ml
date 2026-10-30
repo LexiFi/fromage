@@ -452,7 +452,8 @@ module Make (Config : CONFIG) : S =
           | _ ->
               let separator =
                 if info.newlines >= 2 then line_break ^^ line_break
-                else if info.newlines = 1 then line_break else space
+                else if info.newlines = 1 then line_break
+                else space
               in
               comments_before
                 ~last_followed_on_its_line:(info.newlines = 0) info

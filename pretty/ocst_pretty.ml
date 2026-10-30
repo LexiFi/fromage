@@ -714,23 +714,32 @@ module Make (Config : Doc.CONFIG) =
         | { node = Exp_begin _; attributes = [] } -> head +- expr value
         | _ -> after head (expr value)
       in
-      let head = keyword if_ ext in
-      let head = keyword_head head (expr condition) (tok then_) in
-      let then_part = branch head if_true in
-      match if_false with
-      | None -> then_part
-      | Some (else_, if_false) ->
-          let else_part =
-            match if_false with
-            | { node = Exp_if (if', ext, condition, then_, if_true, if_false);
+      (* [if c then a], and the parts after it: each [else if c then a] of
+         the chain, then [else b]. *)
+      let rec chain (if_, ext, condition, then_, if_true, if_false) =
+        let head = keyword if_ ext in
+        let head = keyword_head head (expr condition) (tok then_) in
+        let then_part = branch head if_true in
+        match if_false with
+        | None -> then_part, []
+        | Some
+            ( else_,
+              { node = Exp_if (if_, ext, condition, then_, if_true, if_false);
                 attributes = []
               }
-            ->
-                tok else_
-                +- if_then_else (if', ext, condition, then_, if_true, if_false)
-            | _ -> branch (tok else_) if_false
-          in
-          flat (then_part +- else_part) <|> (then_part +| else_part)
+            )
+        ->
+            let first, rest =
+              chain (if_, ext, condition, then_, if_true, if_false)
+            in
+            then_part, (tok else_ +- first) :: rest
+        | Some (else_, if_false) -> then_part, [ branch (tok else_) if_false ]
+      in
+      (* The whole chain on one line, or each part on its line: not the first
+         parts on lines of their own and the next ones on one line. *)
+      match chain (if_, ext, condition, then_, if_true, if_false) with
+      | then_part, [] -> then_part
+      | then_part, else_parts -> lines (then_part :: else_parts)
 
     and match_cases values = vertical (cases case values)
 

@@ -49,7 +49,8 @@ let diff ?(context = 3) before after =
       (' ', removed.(i)) :: middle (i + 1) (j + 1)
     else if i < n && (j = m || common.(i + 1).(j) >= common.(i).(j + 1)) then
       ('-', removed.(i)) :: middle (i + 1) j
-    else if j < m then ('+', added.(j)) :: middle i (j + 1) else []
+    else if j < m then ('+', added.(j)) :: middle i (j + 1)
+    else []
   in
   let lines =
     Array.of_list
