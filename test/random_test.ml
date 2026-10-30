@@ -122,8 +122,8 @@ let operator_types () =
   let texts1 = extend [ "" ] in
   let texts2 = extend texts1 in
   let texts =
-    texts1 @ texts2 @ extend texts2 @ List.map (( ^ ) "let") texts2
-    @ List.map (( ^ ) "and") texts2
+      texts1 @ texts2 @ extend texts2
+    @ List.map (( ^ ) "let") texts2 @ List.map (( ^ ) "and") texts2
     @ [ ""; "land"; "lor"; "lxor"; "mod"; "lsl"; "lsr"; "asr"; "let"; "and" ]
   in
   let lexed text =
@@ -324,10 +324,10 @@ let expect_missing_trivia () =
 let explicit_regressions () =
   expect_missing_trivia ();
   let stream =
-    Token_stream.empty
+      Token_stream.empty
     |>
     fun stream ->
-      Token_stream.insert_create_trivia stream (token "let" `LET)
+        Token_stream.insert_create_trivia stream (token "let" `LET)
       |>
       fun stream ->
         Token_stream.insert_create_trivia
@@ -335,7 +335,7 @@ let explicit_regressions () =
   in
   check "keyword-identifier boundary" stream;
   let stream =
-    Token_stream.empty
+      Token_stream.empty
     |>
     fun stream ->
       Token_stream.insert_create_trivia
@@ -386,10 +386,10 @@ let all_token_kinds () =
   in
   check "all non-error token kinds" stream;
   let variable =
-    Token_stream.empty
+      Token_stream.empty
     |>
     fun stream ->
-      Token_stream.insert_create_trivia stream (token "'" `QUOTE)
+        Token_stream.insert_create_trivia stream (token "'" `QUOTE)
       |>
       fun stream ->
         Token_stream.insert_create_trivia
@@ -414,10 +414,11 @@ let () =
   for sequence = 1 to 1_000 do
     let stream = ref Token_stream.empty in
     for _ = 1 to 1 + Random.State.int state 30 do
-      stream
-      := Token_stream.insert_create_trivia !stream (Random_token.random state)
+      stream :=
+        Token_stream.insert_create_trivia !stream (Random_token.random state)
     done;
-    if Random.State.bool state then begin let text, reason =
+    if Random.State.bool state then begin
+      let text, reason =
         List.nth
           unterminated_errors
           (Random.State.int state (List.length unterminated_errors))

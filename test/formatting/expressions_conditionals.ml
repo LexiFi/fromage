@@ -178,11 +178,11 @@ let x5 =
     x
 
 let x5_operand =
-  (if c then a else b)
+    (if c then a else b)
   +
-  ( if
-      condition_with_a_long_name
-        argument_number_one argument_number_two argument_number_three
-    then 1
-    else 2
-  )
+    ( if
+        condition_with_a_long_name
+          argument_number_one argument_number_two argument_number_three
+      then 1
+      else 2
+    )

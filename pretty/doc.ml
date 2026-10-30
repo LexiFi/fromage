@@ -67,6 +67,11 @@ module type S =
     (** The document, with its level indented by [indent]: the lines after its
       first one are indented by [indent] more. No separator. *)
 
+    val shifted : ?mid_line:bool -> t -> t
+    (** The document 2 columns to the right: after two spaces when it starts
+      its line, and its next lines indented by 2. In the middle of a line,
+      the two spaces are one space, unless [mid_line]: [(   a] after [( ]. *)
+
     (** {1 Layouts: breakable separators} *)
 
     val ( <|> ) : t -> t -> t
@@ -455,8 +460,8 @@ module Make (Config : CONFIG) : S =
                 else if info.newlines = 1 then line_break
                 else space
               in
-              comments_before
-                ~last_followed_on_its_line:(info.newlines = 0) info
+                comments_before
+                  ~last_followed_on_its_line:(info.newlines = 0) info
               ^^ separator
         in
         let line_end =
@@ -558,6 +563,11 @@ module Make (Config : CONFIG) : S =
         body = nest_versions indent value.body
       }
 
+    let shifted ?(mid_line = false) value =
+      let value = nest 2 value in
+      let spaces = if mid_line then both (P.text "  ") else space ^^ space in
+      { value with body = spaces ^^ value.body }
+
     let inline left right =
       let value = left +- right in
       if right.breaks && not (is_empty left) then impossible value else value
@@ -580,20 +590,20 @@ module Make (Config : CONFIG) : S =
       join (fun left right -> left ^^ line_break ^^ line_break ^^ right)
 
     let items values =
-      List.fold_right
-        ( fun (value, adjacent) (rest, rest_adjacent) ->
-            let joined =
-              if
-                is_empty rest || starts_after_blank_line rest
-                || adjacent || rest_adjacent
-              then value +| rest
-              else
-                (* [value] on one line, or a blank line after it. *)
-                (flat value +| rest) <|> (value +|| rest)
-            in
-            joined, adjacent
-        )
-        values (empty, false)
+        List.fold_right
+          ( fun (value, adjacent) (rest, rest_adjacent) ->
+              let joined =
+                if
+                    is_empty rest || starts_after_blank_line rest
+                  || adjacent || rest_adjacent
+                then value +| rest
+                else
+                  (* [value] on one line, or a blank line after it. *)
+                  (flat value +| rest) <|> (value +|| rest)
+              in
+              joined, adjacent
+          )
+          values (empty, false)
       |> fst
 
     (* The values so far end either with a value on one line ([single]), which
@@ -706,16 +716,16 @@ module Make (Config : CONFIG) : S =
         function
         | [] -> [ previous ]
         | (separator, value) :: rest ->
-            separator_after ?in_bracket previous (tok separator)
+              separator_after ?in_bracket previous (tok separator)
             :: loop (print value) rest
       in
       loop (print first) rest
 
     let separated_before print { first; rest } =
-      print first
+        print first
       ::
-      List.map
-        (fun (separator, value) -> tok separator +- nest 2 (print value)) rest
+        List.map
+          (fun (separator, value) -> tok separator +- nest 2 (print value)) rest
 
     let semis print ((values, trailing) : _ semis) =
       match
@@ -752,10 +762,7 @@ module Make (Config : CONFIG) : S =
         let first =
           match bar with
           | Some bar -> element bar first
-          | None ->
-              let value = nest 2 (print first) in
-              with_info
-                { value with body = space ^^ space ^^ value.body } (doc first)
+          | None -> with_info (shifted (print first)) (doc first)
         in
         first :: List.map (fun (bar, value) -> element bar value) rest
 
@@ -785,11 +792,10 @@ module Make (Config : CONFIG) : S =
             else if text = "" then ()
             else if String.for_all (fun c -> c = '\000') text then
               (* Spaces add up at the start of a line only. *)
-              pending
-              :=
-              ( if !line_start then !pending + String.length text
-                else max !pending 1
-              )
+              pending :=
+                ( if !line_start then !pending + String.length text
+                  else max !pending 1
+                )
             else if text.[0] = '\001' then begin
               (* A line directive, at the start of a line. *)
               if not !line_start then Buffer.add_char buffer '\n';

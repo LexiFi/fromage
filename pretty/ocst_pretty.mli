@@ -7,3 +7,6 @@ val default_width : int
 
 val implementation : ?width:int -> Ocst.Cst.implementation -> string
 val interface : ?width:int -> Ocst.Cst.interface -> string
+
+(** The kinds of infix operators, which give their layouts. *)
+module Operator_classification = Operator_classification

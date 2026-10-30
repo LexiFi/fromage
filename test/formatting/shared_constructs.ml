@@ -977,32 +977,32 @@ let equal24 = ( = )
 
 (* 24b. Long chain. *)
 let x24_chain =
-  aaaaaaaaaaaaaaaa + bbbbbbbbbbbbbbbbbbbbbbbb + cccccccccccccccccc
-  + ddddddddddddd + eeeeeeeeeeeeeeeeeeeeee + f
+    aaaaaaaaaaaaaaaa + bbbbbbbbbbbbbbbbbbbbbbbb
+  + cccccccccccccccccc + ddddddddddddd + eeeeeeeeeeeeeeeeeeeeee + f
 
 (* 24c. Long operand. *)
 let x24_operand =
-  aaaaaaaaaaaaaaaa
+    aaaaaaaaaaaaaaaa
   +
-  function_with_a_long_name
-    argument_number_one argument_number_two
-    argument_number_three argument_number_four
+    function_with_a_long_name
+      argument_number_one argument_number_two
+      argument_number_three argument_number_four
   + c
 
 (* 24d. Right associative. *)
 let x24_right =
-  aaaaaaaaaaaaaaaa @ bbbbbbbbbbbbbbbbbbbbbbbb @ cccccccccccccccccc
+    aaaaaaaaaaaaaaaa @ bbbbbbbbbbbbbbbbbbbbbbbb @ cccccccccccccccccc
   @ ddddddddddddddddd @ eeeeeeeeeeeeeeeeeeeeee @ f
 
 (* 24e. Comparison with [=], long operands. *)
 let x24_equal =
-  function_with_a_long_name
-    argument_number_one argument_number_two
-    argument_number_three argument_number_four
+    function_with_a_long_name
+      argument_number_one argument_number_two
+      argument_number_three argument_number_four
   =
-  function_with_a_long_name
-    argument_number_one argument_number_two
-    argument_number_three argument_number_four
+    function_with_a_long_name
+      argument_number_one argument_number_two
+      argument_number_three argument_number_four
 
 (* 25. Lists built with [::]. *)
 
@@ -1011,16 +1011,16 @@ let l25 = a :: b :: c
 
 (* 25b. Long. *)
 let l25_long =
-  aaaaaaaaaaaaaaaa :: bbbbbbbbbbbbbbbbbbbbbbbb :: cccccccccccccccccc
+    aaaaaaaaaaaaaaaa :: bbbbbbbbbbbbbbbbbbbbbbbb :: cccccccccccccccccc
   :: ddddddddddddddd :: eeeeeeeeeeeeeeeeeeeeeeee :: f
 
 (* 25c. Long element. *)
 let l25_element =
-  aaaaaaaaaaaaaaaa
+    aaaaaaaaaaaaaaaa
   ::
-  function_with_a_long_name
-    argument_number_one argument_number_two
-    argument_number_three argument_number_four
+    function_with_a_long_name
+      argument_number_one argument_number_two
+      argument_number_three argument_number_four
   :: c
 
 (* 26. Arrow types. *)

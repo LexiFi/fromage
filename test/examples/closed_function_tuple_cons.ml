@@ -16,7 +16,7 @@ let x =
 let x = [ function false -> ., function false -> . :: X1, 1 ]
 let x = function false -> ., function false -> . :: X1, 1; 2
 let x =
-  function false -> ., function false -> . :: X1, function false -> .
+    function false -> ., function false -> . :: X1, function false -> .
   :: X2
   ,
   1

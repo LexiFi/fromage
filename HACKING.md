@@ -334,9 +334,10 @@ whenever a layout can.
 So a multi-line parenthesized expression is written `( f` (with a space, so
 that its contents are indented by an even amount), a multi-line `match`
 or `function` is in `begin`/`end` rather than in parentheses, a keyword
-after `begin` stays on its line (`begin match`, `begin fun`, `begin if`,
-`begin let`...), and `begin` stays on the line of `then` or `else`, with
-`end` in the column of `if`:
+after `begin` stays on its line (`begin match`, `begin fun`, `begin if`...),
+except `let`, which always starts the next line (`test/formatting/begin_end.ml`),
+and `begin` stays on the line of `then` or `else`, with `end` in the column
+of `if`:
 
 ```ocaml
 let ext =
@@ -361,10 +362,21 @@ they are shown (in `test/formatting/`).
 - A separator after an element on several lines is alone on its line, even
   in sequences (`;` after a call on several lines), except after the `)`,
   `end` or `done` which close the element (`separators.ml`).
-- Assignments, `r := v` and `r.x <- v`, are chains of operators, as the
-  other infix operators: `<-` is syntax, but too similar to `:=` to be
-  formatted differently. A change would be part of a change of the
-  operators in general (`separators_after_long_parts.ml`).
+- The infix operators are of three kinds (`pretty/operator_classification.ml`),
+  which differ when an operand is on several lines: the operator is then
+  alone on its line, and the operands which receive nothing are indented
+  by 2 from it. The operands of a symmetric operator (`a + b`, `a = b`,
+  `a && b`, `x :: l`) are all indented; for an operator whose left operand
+  flows into the right one (`x |> f`), only the left one; for an operator
+  whose right operand flows into the left one (`f @@ x`, and the
+  assignments `r := v`, `r.x <- v`), only the right one, and the operator
+  may also end the line of a left operand on one line (`r :=`, then `v`
+  indented). In a bracket
+  (`( a + b )`, `[ a + b; c ]`), where the first operand cannot be indented,
+  the operators are in the column of the bracket instead. The kind of an
+  operator comes from its text: a table of the usual ones, else the
+  direction in which its characters point (`expressions_operators.ml`,
+  `separators_after_long_parts.ml`).
 - The formatter keeps the tokens: it does not add the `|` before the first
   case of `function` or `match` when the source has none; whoever wants it
   writes it (`expressions_applications.ml`, `expressions_matching.ml`).
@@ -404,6 +416,9 @@ do; `--debug` also shows the item and the formatted source.
   space between them only when they are lexed as the same two tokens. Its
   leading comments are kept apart, so that they do not prevent the document
   from fitting on one line.
+- `operator_classification.ml`: the kinds of the infix operators, from
+  their text, which give their layouts (symmetric, left into right, right
+  into left; tested by `test/operator_classification_test.ml`).
 - `syntax_layouts.ml`: the layouts shared by several constructs: let-like
   bindings (`x = e`), match-like cases (`p -> e`), fun-like functions
   (`fun x -> e`, `functor (X : S) -> M`), chains of operators (with

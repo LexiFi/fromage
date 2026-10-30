@@ -98,6 +98,11 @@ module type S =
     (** The document, with its level indented by [indent]: the lines after its
       first one are indented by [indent] more. No separator. *)
 
+    val shifted : ?mid_line:bool -> t -> t
+    (** The document 2 columns to the right: after two spaces when it starts
+      its line, and its next lines indented by 2. In the middle of a line,
+      the two spaces are one space, unless [mid_line]: [(   a] after [( ]. *)
+
     (** {1 Layouts: breakable separators} *)
 
     val ( <|> ) : t -> t -> t

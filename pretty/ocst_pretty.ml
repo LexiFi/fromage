@@ -49,7 +49,7 @@ module Make (Config : Doc.CONFIG) =
           module_path path ++ tok left ++ module_path content ++ tok right
 
     let longident print (qualifier, name) =
-      opt (fun (path, dot) -> module_path path ++ tok dot) qualifier
+        opt (fun (path, dot) -> module_path path ++ tok dot) qualifier
       ++ print name
 
     let operator =
@@ -123,11 +123,11 @@ module Make (Config : Doc.CONFIG) =
           tok question ++ tok name +- tok colon
 
     let type_parameter (variance, variable) =
-      glued_list (List.map tok variance)
+        glued_list (List.map tok variance)
       ++
-      match variable with
-        `Var variable -> type_variable variable
-      | `Any underscore -> tok underscore
+        match variable with
+          `Var variable -> type_variable variable
+        | `Any underscore -> tok underscore
 
     let type_parameters =
       function
@@ -162,6 +162,10 @@ module Make (Config : Doc.CONFIG) =
       | `OR | `BARBAR -> 1, Right
       | `COLONEQUAL -> 0, Right
       | `PREFIXOP _ | `LETOP _ | `ANDOP _ | `BANG -> 9, Left
+
+    let operator_kind (operator : [< Token.any_kind ] Token.token) =
+      Operator_classification.classify
+        (Token.text (operator :> Token.any_token))
 
     (* {1 Layouts shared by patterns and expressions} *)
 
@@ -208,7 +212,7 @@ module Make (Config : Doc.CONFIG) =
                several lines, [with] alone in the column of the bracket, and
                the fields indented by 2. *)
             let content =
-              flat (base +- with_ +- fields)
+                flat (base +- with_ +- fields)
               <|> (flat (base +- with_) +| fields)
             in
             begin match inline with
@@ -217,12 +221,12 @@ module Make (Config : Doc.CONFIG) =
                   ~spaces:true ~inline:false left
                   (content <|> losing_ties (base +| with_ +| fields)) right
             | _ ->
-                bracket ~spaces:true left content right
+                  bracket ~spaces:true left content right
                 <|>
-                losing_ties
-                  ( below ~indent:2 (left +- nest 2 base +| with_) fields
-                    +| right
-                  )
+                  losing_ties
+                    ( below ~indent:2 (left +- nest 2 base +| with_) fields
+                      +| right
+                    )
             end
 
     (* {1 The grammar} *)
@@ -298,7 +302,7 @@ module Make (Config : Doc.CONFIG) =
       =
       fun keyword (ext, values) ->
         let keyword =
-          tok keyword
+            tok keyword
           ++ opt (fun (percent, id) -> tok percent ++ attr_id id) ext
         in
         after keyword (attributes values)
@@ -369,7 +373,7 @@ module Make (Config : Doc.CONFIG) =
           arrow_type first rest
       | Typ_tuple elements ->
           let element (label, typ) =
-            opt (fun (name, colon) -> tok name ++ tok colon) label
+              opt (fun (name, colon) -> tok name ++ tok colon) label
             ++ core_type typ
           in
           pack_list_isolating_multiline
@@ -423,10 +427,10 @@ module Make (Config : Doc.CONFIG) =
           begin match leading_bar with
           | Some _ when after_bracket -> bracket ~spaces:true left content right
           | _ ->
-              flat (left +- content +- right)
+                flat (left +- content +- right)
               <|>
-              if after_bracket then left +- content +| right
-              else left +/ content +| right
+                if after_bracket then left +- content +| right
+                else left +| content +| right
           end
       | Typ_poly (variables, dot, typ) ->
           after (type_variables_dot variables dot) (core_type typ)
@@ -498,7 +502,14 @@ module Make (Config : Doc.CONFIG) =
 
     (* {2 Patterns} *)
 
-    and pattern value = with_attributes pattern_node value
+    and pattern value = with_attributes (pattern_node ~in_bracket:false) value
+
+    (** A pattern which starts where the content of a bracket starts (see
+      [bracket_expr]). *)
+    and bracket_pattern (value : pattern) =
+      match value with
+      | { node; attributes = [] } -> pattern_node ~in_bracket:true node
+      | value -> pattern value
 
     and or_patterns (value : pattern) =
       match value with
@@ -518,15 +529,19 @@ module Make (Config : Doc.CONFIG) =
       match value with
       | { node = Pat_or _; attributes = [] } ->
           or_pattern_lines ~shift:(-2) value
-      | _ -> pattern value
+      | _ -> bracket_pattern value
 
-    and cons_patterns (value : pattern) =
-      match value with
-      | { node = Pat_cons (left, cons, right); attributes = [] } ->
-          pattern left :: operand_after cons (cons_patterns right)
-      | _ -> [ pattern value ]
+    (** As [cons_operands], for a pattern. *)
+    and cons_patterns left cons right =
+      let rec operands rest cons (value : pattern) =
+        match value with
+        | { node = Pat_cons (left, next, right); attributes = [] } ->
+            operands ((cons, pattern left) :: rest) next right
+        | _ -> List.rev ((cons, pattern value) :: rest)
+      in
+      pattern left, operands [] cons right
 
-    and pattern_node node =
+    and pattern_node ~in_bracket node =
       match node with
       | Pat_any value -> tok value
       | Pat_var name -> val_ident name
@@ -536,7 +551,9 @@ module Make (Config : Doc.CONFIG) =
       | Pat_interval (low, dotdot, high) ->
           words [ signed_constant low; tok dotdot; signed_constant high ]
       | Pat_tuple (elements, open_) ->
-          let elements = separated_after tuple_pattern_element elements in
+          let elements =
+            separated_after (tuple_pattern_element ~in_bracket) elements
+          in
           let elements =
             match open_ with
             | None -> elements
@@ -558,10 +575,12 @@ module Make (Config : Doc.CONFIG) =
       | Pat_variant (tag, argument) ->
           after (name_tag tag) (opt pattern argument)
       | Pat_record value -> record_pattern value
-      | Pat_array value -> array_literal pattern value
-      | Pat_list value -> list_literal pattern value
+      | Pat_array value -> array_literal bracket_pattern value
+      | Pat_list value -> list_literal bracket_pattern value
       | Pat_or _ -> or_pattern_lines ~shift:0 { node; attributes = [] }
-      | Pat_cons _ -> operator_chain (cons_patterns { node; attributes = [] })
+      | Pat_cons (left, cons, right) ->
+          let first, rest = cons_patterns left cons right in
+          operator_chain ~in_bracket (operator_kind cons) first rest
       | Pat_constraint value -> poly_pattern value
       | Pat_type (hash, path) -> tok hash ++ longident tok path
       | Pat_lazy (lazy_, ext, value) ->
@@ -594,14 +613,16 @@ module Make (Config : Doc.CONFIG) =
       | { node = Pat_paren value; attributes = [] } ->
           paren ~inline:false shifted_pattern value
       | { node = Pat_list value; attributes = [] } ->
-          list_literal ~inline:false pattern value
+          list_literal ~inline:false bracket_pattern value
       | { node = Pat_record value; attributes = [] } ->
           record_pattern ~inline:false value
       | value -> pattern value
 
-    and tuple_pattern_element =
+    (** An element of a tuple pattern, in a bracket when [in_bracket]. *)
+    and tuple_pattern_element ~in_bracket =
       function
-      | Tuple_pattern value -> pattern value
+      | Tuple_pattern value ->
+          if in_bracket then bracket_pattern value else pattern value
       | Tuple_pattern_label (label, value) ->
           labelled (tok label) (pattern value)
       | Tuple_pattern_pun (tilde, name) -> tok tilde ++ tok name
@@ -642,34 +663,46 @@ module Make (Config : Doc.CONFIG) =
 
     (* {2 Expressions} *)
 
-    and expr value = with_attributes expr_node value
+    and expr value = with_attributes (expr_node ~in_bracket:false) value
 
-    and infix_operands level associativity (value : expr) =
+    (** An expression which starts where the content of a bracket starts, as
+      in [( e )] or [\[ e; ... \]] (see [operator_chain]). *)
+    and bracket_expr (value : expr) =
       match value with
-      | { node = Exp_infix (left, operator, right); attributes = [] } when
-          operator_level operator = (level, associativity)
-      ->
-          begin match associativity with
-          | Left ->
-              infix_operands level associativity left
-              @ [ operator_before operator (expr right) ]
-          | Right ->
-              expr left
-              ::
-              operand_after operator (infix_operands level associativity right)
-          end
-      | _ -> [ expr value ]
+      | { node; attributes = [] } -> expr_node ~in_bracket:true node
+      | value -> expr value
 
-    (** The operands of a chain of operators, with the operator before the first one. *)
-    and operand_after
-      : 'kind.
-          ([< Syntax_layouts.operator_kind ] as 'kind) Token.token -> t list
-          -> t list
-      =
-      fun operator ->
-        function
-        | first :: rest -> operator_before operator first :: rest
-        | [] -> []
+    (** The operands of the chain of [left operator right], with the operators
+      of the same level, associativity and kind as [operator]: the first
+      operand, then each operator and the operand after it. *)
+    and infix_operands left (operator : operator_token) right =
+      let level = operator_level operator
+      and kind = operator_kind operator
+      in
+      let same (other : operator_token) =
+        operator_level other = level && operator_kind other = kind
+      in
+      match snd level with
+      | Left ->
+          (* [((a + b) + c) + d]: the operands from the last one. *)
+          let rec operands rest (value : expr) =
+            match value with
+            | { node = Exp_infix (left, operator, right); attributes = [] } when
+                same operator
+            -> operands ((operator, expr right) :: rest) left
+            | _ -> expr value, rest
+          in
+          operands [ operator, expr right ] left
+      | Right ->
+          (* [a + (b + (c + d))]. *)
+          let rec operands rest operator (value : expr) =
+            match value with
+            | { node = Exp_infix (left, next, right); attributes = [] } when
+                same next
+            -> operands ((operator, expr left) :: rest) next right
+            | _ -> List.rev ((operator, expr value) :: rest)
+          in
+          expr left, operands [] operator right
 
     (** [e#m#n]: [e], then each call, [#m] and [#n]. *)
     and method_calls (value : expr) =
@@ -678,11 +711,15 @@ module Make (Config : Doc.CONFIG) =
           method_calls value @ [ tok hash ++ tok name ]
       | _ -> [ expr value ]
 
-    and cons_operands (value : expr) =
-      match value with
-      | { node = Exp_cons (left, cons, right); attributes = [] } ->
-          expr left :: operand_after cons (cons_operands right)
-      | _ -> [ expr value ]
+    (** As [infix_operands], for [left :: right]. *)
+    and cons_operands left cons right =
+      let rec operands rest cons (value : expr) =
+        match value with
+        | { node = Exp_cons (left, next, right); attributes = [] } ->
+            operands ((cons, expr left) :: rest) next right
+        | _ -> List.rev ((cons, expr value) :: rest)
+      in
+      expr left, operands [] cons right
 
     and sequence (value : expr) =
       match value with
@@ -694,7 +731,7 @@ module Make (Config : Doc.CONFIG) =
       ->
           begin match sequence right with
           | first :: rest ->
-              separator_after (expr left) (tok semi)
+                separator_after (expr left) (tok semi)
               :: (tok percent ++ attr_id id +- first) :: rest
           | [] -> []
           end
@@ -725,7 +762,7 @@ module Make (Config : Doc.CONFIG) =
            then takes more lines: [c] alone on its lines only as a last
            resort. *)
         let head =
-          flat (head +- condition +- then_)
+            flat (head +- condition +- then_)
           <|> as_last_resort (head +/ condition +| then_)
         in
         let then_part = branch head if_true in
@@ -773,74 +810,84 @@ module Make (Config : Doc.CONFIG) =
       let in_ = tok in_ in
       ((flat bindings +- in_) <|> (bindings +| in_)) +| body
 
-    and expr_node node =
+    and expr_node ~in_bracket node =
       match node with
       | Exp_ident path -> longident val_ident path
       | Exp_constant value -> tok value
       | Exp_construct (constructor, argument) ->
           after (longident constr_ident constructor) (opt expr argument)
       | Exp_variant (tag, argument) -> after (name_tag tag) (opt expr argument)
-      | Exp_paren value -> paren expr value
+      | Exp_paren value -> paren bracket_expr value
       | Exp_constraint { left; content = value, constraint_; right } ->
           let constraint_, coercion = type_constraint_parts constraint_ in
-          constrained_paren ?constraint_ ?coercion ~left (expr value) ~right
+          constrained_paren
+            ?constraint_ ?coercion ~left (bracket_expr value) ~right
       | Exp_begin { left; content = ext, body; right } ->
           let left = keyword left ext
           and right = tok right
           in
-          closed
-          @@
-          begin match body with
-          | None -> left +- right
-          | Some
-              ( { node = Exp_match _ | Exp_try _ | Exp_function _;
-                  attributes = []
-                }
-                as body
-              )
-          ->
-              let body = expr body in
-              flat (left +- body +- right) <|> (left +- body +| right)
-          | Some body ->
-              let body = expr body in
-              (* [begin fun], [begin if]...: the keyword on the line of [begin],
+          closed @@
+            begin match body with
+            | None -> left +- right
+            | Some
+                ( { node = Exp_match _ | Exp_try _ | Exp_function _;
+                    attributes = []
+                  }
+                  as body
+                )
+            ->
+                let body = expr body in
+                (* After comments on lines of their own, the body on the
+                   next lines, indented. *)
+                  flat (left +- body +- right)
+                <|> (inline left body +| right) <|> (left +/ body +| right)
+            | Some body ->
+                let body = expr body in
+                (* [begin fun], [begin if]...: the keyword on the line of [begin],
                 and the rest as after [( ]. *)
-              let block = bracket ~spaces:true ~inline:false left body right in
-              (* Not before another [begin]: [begin begin] would hide the
+                let block = bracket ~spaces:true ~inline:false left body right
+                in
+                (* Not before another [begin]: [begin begin] would hide the
                   second one. *)
-              let begins = first_kind body = Some `BEGIN in
-              if
-                starts_with_keyword body && not begins
-                && not (starts_with_comments_of_previous_line body)
-              then
-                flat (left +- body +- right)
-                <|> (inline left (nest 2 body) +| right) <|> block
-              else block
-          end
+                let begins = first_kind body = Some `BEGIN in
+                (* [let] always starts the line after [begin], even when all
+                   fits on one line: [begin let x = e in], then the body
+                   indented by 2, would hide the body after [let]. *)
+                if first_kind body = Some `LET then left +/ body +| right
+                else if
+                    starts_with_keyword body && not begins
+                  && not (starts_with_comments_of_previous_line body)
+                then
+                    flat (left +- body +- right)
+                  <|> (inline left (nest 2 body) +| right) <|> block
+                else block
+            end
       | Exp_apply (function_, arguments) -> application function_ arguments
-      | Exp_infix (_, operator, _) ->
-          let level, associativity = operator_level operator in
-          operator_chain
-            (infix_operands level associativity { node; attributes = [] })
+      | Exp_infix (left, operator, right) ->
+          let first, rest = infix_operands left operator right in
+          operator_chain ~in_bracket (operator_kind operator) first rest
       | Exp_prefix (operator, value) -> tok operator ++ expr value
       | Exp_unary (operator, value) -> tok operator ++ expr value
       | Exp_tuple elements ->
+          (* In a bracket, the elements are where its content starts. *)
           pack_list_isolating_multiline
-            ~indent:0 (separated_after tuple_element elements)
-      | Exp_cons _ -> operator_chain (cons_operands { node; attributes = [] })
+            ~indent:0 (separated_after (tuple_element ~in_bracket) elements)
+      | Exp_cons (left, cons, right) ->
+          let first, rest = cons_operands left cons right in
+          operator_chain ~in_bracket (operator_kind cons) first rest
       | Exp_field (record, dot, label) ->
           expr record ++ tok dot ++ longident tok label
       | Exp_setfield (record, dot, label, arrow, value) ->
           operator_chain
-            [ expr record ++ tok dot ++ longident tok label;
-              operator_before arrow (expr value)
-            ]
+            ~in_bracket (operator_kind arrow)
+            (expr record ++ tok dot ++ longident tok label)
+            [ arrow, expr value ]
       | Exp_index (array, dot, index, assign) ->
           let dot =
             match dot with
             | Index_builtin dot -> tok dot
             | Index_user (qualifier, dotop) ->
-                opt (fun (dot, path) -> tok dot ++ module_path path) qualifier
+                  opt (fun (dot, path) -> tok dot ++ module_path path) qualifier
                 ++ tok dotop
           in
           let index =
@@ -850,7 +897,7 @@ module Make (Config : Doc.CONFIG) =
                   ~inline:false
                   ( fun values ->
                       pack_list_isolating_multiline
-                        ~indent:0 (semis expr values)
+                        ~indent:0 (semis bracket_expr values)
                   )
                   value
             | Brackets value ->
@@ -858,7 +905,7 @@ module Make (Config : Doc.CONFIG) =
                   ~inline:false
                   ( fun values ->
                       pack_list_isolating_multiline
-                        ~indent:0 (semis expr values)
+                        ~indent:0 (semis bracket_expr values)
                   )
                   value
             | Braces value ->
@@ -866,7 +913,7 @@ module Make (Config : Doc.CONFIG) =
                   ~inline:false
                   ( fun values ->
                       pack_list_isolating_multiline
-                        ~indent:0 (semis expr values)
+                        ~indent:0 (semis bracket_expr values)
                   )
                   value
           in
@@ -874,10 +921,12 @@ module Make (Config : Doc.CONFIG) =
           begin match assign with
           | None -> value
           | Some (arrow, assigned) ->
-              operator_chain [ value; operator_before arrow (expr assigned) ]
+              operator_chain
+                ~in_bracket (operator_kind arrow) value [ arrow, expr assigned ]
           end
       | Exp_setinstvar (name, arrow, value) ->
-          operator_chain [ tok name; operator_before arrow (expr value) ]
+          operator_chain
+            ~in_bracket (operator_kind arrow) (tok name) [ arrow, expr value ]
       | Exp_send _ ->
           pack_list_isolating_multiline
             ~glued:true ~indent:2 (method_calls { node; attributes = [] })
@@ -887,7 +936,7 @@ module Make (Config : Doc.CONFIG) =
           let bindings =
             vertical
               ( letop_binding (tok let_op) first
-                ::
+              ::
                 List.map
                   (fun (and_op, binding) -> letop_binding (tok and_op) binding)
                   rest
@@ -899,12 +948,12 @@ module Make (Config : Doc.CONFIG) =
             (keyword let_ ext +- documented structure_item item) in_ (expr body)
       | Exp_fun (fun_, ext, params, constraint_, arrow, body) ->
           let params =
-            List.map function_param params
+              List.map function_param params
             @
-            [ opt
-                (fun (colon, typ) -> tok colon +- nest 2 (core_type typ))
-                constraint_
-            ]
+              [ opt
+                  (fun (colon, typ) -> tok colon +- nest 2 (core_type typ))
+                  constraint_
+              ]
           in
           fun_like ~head:(keyword fun_ ext) ~params arrow ~body:(expr body)
       | Exp_function (function_, ext, values) ->
@@ -968,14 +1017,14 @@ module Make (Config : Doc.CONFIG) =
       | Exp_local_open (path, dot, value) ->
           module_path path ++ tok dot ++ glued_expr value
       | Exp_record value -> record_expr value
-      | Exp_array value -> array_literal expr value
-      | Exp_list value -> list_literal expr value
+      | Exp_array value -> array_literal bracket_expr value
+      | Exp_list value -> list_literal bracket_expr value
       | Exp_extension value -> extension value
       | Exp_unreachable dot -> tok dot
 
     and record_expr ?inline { left; content = base, fields; right } =
       record_literal
-        ?base:(Option.map (fun (base, with_) -> expr base, with_) base)
+        ?base:(Option.map (fun (base, with_) -> bracket_expr base, with_) base)
         ?inline record_field { left; content = fields; right }
 
     (** An expression glued after [M.]: its bracket does not start its line, so
@@ -983,18 +1032,20 @@ module Make (Config : Doc.CONFIG) =
     and glued_expr (value : expr) =
       match value with
       | { node = Exp_paren value; attributes = [] } ->
-          paren ~inline:false expr value
+          paren ~inline:false bracket_expr value
       | { node = Exp_list value; attributes = [] } ->
-          list_literal ~inline:false expr value
+          list_literal ~inline:false bracket_expr value
       | { node = Exp_record value; attributes = [] } ->
           record_expr ~inline:false value
       | value -> expr value
 
-    and tuple_element =
+    (** An element of a tuple, in a bracket when [in_bracket] (see
+      [bracket_expr]). *)
+    and tuple_element ~in_bracket =
       function
       | Tuple_expr (~label, value) ->
           ( match label with
-              None -> expr value
+              None -> if in_bracket then bracket_expr value else expr value
             | Some label -> labelled (tok label) (expr value)
           )
       | Tuple_pun (tilde, name) -> tok tilde ++ tok name
@@ -1148,20 +1199,20 @@ module Make (Config : Doc.CONFIG) =
             value
       | Param_optional (question, name) -> tok question ++ tok name
       | Param_optlabel_default (optlabel, value) ->
-          tok optlabel
+            tok optlabel
           ++
-          paren
-            ~inline:false
-            ( fun (((value, typ) : let_pattern), default) ->
-                let constraint_ = Option.map colon_type typ in
-                match default with
-                | Some (equal, default) ->
-                    binding
-                      ~head:(pattern value) ?constraint_
-                      equal ~body:(expr default)
-                | None -> binding_head ?constraint_ (pattern value)
-            )
-            value
+            paren
+              ~inline:false
+              ( fun (((value, typ) : let_pattern), default) ->
+                  let constraint_ = Option.map colon_type typ in
+                  match default with
+                  | Some (equal, default) ->
+                      binding
+                        ~head:(pattern value) ?constraint_
+                        equal ~body:(expr default)
+                  | None -> binding_head ?constraint_ (pattern value)
+              )
+              value
       | Param_optlabel (optlabel, value) -> tok optlabel ++ tok value
       | Param_labelled_paren (tilde, value) ->
           glued_paren (tok tilde) label_pattern value
@@ -1226,7 +1277,7 @@ module Make (Config : Doc.CONFIG) =
     and let_open : 'a. ('a -> t) -> 'a let_open -> t =
       fun print (let_, open_, bang, values, path, in_, body) ->
         let head =
-          glued_list [ tok let_ +- tok open_; opt tok bang ]
+            glued_list [ tok let_ +- tok open_; opt tok bang ]
           ++ attributes values +- module_path path
         in
         let_in head in_ (print body)
@@ -1267,9 +1318,9 @@ module Make (Config : Doc.CONFIG) =
       | Cf_val (val_, bang, values, flags, name, body, ~post_attributes) ->
           let head =
             words
-              ( (tok val_ ++ opt tok bang ++ attributes values)
+              (   (tok val_ ++ opt tok bang ++ attributes values)
                 :: List.map tok flags
-                @ [ tok name ]
+              @ [ tok name ]
               )
           in
           let body =
@@ -1287,9 +1338,9 @@ module Make (Config : Doc.CONFIG) =
       ->
           let head =
             words
-              ( (tok method_ ++ opt tok bang ++ attributes values)
+              (   (tok method_ ++ opt tok bang ++ attributes values)
                 :: List.map tok flags
-                @ [ tok name ]
+              @ [ tok name ]
               )
           in
           let body =
@@ -1950,6 +2001,8 @@ module Make (Config : Doc.CONFIG) =
         item_attributes
           (after (keyword include_ ext) (print value)) post_attributes
   end
+
+module Operator_classification = Operator_classification
 
 let default_width = 80
 

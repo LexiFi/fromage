@@ -241,7 +241,7 @@ let mutants ?(extra = No_extra) sentence =
       match extra with
       | No_extra | No_mutants -> []
       | Every_token ->
-          Array.to_list Random_token.all
+            Array.to_list Random_token.all
           |>
           List.concat_map (fun token -> [ insert ~token (); replace ~token () ])
       | Mutants count ->
@@ -251,7 +251,7 @@ let mutants ?(extra = No_extra) sentence =
           (* A doc comment before every token, after [separator ()]. *)
           let documented separator =
             let previous = ref None in
-            Array.to_list tokens
+              Array.to_list tokens
             |>
             List.mapi
               ( fun index (token : Ocst.Token.any_token) ->
@@ -269,14 +269,16 @@ let mutants ?(extra = No_extra) sentence =
                   let token = separated doc token in
                   previous := Some token; [ doc; token ]
               )
-            |> List.concat |> Array.of_list |> source
+            |> List.concat
+            |> Array.of_list
+            |> source
           in
-          ( if all then
-              List.map
-                (fun separator -> documented (fun () -> separator))
-                (Array.to_list separators)
-            else []
-          )
+            ( if all then
+                List.map
+                  (fun separator -> documented (fun () -> separator))
+                  (Array.to_list separators)
+              else []
+            )
           @ [ documented (fun () -> separators.(Random.State.int random 3)) ]
     in
     let usual =
@@ -330,8 +332,9 @@ let configurations =
         ;
           { entrypoint;
             arguments =
-              [ "--seed"; "3"; "--count"; "1000"; "--length"; "60"; "--comments"
-              ]
+                [ "--seed"; "3"; "--count"; "1000";
+                  "--length"; "60"; "--comments"
+                ]
               @ valid
           ;
             extra = No_extra
@@ -369,21 +372,21 @@ let quick_configurations =
 type deep = { name : string; parts : int; configuration : configuration }
 
 let huge_valid =
-  valid
+    valid
   @
-  [ "--avoid"; "METAOCAML_ESCAPE"; "--avoid"; "METAOCAML_BRACKET_OPEN";
-    "--avoid"; "_: _* DOT LBRACKET _* LESSMINUS _*";
-    "--avoid"; "_: _* MODULE _* COLON module_type _*";
-    "--avoid"; "_: LPAREN MODULE _* module_type RPAREN"
-  ]
+    [ "--avoid"; "METAOCAML_ESCAPE"; "--avoid"; "METAOCAML_BRACKET_OPEN";
+      "--avoid"; "_: _* DOT LBRACKET _* LESSMINUS _*";
+      "--avoid"; "_: _* MODULE _* COLON module_type _*";
+      "--avoid"; "_: LPAREN MODULE _* module_type RPAREN"
+    ]
 
 let million_valid =
-  huge_valid
+    huge_valid
   @
-  [ "--avoid"; "expr_colon_package_type: _* COLON _*";
-    "--avoid"; "expr_colon_package_type: _* COLONGREATER _*";
-    "--avoid"; "let_bindings(no_ext): _* PERCENT _*"
-  ]
+    [ "--avoid"; "expr_colon_package_type: _* COLON _*";
+      "--avoid"; "expr_colon_package_type: _* COLONGREATER _*";
+      "--avoid"; "let_bindings(no_ext): _* PERCENT _*"
+    ]
 
 let deep_configurations =
   let random ~seed ~count ~length valid =
@@ -451,11 +454,12 @@ let rejections ~entrypoint sentences =
             (* The sentence, or the text before the error for long ones. *)
             let sentence =
               if
-                String.length sentence <= 300 || start < 0
+                  String.length sentence <= 300 || start < 0
                 || start > String.length sentence
               then sentence
               else
-                "..." ^ String.sub sentence (max 0 (start - 60)) (min 60 start)
+                  "..."
+                ^ String.sub sentence (max 0 (start - 60)) (min 60 start)
                 ^ "<HERE>"
             in
             let count, example =
@@ -477,7 +481,7 @@ let rejections ~entrypoint sentences =
     "%s: %d sentences, %d rejected by the compiler\n"
     entrypoint (List.length sentences) total
   ;
-  List.sort (fun (_, (left, _)) (_, (right, _)) -> compare right left) groups
+    List.sort (fun (_, (left, _)) (_, (right, _)) -> compare right left) groups
   |>
   List.iteri
     ( fun index ((message, text), (count, example)) ->
@@ -515,7 +519,7 @@ let sentence_files =
             )
         )
         configurations
-      @
+    @
       List.map
         ( fun { name; configuration; _ } ->
             configuration, name ^ ".sentences", "--deep " ^ name
@@ -712,11 +716,11 @@ let selected ~quick ~entrypoints ~extra ~index ~deep explicit =
           }
         ]
     | [] ->
-        List.filter
-          ( fun { entrypoint; _ } ->
-              entrypoints = [] || List.mem entrypoint entrypoints
-          )
-          (if quick then quick_configurations else configurations)
+          List.filter
+            ( fun { entrypoint; _ } ->
+                entrypoints = [] || List.mem entrypoint entrypoints
+            )
+            (if quick then quick_configurations else configurations)
         |>
         List.map
           ( fun configuration ->
@@ -796,7 +800,7 @@ let check ~timings ~mutants_only ~part fuzz configurations =
                   let kind = failure_kind ~name message in
                   (* The backtrace of an exception of OCST. *)
                   if
-                    kind = "OCST raised an exception"
+                      kind = "OCST raised an exception"
                     || kind = "OCST internal error"
                   then
                     Option.iter
@@ -821,15 +825,15 @@ let check ~timings ~mutants_only ~part fuzz configurations =
           let failures =
             List.concat_map
               ( fun sentence ->
-                  ( if mutants_only then []
-                    else Option.to_list (check_sentence ~kind:"" sentence)
-                  )
-                  @
-                  List.filter_map
-                    (check_sentence ~kind:" mutant")
-                    ( Roundtrip.timed
-                        "make the mutants" (fun () -> mutants ~extra sentence)
+                    ( if mutants_only then []
+                      else Option.to_list (check_sentence ~kind:"" sentence)
                     )
+                  @
+                    List.filter_map
+                      (check_sentence ~kind:" mutant")
+                      ( Roundtrip.timed
+                          "make the mutants" (fun () -> mutants ~extra sentence)
+                      )
               )
               sentences
           in
@@ -934,8 +938,9 @@ let () =
   let flag name doc = Arg.(value & flag & info [ name ] ~doc) in
   let dune_rules_directory =
     Arg.(
-      value & opt (some (enum [ "test", "test"; "coverage", "coverage" ])) None
-      &
+      value
+    & opt (some (enum [ "test", "test"; "coverage", "coverage" ])) None
+    &
       info
         [ "dune-rules" ] ~docv:"DIRECTORY"
         ~doc:
@@ -964,8 +969,9 @@ let () =
       "Check only the mutants of the sentences, which another rule checks."
   and sentences =
     Arg.(
-      value & opt (some file) None
-      &
+      value
+    & opt (some file) None
+    &
       info
         [ "sentences" ] ~docv:"FILE"
         ~doc:"Read the sentences from FILE, written by $(b,--generate)."
@@ -982,8 +988,9 @@ let () =
     )
   and source =
     Arg.(
-      value & opt (some file) None
-      &
+      value
+    & opt (some file) None
+    &
       info
         [ "grammar" ] ~docv:"GRAMMAR"
         ~doc:
@@ -994,11 +1001,11 @@ let () =
   and entrypoints =
     Arg.(
       value
-      &
+    &
       opt_all
         (enum [ "implementation", "implementation"; "interface", "interface" ])
         []
-      &
+    &
       info
         [ "entrypoint" ] ~docv:"ENTRYPOINT"
         ~doc:"Only the configurations of ENTRYPOINT (repeatable)."
@@ -1010,8 +1017,9 @@ let () =
        a random position, and one with it replacing a random token."
   and mutant_count =
     Arg.(
-      value & opt (some int) None
-      &
+      value
+    & opt (some int) None
+    &
       info
         [ "mutants" ] ~docv:"N"
         ~doc:
@@ -1026,22 +1034,23 @@ let () =
        random."
   and index =
     Arg.(
-      value & opt (some int) None
-      &
+      value
+    & opt (some int) None
+    &
       info
         [ "configuration" ] ~docv:"I"
         ~doc:"Only the Ith configuration (from 0) of those selected."
     )
   and part =
     Arg.(
-      value & opt (some (pair ~sep:'/' int int)) None
-      &
-      info [ "part" ] ~docv:"I/N" ~doc:"Only the sentences of index I modulo N."
+      value
+    & opt (some (pair ~sep:'/' int int)) None
+    & info [ "part" ] ~docv:"I/N" ~doc:"Only the sentences of index I modulo N."
     )
   and deep =
     Arg.(
       value
-      &
+    &
       opt
         ( some
             ( enum
@@ -1049,15 +1058,16 @@ let () =
             )
         )
         None
-      &
+    &
       info
         [ "deep" ] ~docv:"NAME"
         ~doc:"The configuration of the deep fuzzing NAME."
     )
   and explicit =
     Arg.(
-      value & pos_all string []
-      &
+      value
+    & pos_all string []
+    &
       info
         [] ~docv:"ENTRYPOINT [FUZZER-ARGUMENT]..."
         ~doc:

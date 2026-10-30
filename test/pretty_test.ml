@@ -43,11 +43,11 @@ let layout_problems ~name ~filename ~width formatted =
   match first_difference formatted (format ~width ~filename formatted) with
   | None -> errors
   | Some (line, first, second) ->
-      errors
+        errors
       @
-      [ Printf.sprintf
-          "%s:%d: formatting again changes %S into %S" name line first second
-      ]
+        [ Printf.sprintf
+            "%s:%d: formatting again changes %S into %S" name line first second
+        ]
 
 (** The problems of a file: it must be formatted (by [make fmt], for the
     default width), and its layouts for the default width and for 120 must
@@ -74,11 +74,11 @@ let check filename =
             name line expected formatted
         ]
   in
-  not_formatted
+    not_formatted
   @ layout_problems ~name ~filename ~width:Ocst_pretty.default_width formatted
   @
-  layout_problems
-    ~name ~filename ~width:120 (format ~width:120 ~filename source)
+    layout_problems
+      ~name ~filename ~width:120 (format ~width:120 ~filename source)
 
 let main files =
   (* As in ocst_format.ml: less work for the major GC when formatting. *)

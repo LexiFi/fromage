@@ -26,7 +26,7 @@ let dump_without_locations erase dump item =
   let rec copy index =
     if index < String.length dump then
       if
-        index + String.length none <= String.length dump
+          index + String.length none <= String.length dump
         && String.sub dump index (String.length none) = none
       then copy (index + String.length none)
       else begin Buffer.add_char buffer dump.[index]; copy (index + 1) end
@@ -83,7 +83,7 @@ let doc_comments iterate item =
 
 (** The source around [line], with the numbers of the lines. *)
 let lines_around source line =
-  String.split_on_char '\n' source
+    String.split_on_char '\n' source
   |> List.mapi (fun index text -> index + 1, text)
   |> List.filter (fun (index, _) -> abs (index - line) <= 5)
   |> List.map (fun (index, text) -> Printf.sprintf "%5d %s" index text)

@@ -29,34 +29,35 @@ let keywords =
     ]
 
 let symbols =
-  List.map
-    (fun (text, kind) -> token text kind)
-    [ "_", `UNDERSCORE; "'", `QUOTE; "`", `BACKQUOTE; "(", `LPAREN;
-      ")", `RPAREN; "{", `LBRACE; "}", `RBRACE; "[", `LBRACKET;
-      "]", `RBRACKET; "[|", `LBRACKETBAR; "|]", `BARRBRACKET;
-      "[<", `LBRACKETLESS; "[>", `LBRACKETGREATER; "{<", `LBRACELESS;
-      ">}", `GREATERRBRACE; ">]", `GREATERRBRACKET; "[@", `LBRACKETAT;
-      "[@@", `LBRACKETATAT; "[@@@", `LBRACKETATATAT; "[%", `LBRACKETPERCENT;
-      "[%%", `LBRACKETPERCENTPERCENT; ",", `COMMA; ";", `SEMI; ";;", `SEMISEMI;
-      "|", `BAR; "||", `BARBAR; ":", `COLON; "::", `COLONCOLON; "=", `EQUAL;
-      "->", `MINUSGREATER; ".", `DOT; "..", `DOTDOT; "<-", `LESSMINUS;
-      ":=", `COLONEQUAL; ":>", `COLONGREATER; "<", `LESS; ">", `GREATER;
-      "&", `AMPERSAND; "&&", `AMPERAMPER; "+", `PLUS; "+.", `PLUSDOT;
-      "+=", `PLUSEQ; "-", `MINUS; "-.", `MINUSDOT; "%", `PERCENT;
-      "#", `HASH; "!", `BANG; "~", `TILDE; "?", `QUESTION; "*", `STAR
-    ]
+    List.map
+      (fun (text, kind) -> token text kind)
+      [ "_", `UNDERSCORE; "'", `QUOTE; "`", `BACKQUOTE; "(", `LPAREN;
+        ")", `RPAREN; "{", `LBRACE; "}", `RBRACE; "[", `LBRACKET;
+        "]", `RBRACKET; "[|", `LBRACKETBAR; "|]", `BARRBRACKET;
+        "[<", `LBRACKETLESS; "[>", `LBRACKETGREATER; "{<", `LBRACELESS;
+        ">}", `GREATERRBRACE; ">]", `GREATERRBRACKET; "[@", `LBRACKETAT;
+        "[@@", `LBRACKETATAT; "[@@@", `LBRACKETATATAT; "[%", `LBRACKETPERCENT;
+        "[%%", `LBRACKETPERCENTPERCENT; ",", `COMMA; ";", `SEMI;
+        ";;", `SEMISEMI; "|", `BAR; "||", `BARBAR; ":", `COLON;
+        "::", `COLONCOLON; "=", `EQUAL; "->", `MINUSGREATER;
+        ".", `DOT; "..", `DOTDOT; "<-", `LESSMINUS; ":=", `COLONEQUAL;
+        ":>", `COLONGREATER; "<", `LESS; ">", `GREATER; "&", `AMPERSAND;
+        "&&", `AMPERAMPER; "+", `PLUS; "+.", `PLUSDOT; "+=", `PLUSEQ;
+        "-", `MINUS; "-.", `MINUSDOT; "%", `PERCENT; "#", `HASH;
+        "!", `BANG; "~", `TILDE; "?", `QUESTION; "*", `STAR
+      ]
   @
-  [ token "!!" (`PREFIXOP (Token.Prefixop.of_string_exn "!!"));
-    token "##" (`HASHOP (Token.Hashop.of_string_exn "##"));
-    token "<=" (`INFIXOP0 (Token.Infixop0.of_string_exn "<="));
-    token "^" (`INFIXOP1 (Token.Infixop1.of_string_exn "^"));
-    token "+!" (`INFIXOP2 (Token.Infixop2.of_string_exn "+!"));
-    token "mod" (`INFIXOP3 (Token.Infixop3.of_string_exn "mod"));
-    token "**" (`INFIXOP4 (Token.Infixop4.of_string_exn "**"));
-    token "let*" (`LETOP (Token.Letop.of_string_exn "let*"));
-    token "and*" (`ANDOP (Token.Andop.of_string_exn "and*"));
-    token ".+" (`DOTOP (Token.Dotop.of_string_exn "+"))
-  ]
+    [ token "!!" (`PREFIXOP (Token.Prefixop.of_string_exn "!!"));
+      token "##" (`HASHOP (Token.Hashop.of_string_exn "##"));
+      token "<=" (`INFIXOP0 (Token.Infixop0.of_string_exn "<="));
+      token "^" (`INFIXOP1 (Token.Infixop1.of_string_exn "^"));
+      token "+!" (`INFIXOP2 (Token.Infixop2.of_string_exn "+!"));
+      token "mod" (`INFIXOP3 (Token.Infixop3.of_string_exn "mod"));
+      token "**" (`INFIXOP4 (Token.Infixop4.of_string_exn "**"));
+      token "let*" (`LETOP (Token.Letop.of_string_exn "let*"));
+      token "and*" (`ANDOP (Token.Andop.of_string_exn "and*"));
+      token ".+" (`DOTOP (Token.Dotop.of_string_exn "+"))
+    ]
 
 let literals =
   let lident name = Token.Lident.of_string_exn name in

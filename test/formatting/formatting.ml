@@ -219,7 +219,8 @@ let a =
     xxxxxxxxxxx xxxxx xxxxxxxxxxxx xxxxxxxxxxx
 
 let a =
-  xxxxxxxx xxxxxxxxxxxx xxxxxxxxxxxxx xxxxxxxxxxx xxxxx xxxxxxxxxxxx xxxxxxxxxxx
+    xxxxxxxx
+      xxxxxxxxxxxx xxxxxxxxxxxxx xxxxxxxxxxx xxxxx xxxxxxxxxxxx xxxxxxxxxxx
   |>
   xxxxxxxx xxxxxxxxxxxx xxxxxxxxxxxxx xxxxxxxxxxx xxxxx xxxxxxxxxxxx xxxxxxxxxxx
   |>
@@ -232,7 +233,8 @@ let a =
   xxxxxxxx xxxxxxxxxxxx xxxxxxxxxxxxx xxxxxxxxxxx xxxxx xxxxxxxxxxxx xxxxxxxxxxx
 
 let a =
-  xxxxxxxx xxxxxxxxxxxx xxxxxxxxxxxxx xxxxxxxxxxx xxxxx xxxxxxxxxxxx xxxxxxxxxxx
+    xxxxxxxx
+      xxxxxxxxxxxx xxxxxxxxxxxxx xxxxxxxxxxx xxxxx xxxxxxxxxxxx xxxxxxxxxxx
   |> xxxxxxxx xxxxxxxxxxxx xxxxxxxxxxxxx xxxxxxxxxxx xxxxx xxxxxxxxxxxx xxxxxxx
   |>
   xxxxxxxx
@@ -246,7 +248,8 @@ let a =
   xxxxxxxx xxxxxxxxxxxx xxxxxxxxxxxxx xxxxxxxxxxx xxxxx xxxxxxxxxxxx xxxxxxxxxx
 
 let a =
-  xxxxxxxx xxxxxxxxxxxx xxxxxxxxxxxxx xxxxxxxxxxx xxxxx xxxxxxxxxxxx xxxxxxxxxxx
+    xxxxxxxx
+      xxxxxxxxxxxx xxxxxxxxxxxxx xxxxxxxxxxx xxxxx xxxxxxxxxxxx xxxxxxxxxxx
   |>
   xxxxxxxx xxxxxxxxxxxx xxxxxxxxxxxxx xxxxxxxxxxx xxxxx xxxxxxxxxxxx xxxxxxxxxxx
   |>>>>>>>>>>>>>>>>>>=
@@ -263,8 +266,10 @@ let a =
   xxxxxxxx xxxxxxxxxxxx xxxxxxxxxxxxx xxxxxxxxxxx xxxxx xxxxxxxxxxxx xxxxxxxxxxx
 
 let a =
-  xxxxxxxx xxxxxxxxxxxx xxxxxxxxxxxxx xxxxxxxxxxx xxxxx xxxxxxxxxxxx xxxxxxxxxxx
-  |> xxxxxxxx xxxxxxxxxxxx |> f xxxxxxxxxxxxx
+    xxxxxxxx
+      xxxxxxxxxxxx xxxxxxxxxxxxx xxxxxxxxxxx xxxxx xxxxxxxxxxxx xxxxxxxxxxx
+  |> xxxxxxxx xxxxxxxxxxxx
+  |> f xxxxxxxxxxxxx
   |> xxxxxxxxxxx xxxxx xxxxxxxxxxxx xxxxxxxxxxx
   |>>>>>>>>>>>>>>>>>>=
   xxxxxxxx
@@ -272,8 +277,13 @@ let a =
     xxxxxxxxxxx xxxxxxxx xxxxxxxxxxxx xxxxxxxxxxxxx xxxxxxxxxxx
     xxxxx xxxxxxxxxxxx xxxxxxxxxxx xxxxxxxx xxxxxxxxxxxx
     xxxxxxxxxxxxx xxxxxxxxxxx xxxxx xxxxxxxxxxxx xxxxxxxxxxx
-  |> f y |> xxxxxxxx xxxxxxxxxxxx xxxxxxxxxxxxx xxxxxxxxxxx
-  |> xxxxx xxxxxxxxxxxx xxxxxxxxxxx |> f |> g |> h |> fffff ffffffff
+  |> f y
+  |> xxxxxxxx xxxxxxxxxxxx xxxxxxxxxxxxx xxxxxxxxxxx
+  |> xxxxx xxxxxxxxxxxx xxxxxxxxxxx
+  |> f
+  |> g
+  |> h
+  |> fffff ffffffff
   |>
   xxxxxxxx xxxxxxxxxxxx xxxxxxxxxxxxx xxxxxxxxxxx xxxxx xxxxxxxxxxxx xxxxxxxxxxx
   |>

@@ -9,7 +9,7 @@ let empty = []
 let tokens stream = List.rev stream
 
 let token_text token =
-  String.concat "" (List.map Token.trivia_text token.Token.leading)
+    String.concat "" (List.map Token.trivia_text token.Token.leading)
   ^ Token.text token
 
 let source stream = String.concat "" (List.map token_text (tokens stream))
@@ -17,12 +17,12 @@ let source stream = String.concat "" (List.map token_text (tokens stream))
 let same_kind left right =
   match left, right with
   | `ERROR left, `ERROR right ->
-      left.Token.reason = right.Token.reason
+        left.Token.reason = right.Token.reason
       && left.Token.text = right.Token.text
   | _ -> left = right
 
 let same_token left right =
-  left.Token.leading = right.Token.leading
+    left.Token.leading = right.Token.leading
   && Token.text left = Token.text right && same_kind left.kind right.kind
 
 let is_lexed_as stream =
@@ -92,7 +92,7 @@ let insert_group_create_trivia stream group =
                   stream
                   ( { first with Token.leading = [ Token.Whitespace separator ]
                     }
-                    :: rest
+                  :: rest
                   )
             )
             stream

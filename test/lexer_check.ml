@@ -9,7 +9,8 @@
 
 let check_roundtrip filename input =
   let output = Ocst.source_of_tokens (Ocst.lex input) in
-  if input <> output then begin let rec first_difference offset =
+  if input <> output then begin
+    let rec first_difference offset =
       if offset = String.length input || offset = String.length output then
         offset
       else if input.[offset] = output.[offset] then

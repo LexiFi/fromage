@@ -42,11 +42,11 @@ let location state index =
     | None ->
         (* Without the doc comments. *)
         let spans =
-          List.combine
-            state.raw
-            ( Array.to_list
-                (Token_position.spans ~filename:state.filename state.raw)
-            )
+            List.combine
+              state.raw
+              ( Array.to_list
+                  (Token_position.spans ~filename:state.filename state.raw)
+              )
           |>
           List.filter_map
             ( fun ((token : Token.any_token), span) ->
@@ -504,7 +504,7 @@ let is state (kind : [< Token.any_kind ]) =
    not checked again. *)
 let shift state (kind : 'kind) : 'kind tok =
   let leading =
-    Doc_comments.remaining state.docs state.index
+      Doc_comments.remaining state.docs state.index
     @ state.tokens.(state.index).leading
   in
   state.index <- state.index + 1; { Token.leading; kind }
@@ -563,7 +563,7 @@ let unsettled state { pending_index; pending_kind } : _ tok =
 
 let settle state { pending_index; pending_kind } : _ tok =
   { Token.leading =
-      Doc_comments.remaining state.docs pending_index
+        Doc_comments.remaining state.docs pending_index
       @ state.tokens.(pending_index).leading
   ;
     kind = pending_kind
@@ -800,7 +800,7 @@ let items
       | Some starts ->
           let rec loop index =
             if
-              index < Array.length state.tokens
+                index < Array.length state.tokens
               && state.tokens.(index).kind = `SEMISEMI
             then Doc_comments.has_text docs index || loop (index + 1)
             else
@@ -954,16 +954,16 @@ let operator_token state : operator_token =
 
 (* Does [( operator )] start at [offset]? *)
 let operator_at state offset =
-  peek state offset = `LPAREN
+    peek state offset = `LPAREN
   &&
-  ( is_operator_kind (peek state (offset + 1))
-    && peek state (offset + 2) = `RPAREN
+    (   is_operator_kind (peek state (offset + 1))
+      && peek state (offset + 2) = `RPAREN
     ||
-    begin match peek state (offset + 1), peek state (offset + 2) with
-    | `DOTOP _, (`LPAREN | `LBRACKET | `LBRACE) -> true
-    | _ -> false
-    end
-  )
+      begin match peek state (offset + 1), peek state (offset + 2) with
+      | `DOTOP _, (`LPAREN | `LBRACKET | `LBRACE) -> true
+      | _ -> false
+      end
+    )
 
 (* Parentheses, brackets or braces around a content, which is parsed knowing
    the closing token. The caller checks the opening token. [unclosed] is the
@@ -1588,11 +1588,13 @@ and alias_type state error =
 
 (* [(module M : S) -> t]. *)
 and functor_type_at state offset =
-  peek state offset = `LPAREN && peek state (offset + 1) = `MODULE
+    peek state offset = `LPAREN
+  && peek state (offset + 1) = `MODULE
   &&
-  begin let offset = skip_ext_attributes state (offset + 2) in
-    is_uident (peek state offset) && peek state (offset + 1) = `COLON
-  end
+    begin
+      let offset = skip_ext_attributes state (offset + 2) in
+      is_uident (peek state offset) && peek state (offset + 1) = `COLON
+    end
 
 and function_type state error =
   match next state with
@@ -1613,7 +1615,8 @@ and function_type state error =
       let colon = token state `COLON in
       let label = Labelled (name, colon) in
       if functor_type_at state 0 then functor_type state label
-      else begin let domain =
+      else begin
+        let domain =
           param_type
             state
             ( syntax_error
@@ -1749,7 +1752,8 @@ and atomic_type state error =
         let opening = state.index in
         let left = token state `LPAREN in
         let first = core_type state E.parenthesized_type in
-        if is state `COMMA then begin let content =
+        if is state `COMMA then begin
+          let content =
             Many
               ( non_empty_separated
                   state `COMMA
@@ -2051,13 +2055,13 @@ and functor_arg state =
     Functor_named { left; content = (name, colon, typ); right }
 
 and functor_arg_at state offset =
-  peek state offset = `LPAREN
+    peek state offset = `LPAREN
   &&
-  begin match peek state (offset + 1), peek state (offset + 2) with
-  | `RPAREN, _ -> true
-  | (`UIDENT _ | `UNDERSCORE), `COLON -> true
-  | _ -> false
-  end
+    begin match peek state (offset + 1), peek state (offset + 2) with
+    | `RPAREN, _ -> true
+    | (`UIDENT _ | `UNDERSCORE), `COLON -> true
+    | _ -> false
+    end
 
 and functor_args state =
   if functor_arg_at state 0 then
@@ -2352,7 +2356,8 @@ and signature_item state =
       | _ ->
           let module_ = token state `MODULE in
           let ext_attributes = ext_attributes state in
-          if is state `REC then begin let rec_ = token state `REC in
+          if is state `REC then begin
+            let rec_ = token state `REC in
             let declaration state = module_declaration state ~recursive:true in
             let declarations = and_list state declaration (declaration state) in
             Sig_recmodule (module_, ext_attributes, rec_, declarations)
@@ -2578,13 +2583,13 @@ and type_item state ~rebind ~substitution =
   let nonrec_ = optional state `NONREC in
   let parameters = type_parameters state in
   if
-    is_uident (next state)
+      is_uident (next state)
     &&
-    not
-      ( match peek state 1 with
-          `DOT | `LPAREN -> true
-        | _ -> false
-      )
+      not
+        ( match peek state 1 with
+            `DOT | `LPAREN -> true
+          | _ -> false
+        )
   then
     raise
       ( failure
@@ -2806,15 +2811,16 @@ and constructor_signature state =
           Some (variables, token state `DOT)
         else None
       in
-      if is state `LBRACE then begin let arguments = constructor_arguments state
-        in
+      if is state `LBRACE then begin
+        let arguments = constructor_arguments state in
         let arrow = expect state `MINUSGREATER E.gadt_arrow in
         Args_gadt
           ( colon, variables, Some (arguments, arrow),
             atomic_type state E.gadt_result
           )
       end
-      else begin let first =
+      else begin
+        let first =
           atomic_type
             state
             ( syntax_error
@@ -3720,7 +3726,8 @@ and module_expr_postfix state expr =
 and paren_module_expr state =
   let opening = state.index in
   let left = token state `LPAREN in
-  if is state `VAL then begin let val_ = token state `VAL in
+  if is state `VAL then begin
+    let val_ = token state `VAL in
     let attributes = attributes state in
     let expr =
       expr
@@ -3753,7 +3760,8 @@ and paren_module_expr state =
           { left; content = (val_, attributes, expr, package); right = rparen }
       )
   end
-  else begin let expr =
+  else begin
+    let expr =
       module_expr
         state
         ( syntax_error
@@ -3902,7 +3910,8 @@ and structure_item state =
         let declaration = module_type_declaration ~substitution:false state in
         Str_modtype declaration
       end
-      else begin let module_ = token state `MODULE in
+      else begin
+        let module_ = token state `MODULE in
         let ext_attributes = ext_attributes state in
         match optional state `REC with
         | None ->
@@ -4011,15 +4020,16 @@ and let_binding state ~pun : let_binding =
 
 (* A value name followed by something else than a pattern continuation. *)
 and let_ident_at state =
-  is_val_ident_at state 0
+    is_val_ident_at state 0
   &&
-  begin match peek state (after_val_ident state 0) with
-  | `COMMA | `COLONCOLON | `AS | `BAR | `LBRACKETAT -> false
-  | _ -> true
-  end
+    begin match peek state (after_val_ident state 0) with
+    | `COMMA | `COLONCOLON | `AS | `BAR | `LBRACKETAT -> false
+    | _ -> true
+    end
 
 and let_binding_body state ~pun =
-  if let_ident_at state then begin let name = val_ident state internal in
+  if let_ident_at state then begin
+    let name = val_ident state internal in
     match next state with
     | `COLON when peek state 1 = `TYPE ->
         let colon = token state `COLON in
@@ -4104,7 +4114,8 @@ and let_binding_body state ~pun =
   end
 
 and letop_binding state =
-  if let_ident_at state then begin let name = val_ident state internal in
+  if let_ident_at state then begin
+    let name = val_ident state internal in
     match next state with
     | `EQUAL ->
         let equal = token state `EQUAL in
@@ -4324,16 +4335,19 @@ and param_pattern state error =
 (* A simple pattern, or [(pattern : 'a. t)], or [error]. *)
 and paren_pattern_or_poly state error =
   if
-    is state `LPAREN && not (operator_at state 0)
+      is state `LPAREN
+    && not (operator_at state 0)
     &&
-    begin match peek state 1, peek state 2 with
-    | (`MODULE | `RPAREN), _ | `COLONCOLON, `RPAREN -> false
-    | _ -> true
-    end
-  then begin let opening = state.index in
+      begin match peek state 1, peek state 2 with
+      | (`MODULE | `RPAREN), _ | `COLONCOLON, `RPAREN -> false
+      | _ -> true
+      end
+  then begin
+    let opening = state.index in
     let left = token state `LPAREN in
     let content = pattern state E.parenthesized_pattern in
-    if is state `COLON then begin let colon = token state `COLON in
+    if is state `COLON then begin
+      let colon = token state `COLON in
       if typevars_then_dot state 0 then
         let typ = poly_type state in
         let right =
@@ -4586,7 +4600,8 @@ and expr_assignment state lhs =
     (* After the operators, a comma starts a tuple: [a := function p -> . ** b,
        c] is [((a := function p -> .) ** b), c]. *)
     let after rhs expr =
-      if closed_function ~comma:false rhs then begin let start = state.index in
+      if closed_function ~comma:false rhs then begin
+        let start = state.index in
         let expr = binary_loop state 0 expr in
         let expr =
           if state.index > start && is state `COMMA then
@@ -4674,8 +4689,8 @@ and binary_loop state minimum lhs =
       if is state `LBRACKETAT then
         let attribute = attribute_with state `LBRACKETAT in
         binary_loop state minimum (add_attributes lhs [ attribute ])
-      else begin let right_minimum =
-          if associativity = `Right then level else level + 1
+      else begin
+        let right_minimum = if associativity = `Right then level else level + 1
         in
         if is state `COLONCOLON then
           let cons = token state `COLONCOLON in
@@ -4880,7 +4895,8 @@ and expr_keyword state =
       let let_ = token state `LET in
       let ext_attributes = ext_attributes state in
       if let_item_at state then let_item_expression state let_ ext_attributes
-      else begin let bindings =
+      else begin
+        let bindings =
           let_bindings_rest state ~docs:Ignore_docs let_ ext_attributes
         in
         let in_ = expect state `IN (syntax_error "let-in" "'in' expected") in

@@ -54,7 +54,6 @@ module Make (D : Doc.S) =
 
     let operator_name operator = D.tok operator
 
-    let operator_before operator operand = after_line (D.tok operator) operand
     let arrow_type first rest =
       let after_arrow (~arrow, ~typ) = after_line (D.tok arrow) typ in
       match List.rev rest with
@@ -62,11 +61,72 @@ module Make (D : Doc.S) =
           let domains = first :: List.rev_map after_arrow domains
           and result = after_arrow result
           in
-          flat (words domains +- result)
+            flat (words domains +- result)
           <|> (pack_list_isolating_multiline ~indent:0 domains +| result)
       | [] -> first
 
-    let operator_chain values = pack_list_isolating_multiline ~indent:0 values
+    let operator_chain ?(in_bracket = false) kind first rest =
+      let rest =
+        List.map (fun (operator, operand) -> D.tok operator, operand) rest
+      in
+      let one_line (operator, operand) = inline operator (flat operand) in
+      match rest with
+      | [] -> first
+      | _ ->
+          (* The indentation of the first operand, and of the next ones on
+             several lines, from the column of the operators. *)
+          let first_indent, operand_indent =
+            match (kind : Operator_classification.t) with
+            | Symmetric -> 2, 2
+            | Left_into_right -> 2, 0
+            | Right_into_left -> 0, 2
+          in
+          (* All the operands on one line: as many per line as fit. *)
+          let packed first =
+            pack_list_isolating_multiline
+              ~indent:0 (flat first :: List.map one_line rest)
+          in
+          let packed =
+            if in_bracket || first_indent = 0 then packed first
+            else
+              (* On several lines, the first operand indented as in [lines],
+                 also after [( ]: [(   a], then [+ b]. *)
+              flat (packed first) <|> packed (shifted ~mid_line:true first)
+          in
+          (* An operator starting its line: alone before an operand on several
+             lines. *)
+          let part ((operator, operand) as value) =
+            one_line value <|> below ~indent:operand_indent operator operand
+          in
+          let lines =
+            if in_bracket then
+              (* The first operand where the content of the bracket starts,
+                 and the operators [first_indent] columns before it. *)
+              List.fold_left
+                ( fun doc value ->
+                    below ~indent:(-first_indent) doc (part value)
+                )
+                first rest
+            else
+              let first =
+                if first_indent = 0 then first else shifted ~mid_line:true first
+              in
+              List.fold_left (fun doc value -> doc +| part value) first rest
+          in
+          (* Right into left, after an operand on one line: the operator at
+             the end of its line, and the next operand on the next lines,
+             indented by 2: [a :=], then [b]. *)
+          let rec at_line_end first =
+            function
+            | [] -> first
+            | (operator, operand) :: rest ->
+                below
+                  ~indent:2 (flat first +- operator) (at_line_end operand rest)
+          in
+          match kind with
+          | Right_into_left ->
+              packed <|> losing_ties lines <|> at_line_end first rest
+          | Symmetric | Left_into_right -> packed <|> losing_ties lines
 
     (* {1 Type constraints} *)
 
@@ -99,7 +159,7 @@ module Make (D : Doc.S) =
       else
         (* The parts in the column of the brackets, which belong to the
            constraint. *)
-        flat (left ++ value +- words parts ++ right)
+          flat (left ++ value +- words parts ++ right)
         <|> (left +- nest 2 value +| vertical parts +| right)
 
     (* {1 Let-like bindings} *)
@@ -122,7 +182,7 @@ module Make (D : Doc.S) =
           match keyword with
           | None -> with_params head
           | Some keyword ->
-              with_params (flat (keyword +- head))
+                with_params (flat (keyword +- head))
               <|> losing_ties (keyword +/ with_params head)
         in
         (* [: t], [:> u] and [= v]: all on one line, or each starting its
@@ -158,12 +218,15 @@ module Make (D : Doc.S) =
             flat (words +- body) <|> (words +| body)
         in
         (* [inline]: not after comments on lines of their own before [=]. *)
-        after (inline (flat head) separator) body
+          after (inline (flat head) separator) body
         <|>
-        losing_ties (below ~indent:parts_indent head (flat (separator +- body)))
+          losing_ties
+            (below ~indent:parts_indent head (flat (separator +- body)))
         <|>
-        losing_ties
-          (separator_on_its_own_line ~parts_indent ~indent head separator body)
+          losing_ties
+            ( separator_on_its_own_line
+                ~parts_indent ~indent head separator body
+            )
 
     (* {1 For loops} *)
 
@@ -173,11 +236,11 @@ module Make (D : Doc.S) =
       in
       let stop = after direction stop in
       let range =
-        flat (index +- equal +- start +- stop)
+          flat (index +- equal +- start +- stop)
         <|> (flat (index +- equal +- start) +| stop)
         <|> (index +| (equal +- nest 2 start) +| stop)
       in
-      flat (keyword +- range +- do_)
+        flat (keyword +- range +- do_)
       (* [for index =] on its line, [start] after it or below it, and
          [to stop] on the next line. *)
       <|> (after (flat (keyword +- index +- equal)) start +/ stop +| do_)
@@ -207,7 +270,7 @@ module Make (D : Doc.S) =
           let arrow_line =
             inline arrow (flat body) <|> below ~indent:4 arrow body
           in
-          with_body (flat (head +- arrow))
+            with_body (flat (head +- arrow))
           <|> as_last_resort (below ~indent:(-2) head arrow_line)
 
     let guarded head guard =
@@ -227,7 +290,7 @@ module Make (D : Doc.S) =
       | Some arrow ->
           let arrow = D.tok arrow in
           (* After a head on several lines, [->] starts the next line. *)
-          after (flat head +- arrow) body
+            after (flat head +- arrow) body
           <|> losing_ties (head +/ after arrow body)
 
     (* {1 Fun-like functions} *)
@@ -235,7 +298,7 @@ module Make (D : Doc.S) =
     let fun_like ~head ~params arrow ~body =
       let arrow = D.tok arrow in
       let head =
-        flat (head +- words params +- arrow)
+          flat (head +- words params +- arrow)
         (* Only for parameters on several lines. *)
         <|> losing_ties (pack_after_head ~indent:2 head params +| arrow)
       in

@@ -2,9 +2,8 @@
    [Ocst_pretty] too (see [Roundtrip.formatter]). *)
 
 let () =
-  Roundtrip.formatter
-  :=
-  Some
-    { format_implementation = Ocst_pretty.implementation;
-      format_interface = Ocst_pretty.interface
-    }
+  Roundtrip.formatter :=
+    Some
+      { format_implementation = Ocst_pretty.implementation;
+        format_interface = Ocst_pretty.interface
+      }

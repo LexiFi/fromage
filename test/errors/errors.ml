@@ -34,7 +34,7 @@ let compiler_error ~filename source =
   | exception error ->
       match Location.error_of_exn error with
       | Some (`Ok { main = { loc; txt }; _ }) ->
-          Ocst.Syntax_error.location_text loc ^ "\nError: "
+            Ocst.Syntax_error.location_text loc ^ "\nError: "
           ^ Format.asprintf "%a" Format_doc.Doc.format txt
       | Some `Already_displayed | None -> Printexc.to_string error
 

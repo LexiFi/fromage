@@ -65,8 +65,9 @@ let () =
     )
   and debug =
     Arg.(
-      value & flag
-      &
+      value
+    & flag
+    &
       info
         [ "debug" ]
         ~doc:
@@ -77,10 +78,10 @@ let () =
   in
   let doc = "Format OCaml files."
   and exits =
-    Cmd.Exit.info 1 ~doc:"on a syntax error."
+      Cmd.Exit.info 1 ~doc:"on a syntax error."
     ::
-    Cmd.Exit.info
-      2 ~doc:"when formatting would change the AST of a file (left as it is)."
+      Cmd.Exit.info
+        2 ~doc:"when formatting would change the AST of a file (left as it is)."
     :: Cmd.Exit.defaults
   in
   exit

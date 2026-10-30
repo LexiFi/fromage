@@ -1,0 +1,67 @@
++     symmetric
+-     symmetric
+*     symmetric
+/     symmetric
+**    symmetric
++.    symmetric
+-.    symmetric
+*.    symmetric
+/.    symmetric
+mod   symmetric
+land  symmetric
+lor   symmetric
+lxor  symmetric
+lsl   symmetric
+lsr   symmetric
+asr   symmetric
+=     symmetric
+<>    symmetric
+==    symmetric
+!=    symmetric
+<     symmetric
+>     symmetric
+<=    symmetric
+>=    symmetric
+&&    symmetric
+||    symmetric
+&     symmetric
+or    symmetric
+^     symmetric
+@     symmetric
+::    symmetric
+|>    left into right
+@@    right into left
+:=    right into left
+<-    right into left
+>>=   left into right
+>>|   left into right
+>|=   left into right
+>>    left into right
+<<    right into left
+<|    right into left
+=<<   right into left
+<$>   symmetric
+<*>   symmetric
+<+>   symmetric
+>=>   left into right
+<=<   right into left
+<.    symmetric
+>=.   symmetric
+=.    symmetric
+^^    symmetric
+++    symmetric
++-    symmetric
++|    symmetric
++/    symmetric
+%     symmetric
+|>>   left into right
+%>    left into right
+=>    left into right
+<||   right into left
+@@@   right into left
++=    right into left
+^=    right into left
+===   symmetric
+!==   symmetric
+&&&   symmetric
+***   symmetric

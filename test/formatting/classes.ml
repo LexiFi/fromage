@@ -149,9 +149,9 @@ let x6 =
   object (self : 'self)
     method m = 1
     method n =
-      self#m
+        self#m
       +
-      function_with_a_long_name
-        argument_number_one argument_number_two
-        argument_number_three argument_number_four
+        function_with_a_long_name
+          argument_number_one argument_number_two
+          argument_number_three argument_number_four
   end

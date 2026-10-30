@@ -42,17 +42,19 @@ let f2c =
   -> 4
   | _ -> 2
 
-(* Assignments are chains of operators: a side on several lines has its
-   operator alone on its line. *)
+(* Assignments are chains of operators, whose value flows into the left
+   side: a value on several lines is indented by 2, after the operator
+   alone on its line after a left side on several lines, or after the
+   operator at the end of the line of a left side on one line. *)
 let () =
   ( function_with_a_long_name
       argument_number_one argument_number_two
       argument_number_three argument_number_four
   ).contents
   :=
-  function_with_a_long_name
-    argument_number_one argument_number_two
-    argument_number_three argument_number_four
+    function_with_a_long_name
+      argument_number_one argument_number_two
+      argument_number_three argument_number_four
 
 let () =
   ( function_with_a_long_name
@@ -60,9 +62,9 @@ let () =
       argument_number_three argument_number_four
   ).field
   <-
-  function_with_a_long_name
-    argument_number_one argument_number_two
-    argument_number_three argument_number_four
+    function_with_a_long_name
+      argument_number_one argument_number_two
+      argument_number_three argument_number_four
 
 let () =
   ( function_with_a_long_name
@@ -70,19 +72,18 @@ let () =
       argument_number_three argument_number_four
   ).(index)
   <-
-  function_with_a_long_name
-    argument_number_one argument_number_two
-    argument_number_three argument_number_four
+    function_with_a_long_name
+      argument_number_one argument_number_two
+      argument_number_three argument_number_four
 
 let o2d4 =
   object
     val mutable field = 0
     method m =
-      field
-      <-
-      function_with_a_long_name
-        argument_number_one argument_number_two
-        argument_number_three argument_number_four
+      field <-
+        function_with_a_long_name
+          argument_number_one argument_number_two
+          argument_number_three argument_number_four
   end
 
 (* The parentheses belong to the constraint: [:] and [:>] start their

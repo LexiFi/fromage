@@ -23,7 +23,7 @@ let whitespace text =
     )
     text
   ;
-  (if !newlines > 0 then [ Newline !newlines ] else [])
+    (if !newlines > 0 then [ Newline !newlines ] else [])
   @ if !spaces > 0 then [ Space !spaces ] else []
 
 let of_token (token : Token.any_token) =
@@ -50,11 +50,10 @@ type info =
 let first = ref None
 
 let set tokens =
-  first
-  :=
-  match tokens with
-  | token :: _ -> Some token
-  | [] -> None
+  first :=
+    match tokens with
+    | token :: _ -> Some token
+    | [] -> None
 
 let clear () = first := None
 
@@ -95,31 +94,33 @@ let glued = Hashtbl.create 256
 
 let can_glue (left : Token.any_token) (right : Token.any_token) =
   let right_info = info right in
-  right_info.previous_line = []
-  && right_info.before = [] && right_info.newlines < 2
+    right_info.previous_line = []
+  && right_info.before = []
+  && right_info.newlines < 2
   &&
-  let left_text = Token.text left
-  and right_text = Token.text right
-  in
-  left_text = "" || right_text = ""
-  ||
-  match Hashtbl.find_opt glued (left.kind, right.kind) with
-  | Some result -> result
-  | None ->
-      let last = left_text.[String.length left_text - 1]
-      and next = right_text.[0]
-      in
-      let result =
-        (not ((last = '(' && next = '*') || (last = '*' && next = ')')))
-        &&
-        match Ocst.lex (left_text ^ right_text) with
-        | [ first; second; { kind = `EOF; _ } ] ->
-            first.leading = [] && second.leading = []
-            && first.kind = left.kind && second.kind = right.kind
-        | _ -> false
-        | exception _ -> false
-      in
-      (* The cache is bounded: the kinds of the tokens include their texts. *)
-      if Hashtbl.length glued > 100_000 then Hashtbl.reset glued;
-      Hashtbl.add glued (left.kind, right.kind) result;
-      result
+    let left_text = Token.text left
+    and right_text = Token.text right
+    in
+      left_text = ""
+    || right_text = ""
+    ||
+      match Hashtbl.find_opt glued (left.kind, right.kind) with
+      | Some result -> result
+      | None ->
+          let last = left_text.[String.length left_text - 1]
+          and next = right_text.[0]
+          in
+          let result =
+              (not ((last = '(' && next = '*') || (last = '*' && next = ')')))
+            &&
+              match Ocst.lex (left_text ^ right_text) with
+              | [ first; second; { kind = `EOF; _ } ] ->
+                    first.leading = [] && second.leading = []
+                  && first.kind = left.kind && second.kind = right.kind
+              | _ -> false
+              | exception _ -> false
+          in
+          (* The cache is bounded: the kinds of the tokens include their texts. *)
+          if Hashtbl.length glued > 100_000 then Hashtbl.reset glued;
+          Hashtbl.add glued (left.kind, right.kind) result;
+          result

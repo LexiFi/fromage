@@ -8,7 +8,7 @@ let diff ?(context = 3) before after =
      that only the middle goes through the longest common subsequence. *)
   let rec prefix index =
     if
-      index < Array.length before && index < Array.length after
+        index < Array.length before && index < Array.length after
       && before.(index) = after.(index)
     then prefix (index + 1)
     else index
@@ -16,10 +16,11 @@ let diff ?(context = 3) before after =
   let start = prefix 0 in
   let rec suffix count =
     if
-      count < Array.length before - start && count < Array.length after - start
+        count < Array.length before - start
+      && count < Array.length after - start
       &&
-      before.(Array.length before - 1 - count)
-      = after.(Array.length after - 1 - count)
+          before.(Array.length before - 1 - count)
+        = after.(Array.length after - 1 - count)
     then suffix (count + 1)
     else count
   in
@@ -35,11 +36,10 @@ let diff ?(context = 3) before after =
   let common = Array.make_matrix (n + 1) (m + 1) 0 in
   for i = n - 1 downto 0 do
     for j = m - 1 downto 0 do
-      common.(i).(j)
-      <-
-      ( if removed.(i) = added.(j) then common.(i + 1).(j + 1) + 1
-        else max common.(i + 1).(j) common.(i).(j + 1)
-      )
+      common.(i).(j) <-
+        ( if removed.(i) = added.(j) then common.(i + 1).(j + 1) + 1
+          else max common.(i + 1).(j) common.(i).(j + 1)
+        )
     done
   done;
   (* The lines with their changes, ['-'] removed, ['+'] added, [' ']
@@ -56,8 +56,8 @@ let diff ?(context = 3) before after =
     Array.of_list
       ( List.map
           (fun line -> ' ', line) (Array.to_list (Array.sub before 0 start))
-        @ middle 0 0
-        @
+      @ middle 0 0
+      @
         List.map
           (fun line -> ' ', line)
           (Array.to_list (Array.sub before (Array.length before - stop) stop))

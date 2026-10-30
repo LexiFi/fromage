@@ -8,7 +8,8 @@
       line starts) by a token which starts its line;
     - a bracket closed on another line with content on its line has that
       content 2 columns after it, so that the next lines of the content can
-      be indented after its first token;
+      be indented after its first token, or 4 for the first operand of a
+      chain of operators whose operators are 2 columns after it;
     - the indentation of a line of code is even, and increases by at most 4
       from a line of code to the next, where the content of the line starts:
       after the items of two columns at its start ([| ], [( ], [\[ ]), as if
@@ -37,6 +38,15 @@ let opening : Ocst.Token.any_kind -> opening option =
   | `STRUCT | `SIG | `OBJECT | `DO -> Some Block
   | _ -> None
 
+let is_infix_operator =
+  function
+  | `INFIXOP0 _ | `INFIXOP1 _ | `INFIXOP2 _ | `INFIXOP3 _ | `INFIXOP4 _
+    | `HASHOP _ | `PLUS | `PLUSDOT | `PLUSEQ | `MINUS | `MINUSDOT
+    | `STAR | `PERCENT | `EQUAL | `LESS | `GREATER | `AMPERSAND
+    | `AMPERAMPER | `OR | `BARBAR | `COLONCOLON | `COLONEQUAL | `LESSMINUS
+  -> true
+  | _ -> false
+
 let is_closing_bracket =
   function
   | `RPAREN | `RBRACE | `RBRACKET | `BARRBRACKET
@@ -60,6 +70,8 @@ let errors ~filename source =
      columns at its start ([| ], [( ], [\[ ]), which are collapsed lines. In
      [| ( f], [f] would be two lines below, indented by 4. *)
   let contents = Array.make (Array.length lines + 1) None in
+  (* Whether each line starts with an infix operator. *)
+  let operator_lines = Array.make (Array.length lines + 1) false in
   let collapsing = ref false in
   let stack = ref [] in
   (* A bracket closed on another line than its own: closed in its column, and
@@ -73,7 +85,7 @@ let errors ~filename source =
           )
       ;
       if
-        line' < Array.length first_tokens
+          line' < Array.length first_tokens
         && first_tokens.(line') <> Some column'
       then
         error
@@ -99,16 +111,33 @@ let errors ~filename source =
      the bracket ([\[@@attr]): not checked by [content_after_bracket]. *)
   and attribute_brackets = Hashtbl.create 16
   in
+  (* The first operand of a chain of operators, which starts the content of
+     a bracket, 4 columns after it: the next line which starts to its left
+     starts with an operator, 2 columns after the bracket, as in [(   a],
+     then [  && b]. *)
+  let chain_operand (line, column) content_column =
+    let rec next line' =
+      if line' >= Array.length first_tokens then false
+      else
+        match first_tokens.(line') with
+        | Some column' when column' < content_column ->
+            column' = column + 2 && operator_lines.(line')
+        | _ -> next (line' + 1)
+    in
+    content_column = column + 4 && next (line + 1)
+  in
   (* A bracket closed on another line, with content on its line: the content
      starts 2 columns after the bracket (or the path or label it is glued
      to), so that its next lines can be indented after its first token by 2
-     or 4, as in [( f]; else the content starts the next line, as after
+     or 4, as in [( f], or 4 for the first operand of a chain
+     ([chain_operand]); else the content starts the next line, as after
      [\[|]. *)
   let content_after_bracket ((line, column) as bracket) (line', _) =
     match Hashtbl.find_opt after_brackets bracket with
     | _ when Hashtbl.mem attribute_brackets bracket -> ()
     | Some (content_line, content_column) when
-        line' <> line && content_line = line && content_column <> column + 2
+          line' <> line && content_line = line && content_column <> column + 2
+        && not (chain_operand bracket content_column)
     ->
         error
           line
@@ -151,7 +180,17 @@ let errors ~filename source =
         ->
             let first_line, first_column = Hashtbl.find first_elements bracket
             in
-            if first_line < line && first_column <> column then
+            (* The element of a chain operand starts where its operators
+               start. *)
+            if
+                first_line < line
+              && first_column <> column
+              &&
+                not
+                  ( first_column = column + 2
+                    && chain_operand bracket first_column
+                  )
+            then
               error
                 line
                 ( Printf.sprintf
@@ -162,16 +201,19 @@ let errors ~filename source =
         end;
         if starts_line then begin
           first_tokens.(line) <- Some column;
+          operator_lines.(line) <- is_infix_operator token.kind;
           contents.(line) <- Some column;
           collapsing := true
         end
         else if !collapsing then begin match previous, contents.(line) with
         | Some (previous_kind, (previous_line, previous_column)), Some content
           when
-            previous_line = line && previous_column = content
+              previous_line = line
+            && previous_column = content
             && column = content + 2
             &&
-            String.length (Ocst.Token.text (Ocst.Token.make previous_kind)) <= 2
+                String.length (Ocst.Token.text (Ocst.Token.make previous_kind))
+              <= 2
         -> contents.(line) <- Some column
         | _ -> collapsing := false
         end

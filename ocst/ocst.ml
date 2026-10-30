@@ -17,7 +17,7 @@ let source_of_tokens tokens =
     ""
     ( List.map
         ( fun token ->
-            String.concat "" (List.map Token.trivia_text token.Token.leading)
+              String.concat "" (List.map Token.trivia_text token.Token.leading)
             ^ Token.text token
         )
         tokens

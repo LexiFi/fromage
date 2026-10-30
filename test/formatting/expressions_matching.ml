@@ -171,15 +171,15 @@ let x5 =
 
 (* 6. A [match] as an operand and as an argument. *)
 let x6 =
-  ( match x with
-      A -> 1
-    | B -> 2
-  )
+    ( match x with
+        A -> 1
+      | B -> 2
+    )
   +
-  ( match y with
-      C -> 3
-    | D -> 4
-  )
+    ( match y with
+        C -> 3
+      | D -> 4
+    )
 
 let x6_argument =
   f

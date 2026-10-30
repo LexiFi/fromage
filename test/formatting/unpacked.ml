@@ -79,10 +79,10 @@ type t8 =
 (* Decision: this one should be packed. Generally a list of stuff thats never broken is clearly a bug and will result in overflowing lines. How come did fuzzing not find such cases ? *)
 type t9 =
   [<
-      `Aaaaaaaaaa | `Bbbbbbbbbbbb | `Cccccccccccc
-    >
-      `Aaaaaaaaaa `Bbbbbbbbbbbb `Cccccccccccc
-      `Dddddddddddddddddd `Eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+    `Aaaaaaaaaa | `Bbbbbbbbbbbb | `Cccccccccccc
+  >
+    `Aaaaaaaaaa `Bbbbbbbbbbbb `Cccccccccccc
+    `Dddddddddddddddddd `Eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
   ]
 
 (* 10. The types of an argument of a polymorphic variant tag, after [of &]:
@@ -90,9 +90,9 @@ type t9 =
 (* Decision: this one should be packed *)
 type t10 =
   [<
-      `Aaaaaaaaaa of &
-        aaaaaaaaaaaaaaaa & bbbbbbbbbbbbbbbbbbbbb & ccccccccccccccccccccc
-        & ccccccccccccccccccccc & ccccccccccccccccccccc & ccccccccccccccccccccc
+    `Aaaaaaaaaa of &
+      aaaaaaaaaaaaaaaa & bbbbbbbbbbbbbbbbbbbbb & ccccccccccccccccccccc
+      & ccccccccccccccccccccc & ccccccccccccccccccccc & ccccccccccccccccccccc
   ]
 
 (* 11. The fields of an object type: on one line, or one per line; here on
@@ -232,7 +232,7 @@ let i21_long =
 (* [::] is a separator here, it is only allowed to end a line if whats before is single line, and if whats after is multine, it should have a break right after it. Test this.*)
 let f22 =
   function
-    aaaaaaaaaaaa :: bbbbbbbbbbbbbbb
+      aaaaaaaaaaaa :: bbbbbbbbbbbbbbb
     :: cccccccccccccccc :: ddddddddddddd :: eeeeeeeee
   -> 1
 

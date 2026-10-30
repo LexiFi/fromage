@@ -105,19 +105,17 @@ let () = print @@ f x
 
 (* 3b. Long argument. *)
 let () =
-  function_with_a_long_name
-  @@
-  other_function_with_a_long_name
-    argument_number_five argument_number_six argument_number_seven
+  function_with_a_long_name @@
+    other_function_with_a_long_name
+      argument_number_five argument_number_six argument_number_seven
 
 (* 3c. A function after [@@]. *)
 let () =
-  with_resource resource_with_a_long_name
-  @@
-  fun handle ->
-    function_with_a_long_name
-      argument_number_one argument_number_two
-      argument_number_three argument_number_four
+  with_resource resource_with_a_long_name @@
+    fun handle ->
+      function_with_a_long_name
+        argument_number_one argument_number_two
+        argument_number_three argument_number_four
 
 (* 4. Pipelines with [|>]. *)
 
@@ -126,7 +124,7 @@ let x4 = values |> List.map f |> List.filter g
 
 (* 4b. Long steps. *)
 let x4_long =
-  values_with_a_long_name
+    values_with_a_long_name
   |>
   List.map
     ( fun x ->

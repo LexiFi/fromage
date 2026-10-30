@@ -57,11 +57,10 @@ let skip_trivia lines (trivia : Token.trivia) =
       String.iter
         ( fun character ->
             if character = '\n' then
-              lines
-              :=
-              match !lines with
-                No_line -> New_line
-              | New_line | Blank_line -> Blank_line
+              lines :=
+                match !lines with
+                  No_line -> New_line
+                | New_line | Blank_line -> Blank_line
         )
         text
       ;
@@ -170,7 +169,7 @@ let has_text t k =
 (* {1 Placement} *)
 
 let warning doc =
-  doc.token.leading
+    doc.token.leading
   @ [ Token.Warning (Unattached_docstring, Token.text doc.token) ]
 
 let place t doc =
@@ -236,10 +235,9 @@ let resolve t k ~post ~texts ~pre =
           [@coverage off]
           ;
           let token = place t doc in
-          floating
-          :=
-          (if ambiguous doc then Cst.Ambiguous token else Cst.Text token)
-          :: !floating
+          floating :=
+              (if ambiguous doc then Cst.Ambiguous token else Cst.Text token)
+            :: !floating
         end
     )
     (tables t k).docs

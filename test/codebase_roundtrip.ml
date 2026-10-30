@@ -32,11 +32,11 @@ let read_file filename =
 let is_example filename =
   let marker = "test/examples/" in
   let rec find index =
-    index + String.length marker <= String.length filename
+      index + String.length marker <= String.length filename
     &&
-    ( String.sub filename index (String.length marker) = marker
-      || find (index + 1)
-    )
+      ( String.sub filename index (String.length marker) = marker
+        || find (index + 1)
+      )
   in
   find 0
 

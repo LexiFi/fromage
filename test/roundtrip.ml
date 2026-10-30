@@ -35,7 +35,7 @@ let timed phase parse =
 
 (** The timings of the phases, the longest first. *)
 let print_timings () =
-  Hashtbl.fold (fun phase total all -> (phase, !total) :: all) timings []
+    Hashtbl.fold (fun phase total all -> (phase, !total) :: all) timings []
   |> List.sort (fun (_, left) (_, right) -> compare right left)
   |> List.iter (fun (phase, time) -> Printf.eprintf "%8.2fs  %s\n" time phase)
 
@@ -47,16 +47,15 @@ let docstring_warnings parse =
   and state = Warnings.backup ()
   in
   ignore (Warnings.parse_options false "+50");
-  ( Location.warning_reporter
-    :=
-    ( fun loc warning ->
-        begin match warning with
-        | Warnings.Unexpected_docstring _ ->
-            warnings := (loc, warning) :: !warnings
-        | _ -> ()
-        end;
-        None
-    )
+  ( Location.warning_reporter :=
+      ( fun loc warning ->
+          begin match warning with
+          | Warnings.Unexpected_docstring _ ->
+              warnings := (loc, warning) :: !warnings
+          | _ -> ()
+          end;
+          None
+      )
   );
   Fun.protect
     ~finally:
@@ -84,12 +83,13 @@ let check_warnings ~name ocst compiler =
       | warning :: ocst, warning' :: compiler when warning = warning' ->
           first ocst compiler
       | warning :: _, _ ->
-          "OCST warns: " ^ describe_warning warning
+            "OCST warns: "
+          ^ describe_warning warning
           ^
-          ( match compiler with
-              warning :: _ -> ", the compiler: " ^ describe_warning warning
-            | [] -> ""
-          )
+            ( match compiler with
+                warning :: _ -> ", the compiler: " ^ describe_warning warning
+              | [] -> ""
+            )
       | [], warning :: _ -> "the compiler warns: " ^ describe_warning warning
       | [], [] -> assert false
     in
@@ -246,10 +246,10 @@ let significant source =
 let keeps original result =
   match original, result with
   | Trivia { text; own_line; blank }, Trivia result ->
-      text = result.text && ((not own_line) || result.own_line)
+        text = result.text && ((not own_line) || result.own_line)
       && ((not blank) || result.blank)
   | Token { kind; own_line; blank }, Token result ->
-      kind = result.kind && ((not own_line) || result.own_line)
+        kind = result.kind && ((not own_line) || result.own_line)
       && ((not blank) || result.blank)
   | _ -> false
 
@@ -268,7 +268,7 @@ let describe_significant =
 
 (** The lines of [text] around [line]. *)
 let lines_around text line =
-  String.split_on_char '\n' text
+    String.split_on_char '\n' text
   |> List.mapi (fun index text -> index + 1, text)
   |> List.filter (fun (index, _) -> abs (index - line) <= 5)
   |> List.map (fun (index, text) -> Printf.sprintf "%5d %s" index text)

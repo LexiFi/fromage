@@ -58,12 +58,11 @@ let main directory =
           if Filename.check_suffix name ".mli" then check_interface
           else check_implementation
         in
-        begin match
-          failure ~name (fun () -> ignore (check filename source))
-        with
-        | None -> print_endline "The compiler agrees."
-        | Some { message; _ } ->
-            Printf.printf "The compiler disagrees: %s\n" message
+        begin
+          match failure ~name (fun () -> ignore (check filename source)) with
+          | None -> print_endline "The compiler agrees."
+          | Some { message; _ } ->
+              Printf.printf "The compiler disagrees: %s\n" message
         end;
         print_newline ()
     )

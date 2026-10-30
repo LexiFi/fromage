@@ -89,32 +89,67 @@ module Make (D : Doc.S)
       val operator_name : Cst.operator_token -> t
       (** An operator as the name of a value: [=] in [( = )]. *)
 
-      val operator_before : [< operator_kind ] Token.token -> t -> t
-      (** An operand after its operator, in a chain of operators:
-      {[
-        + operand
-      ]}
-      An operand on several lines is on the lines after its operator:
-      {[
-        +
-        operand ...
-        operand
-      ]} *)
-
-      val operator_chain : t list -> t
-      (** The operands of a chain ([operator_before]), packed at the same
-      indentation:
+      val operator_chain :
+        ?in_bracket:bool -> Operator_classification.t -> t
+        -> ([< operator_kind ] Token.token * t) list
+        -> t
+      (** [operator_chain kind first rest]: a chain of operators of [kind], its
+      first operand, then each operator and the operand after it. With all
+      the operands on one line, packed at the same indentation:
       {[
         a + b + c
         + d + e
       ]}
-      An operand on several lines has a line break before it and after it:
+      Else each operator starts its line, alone before an operand on several
+      lines, and the operands are indented from the operators by 2, for a
+      [Symmetric] operator:
       {[
-        a + b
+            a ...
+            a
+          +
+            b ...
+            b
+          + c
+      ]}
+      only the first one for [Left_into_right]:
+      {[
+            a ...
+            a
+          |>
+          b ...
+          b
+          |> c
+      ]}
+      and all of them but the first one for [Right_into_left]:
+      {[
+          a
+          :=
+            b ...
+            b
+      ]}
+      where, after an operand on one line, the operator can also end its
+      line, each next operand indented by 2 from the one before it:
+      {[
+          a :=
+            b ...
+            b
+      ]}
+      {[
+          a @@
+            b @@
+              c ...
+              c
+      ]}
+      [in_bracket]: the chain starts where the content of a bracket starts,
+      as in [( a + b )] or [\[ a + b; c \]], where the first operand cannot be
+      indented: the operators are in the column of the bracket instead.
+      {[
+        ( a ...
+          a
         +
-        operand ...
-        operand
-        + c
+          b ...
+          b
+        )
       ]} *)
 
       val arrow_type :

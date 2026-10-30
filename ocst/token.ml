@@ -141,29 +141,29 @@ module Lident =
     type t = string
     let of_string text =
       let valid_plain name =
-        String.length name > 0
+          String.length name > 0
         &&
-        ( match name.[0] with
-            'a' .. 'z' | '_' -> true
-          | _ -> false
-        )
+          ( match name.[0] with
+              'a' .. 'z' | '_' -> true
+            | _ -> false
+          )
         && all is_ident_tail name
       in
       let valid_ext name =
-        (not (is_ascii name))
+          (not (is_ascii name))
         &&
-        begin match Misc.Utf8_lexeme.normalize name with
-        | Ok name ->
-            Misc.Utf8_lexeme.is_valid_identifier name
-            && not (Misc.Utf8_lexeme.is_capitalized name)
-        | Error _ -> false
-        end
+          begin match Misc.Utf8_lexeme.normalize name with
+          | Ok name ->
+                Misc.Utf8_lexeme.is_valid_identifier name
+              && not (Misc.Utf8_lexeme.is_capitalized name)
+          | Error _ -> false
+          end
       in
       if String.length text > 2 && text.[0] = '\\' && text.[1] = '#' then
         let name = String.sub text 2 (String.length text - 2) in
         if valid_plain name || valid_ext name then Some text else None
       else if
-        text <> "_" && valid_plain text
+          text <> "_" && valid_plain text
         && keyword_of_string text = None && not (is_word_operator text)
       then Some text
       else if valid_ext text then Some text
@@ -184,18 +184,18 @@ module Uident =
     type t = string
     let of_string text =
       if
-        String.length text > 0
+          String.length text > 0
         &&
-        ( match text.[0] with
-            'A' .. 'Z' -> true
-          | _ -> false
-        )
+          ( match text.[0] with
+              'A' .. 'Z' -> true
+            | _ -> false
+          )
         && all is_ident_tail text
       then Some text
       else if not (is_ascii text) then
         match Misc.Utf8_lexeme.normalize text with
         | Ok name when
-            Misc.Utf8_lexeme.is_valid_identifier name
+              Misc.Utf8_lexeme.is_valid_identifier name
             && Misc.Utf8_lexeme.is_capitalized name
         -> Some text
         | _ -> None
@@ -228,20 +228,20 @@ module Numeric_text =
   struct
     let of_string text =
       if
-        String.length text > 0
+          String.length text > 0
         &&
-        ( match text.[0] with
-            '0' .. '9' -> true
-          | _ -> false
-        )
-        &&
-        all
-          ( function
-            | 'A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '_' | '.' | '+' | '-' ->
-                true
+          ( match text.[0] with
+              '0' .. '9' -> true
             | _ -> false
           )
-          text
+        &&
+          all
+            ( function
+              | 'A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '_' | '.' | '+' | '-' ->
+                  true
+              | _ -> false
+            )
+            text
       then Some text
       else None
   end
@@ -253,17 +253,19 @@ module Integer_digits =
     ( struct
         let name = "Integer_digits"
         let valid text =
-          Numeric_text.of_string text <> None && not (String.contains text '.')
-          && not (String.contains text '+') && not (String.contains text '-')
+            Numeric_text.of_string text <> None
+          && not (String.contains text '.')
+          && not (String.contains text '+')
+          && not (String.contains text '-')
           &&
-          ( is_hex text
-            || not (String.contains text 'e' || String.contains text 'E')
-          )
-          &&
-          not
             ( is_hex text
-              && (String.contains text 'p' || String.contains text 'P')
+              || not (String.contains text 'e' || String.contains text 'E')
             )
+          &&
+            not
+              ( is_hex text
+                && (String.contains text 'p' || String.contains text 'P')
+              )
       end
     )
 
@@ -272,7 +274,7 @@ module Float_digits =
     ( struct
         let name = "Float_digits"
         let valid text =
-          Numeric_text.of_string text <> None
+            Numeric_text.of_string text <> None
           && Integer_digits.of_string text = None
       end
     )
@@ -306,7 +308,7 @@ let is_kwdopchar =
    then by characters satisfying [rest]. *)
 let operator_text ~prefix ~first ~rest text =
   let start = String.length prefix in
-  String.starts_with ~prefix text
+    String.starts_with ~prefix text
   && String.length text > start && first text.[start]
   && all rest (String.sub text (start + 1) (String.length text - start - 1))
 
@@ -319,16 +321,16 @@ module Prefixop =
     ( struct
         let name = "Prefixop"
         let valid text =
-          text <> "!="
+            text <> "!="
           &&
-          operator_text
-            ~prefix:""
-            ~first:
-              ( function
-                  '!' | '~' | '?' -> true
-                | _ -> false
-              )
-            ~rest:is_symbolchar_or_hash text
+            operator_text
+              ~prefix:""
+              ~first:
+                ( function
+                    '!' | '~' | '?' -> true
+                  | _ -> false
+                )
+              ~rest:is_symbolchar_or_hash text
           && String.length text > 1
       end
     )
@@ -348,18 +350,18 @@ module Infixop0 =
     ( struct
         let name = "Infixop0"
         let valid text =
-          text = "!="
+            text = "!="
           ||
-          ( operator_text
-              ~prefix:""
-              ~first:
-                ( function
-                    '=' | '<' | '>' | '|' | '&' | '$' -> true
-                  | _ -> false
-                )
-              ~rest:is_symbolchar text
+            ( operator_text
+                ~prefix:""
+                ~first:
+                  ( function
+                      '=' | '<' | '>' | '|' | '&' | '$' -> true
+                    | _ -> false
+                  )
+                ~rest:is_symbolchar text
             && not (List.mem text [ "&"; "&&"; "<"; "<-"; "="; ">"; "|"; "||" ])
-          )
+            )
       end
     )
 
@@ -384,14 +386,14 @@ module Infixop2 =
     ( struct
         let name = "Infixop2"
         let valid text =
-          operator_text
-            ~prefix:""
-            ~first:
-              ( function
-                  '+' | '-' -> true
-                | _ -> false
-              )
-            ~rest:is_symbolchar text
+            operator_text
+              ~prefix:""
+              ~first:
+                ( function
+                    '+' | '-' -> true
+                  | _ -> false
+                )
+              ~rest:is_symbolchar text
           && not (List.mem text [ "+"; "+."; "+="; "-"; "-."; "->" ])
       end
     )
@@ -401,19 +403,19 @@ module Infixop3 =
     ( struct
         let name = "Infixop3"
         let valid text =
-          List.mem text [ "land"; "lor"; "lxor"; "mod" ]
+            List.mem text [ "land"; "lor"; "lxor"; "mod" ]
           ||
-          ( operator_text
-              ~prefix:""
-              ~first:
-                ( function
-                    '*' | '/' | '%' -> true
-                  | _ -> false
-                )
-              ~rest:is_symbolchar text
+            ( operator_text
+                ~prefix:""
+                ~first:
+                  ( function
+                      '*' | '/' | '%' -> true
+                    | _ -> false
+                  )
+                ~rest:is_symbolchar text
             && not (List.mem text [ "*"; "%" ])
             && not (String.starts_with ~prefix:"**" text)
-          )
+            )
       end
     )
 
@@ -422,9 +424,10 @@ module Infixop4 =
     ( struct
         let name = "Infixop4"
         let valid text =
-          List.mem text [ "lsl"; "lsr"; "asr" ]
+            List.mem text [ "lsl"; "lsr"; "asr" ]
           ||
-          operator_text ~prefix:"*" ~first:(( = ) '*') ~rest:is_symbolchar text
+            operator_text
+              ~prefix:"*" ~first:(( = ) '*') ~rest:is_symbolchar text
       end
     )
 
@@ -582,11 +585,11 @@ let kind_text : any_kind -> string =
       "{" ^ delimiter ^ "|" ^ contents ^ "|" ^ delimiter ^ "}"
   | `CHAR (literal : char_literal) -> "'" ^ literal.contents ^ "'"
   | `QUOTED_STRING_EXPR (q : quoted_extension) ->
-      "{%" ^ q.id ^ q.blanks ^ q.delimiter ^ "|"
+        "{%" ^ q.id ^ q.blanks ^ q.delimiter ^ "|"
       ^ q.contents ^ "|" ^ q.delimiter ^ "}"
   | `QUOTED_STRING_ITEM (q : quoted_extension) ->
-      "{%%" ^ q.id ^ q.blanks ^ q.delimiter ^ "|"
-      ^ q.contents ^ "|" ^ q.delimiter ^ "}"
+        "{%%" ^ q.id ^ q.blanks ^ q.delimiter
+      ^ "|" ^ q.contents ^ "|" ^ q.delimiter ^ "}"
   | `LPAREN -> "("
   | `RPAREN -> ")"
   | `LBRACE -> "{"

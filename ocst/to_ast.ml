@@ -26,8 +26,8 @@ let consume cursor (token : _ Token.token) =
   cursor.position <- advance start (Token.text token);
   cursor.last_end <- cursor.position;
   if cursor.count = Array.length cursor.starts then
-    cursor.starts
-    <- Array.append cursor.starts (Array.make (max 64 cursor.count) start)
+    cursor.starts <-
+      Array.append cursor.starts (Array.make (max 64 cursor.count) start)
   ;
   cursor.starts.(cursor.count) <- start;
   cursor.count <- cursor.count + 1;
@@ -125,10 +125,9 @@ let skip_floating cursor (value : Cst.floating) =
   | Text token -> skip_doc cursor token
   | Ambiguous token ->
       skip_doc cursor token;
-      cursor.warnings
-      <-
-      (Docstrings.docstring_loc (docstring cursor token), false)
-      :: cursor.warnings
+      cursor.warnings <-
+          (Docstrings.docstring_loc (docstring cursor token), false)
+        :: cursor.warnings
 
 let texts cursor values =
   List.filter_map
@@ -586,7 +585,7 @@ let operator cursor (operator : Cst.operator) =
       skip_option cursor assign;
       let op = match dotop.kind with `DOTOP op -> Token.Dotop.to_string op in
       let left, right = bracket_texts kind in
-      "." ^ op ^ left ^ (if index = None then "" else ";..")
+        "." ^ op ^ left ^ (if index = None then "" else ";..")
       ^ right ^ (if assign = None then "" else "<-")
 
 let val_ident cursor (value : Cst.val_ident) =
@@ -790,11 +789,10 @@ let elements cursor ~claims text item (values : _ Cst.element list) =
         text (texts cursor values) @ loop values rest
     | Cst.Item ((pre, value, post) as documented) :: rest ->
         let after, _ = floating rest in
-        cursor.docs
-        <-
-        ( if claims value then item_docs cursor ~before ~after documented
-          else Docstrings.empty_docs
-        )
+        cursor.docs <-
+          ( if claims value then item_docs cursor ~before ~after documented
+            else Docstrings.empty_docs
+          )
         ;
         skip_docs cursor pre;
         let item = item value in
@@ -816,7 +814,7 @@ let group_docs cursor (docs : Docstrings.docs) (_, rest) =
           item_docs cursor ~before:[] ~after:values (None, (), post)
         in
         let next = item_docs cursor ~before:values ~after:[] (next, (), None) in
-        { Docstrings.docs_pre = pre; docs_post = previous.docs_post }
+          { Docstrings.docs_pre = pre; docs_post = previous.docs_post }
         :: loop next.docs_pre rest
   in
   loop docs.docs_pre rest
@@ -3693,11 +3691,11 @@ let cursor filename tokens =
 (* The warnings about doc comments, in source order, as the compiler at the
    end of parsing ([Docstrings.warn_bad_docstrings]). *)
 let warn cursor =
-  List.sort
-    ( fun ((left : Location.t), _) (right, _) ->
-        compare left.loc_start.pos_cnum right.loc_start.pos_cnum
-    )
-    cursor.warnings
+    List.sort
+      ( fun ((left : Location.t), _) (right, _) ->
+          compare left.loc_start.pos_cnum right.loc_start.pos_cnum
+      )
+      cursor.warnings
   |>
   List.iter
     ( fun (loc, unattached) ->
