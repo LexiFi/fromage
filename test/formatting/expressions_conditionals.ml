@@ -31,6 +31,13 @@ let () =
       argument_number_five argument_number_six argument_number_seven
   end
 
+(* 1e. Short condition, and a branch which would fit on one line after a
+   condition alone on its line: [if c then] stays on one line. *)
+let () =
+  if !indentation then begin
+    indentation := false; pending := String.length text
+  end
+
 (* 2. [if c then a else b]. *)
 
 (* 2a. Short. *)

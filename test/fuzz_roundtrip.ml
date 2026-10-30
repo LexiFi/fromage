@@ -785,9 +785,9 @@ let check ~timings ~mutants_only ~part fuzz configurations =
                 ~name
                 ( fun () ->
                     let both = check ~name filename sentence in
-                    if
-                      kind <> ""
-                    then begin incr checked; if both then incr accepted end
+                    if kind <> "" then begin
+                      incr checked; if both then incr accepted
+                    end
                     else if both then incr valid
                 )
             in

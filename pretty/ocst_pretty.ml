@@ -717,8 +717,17 @@ module Make (Config : Doc.CONFIG) =
       (* [if c then a], and the parts after it: each [else if c then a] of
          the chain, then [else b]. *)
       let rec chain (if_, ext, condition, then_, if_true, if_false) =
-        let head = keyword if_ ext in
-        let head = keyword_head head (expr condition) (tok then_) in
+        let head = keyword if_ ext
+        and condition = expr condition
+        and then_ = tok then_
+        in
+        (* [if c then] on one line whenever it fits, even when the branch
+           then takes more lines: [c] alone on its lines only as a last
+           resort. *)
+        let head =
+          flat (head +- condition +- then_)
+          <|> as_last_resort (head +/ condition +| then_)
+        in
         let then_part = branch head if_true in
         match if_false with
         | None -> then_part, []

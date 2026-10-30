@@ -779,9 +779,9 @@ module Make (Config : CONFIG) : S =
               indentation := true;
               line_start := true
             end
-            else if
-              !indentation
-            then begin indentation := false; pending := String.length text end
+            else if !indentation then begin
+              indentation := false; pending := String.length text
+            end
             else if text = "" then ()
             else if String.for_all (fun c -> c = '\000') text then
               (* Spaces add up at the start of a line only. *)
