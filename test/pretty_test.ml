@@ -80,10 +80,22 @@ let check filename =
   layout_problems
     ~name ~filename ~width:120 (format ~width:120 ~filename source)
 
-let () =
+let main files =
   (* As in ocst_format.ml: less work for the major GC when formatting. *)
   Gc.set { (Gc.get ()) with space_overhead = 200 };
-  let files = List.tl (Array.to_list Sys.argv) in
   let problems = List.concat_map check files in
   Printf.printf "Formatted %d files.\n" (List.length files);
   List.iter print_endline problems
+
+let () =
+  let open Cmdliner in
+  let files = Arg.(value & pos_all file [] & info [] ~docv:"FILE") in
+  exit
+    ( Cmd.eval
+        ( Cmd.make
+            ( Cmd.info
+                "pretty_test" ~doc:"Check the layout of the formatted files."
+            )
+            Term.(const main $ files)
+        )
+    )

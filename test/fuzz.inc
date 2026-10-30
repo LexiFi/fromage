@@ -6,126 +6,126 @@
  (action
   (with-stdout-to
    %{targets}
-   (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:parser.mly} --configuration 0 --generate))))
+   (run ./fuzz_roundtrip.exe --menhir %{bin:menhir} --fuzzer %{bin:ocamlgrammarfuzzer} --grammar %{dep:parser.mly} --configuration 0 --generate))))
 
 (rule
  (targets fuzz_1.sentences)
  (action
   (with-stdout-to
    %{targets}
-   (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:parser.mly} --configuration 1 --generate))))
+   (run ./fuzz_roundtrip.exe --menhir %{bin:menhir} --fuzzer %{bin:ocamlgrammarfuzzer} --grammar %{dep:parser.mly} --configuration 1 --generate))))
 
 (rule
  (targets fuzz_2.sentences)
  (action
   (with-stdout-to
    %{targets}
-   (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:parser.mly} --configuration 2 --generate))))
+   (run ./fuzz_roundtrip.exe --menhir %{bin:menhir} --fuzzer %{bin:ocamlgrammarfuzzer} --grammar %{dep:parser.mly} --configuration 2 --generate))))
 
 (rule
  (targets fuzz_3.sentences)
  (action
   (with-stdout-to
    %{targets}
-   (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:parser.mly} --configuration 3 --generate))))
+   (run ./fuzz_roundtrip.exe --menhir %{bin:menhir} --fuzzer %{bin:ocamlgrammarfuzzer} --grammar %{dep:parser.mly} --configuration 3 --generate))))
 
 (rule
  (targets fuzz_4.sentences)
  (action
   (with-stdout-to
    %{targets}
-   (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:parser.mly} --configuration 4 --generate))))
+   (run ./fuzz_roundtrip.exe --menhir %{bin:menhir} --fuzzer %{bin:ocamlgrammarfuzzer} --grammar %{dep:parser.mly} --configuration 4 --generate))))
 
 (rule
  (targets fuzz_6.sentences)
  (action
   (with-stdout-to
    %{targets}
-   (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:parser.mly} --configuration 6 --generate))))
+   (run ./fuzz_roundtrip.exe --menhir %{bin:menhir} --fuzzer %{bin:ocamlgrammarfuzzer} --grammar %{dep:parser.mly} --configuration 6 --generate))))
 
 (rule
  (targets fuzz_7.sentences)
  (action
   (with-stdout-to
    %{targets}
-   (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:parser.mly} --configuration 7 --generate))))
+   (run ./fuzz_roundtrip.exe --menhir %{bin:menhir} --fuzzer %{bin:ocamlgrammarfuzzer} --grammar %{dep:parser.mly} --configuration 7 --generate))))
 
 (rule
  (targets fuzz_8.sentences)
  (action
   (with-stdout-to
    %{targets}
-   (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:parser.mly} --configuration 8 --generate))))
+   (run ./fuzz_roundtrip.exe --menhir %{bin:menhir} --fuzzer %{bin:ocamlgrammarfuzzer} --grammar %{dep:parser.mly} --configuration 8 --generate))))
 
 (rule
  (targets fuzz_9.sentences)
  (action
   (with-stdout-to
    %{targets}
-   (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:parser.mly} --configuration 9 --generate))))
+   (run ./fuzz_roundtrip.exe --menhir %{bin:menhir} --fuzzer %{bin:ocamlgrammarfuzzer} --grammar %{dep:parser.mly} --configuration 9 --generate))))
 
 (rule
  (targets fuzz_10.sentences)
  (action
   (with-stdout-to
    %{targets}
-   (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:parser.mly} --configuration 10 --generate))))
+   (run ./fuzz_roundtrip.exe --menhir %{bin:menhir} --fuzzer %{bin:ocamlgrammarfuzzer} --grammar %{dep:parser.mly} --configuration 10 --generate))))
 
 (rule
  (targets fuzz_long_implementation.sentences)
  (action
   (with-stdout-to
    %{targets}
-   (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:parser.mly} --deep fuzz_long_implementation --generate))))
+   (run ./fuzz_roundtrip.exe --menhir %{bin:menhir} --fuzzer %{bin:ocamlgrammarfuzzer} --grammar %{dep:parser.mly} --deep fuzz_long_implementation --generate))))
 
 (rule
  (targets fuzz_huge_2000_implementation.sentences)
  (action
   (with-stdout-to
    %{targets}
-   (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:parser.mly} --deep fuzz_huge_2000_implementation --generate))))
+   (run ./fuzz_roundtrip.exe --menhir %{bin:menhir} --fuzzer %{bin:ocamlgrammarfuzzer} --grammar %{dep:parser.mly} --deep fuzz_huge_2000_implementation --generate))))
 
 (rule
  (targets fuzz_huge_20000_implementation.sentences)
  (action
   (with-stdout-to
    %{targets}
-   (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:parser.mly} --deep fuzz_huge_20000_implementation --generate))))
+   (run ./fuzz_roundtrip.exe --menhir %{bin:menhir} --fuzzer %{bin:ocamlgrammarfuzzer} --grammar %{dep:parser.mly} --deep fuzz_huge_20000_implementation --generate))))
 
 (rule
  (targets fuzz_million_implementation.sentences)
  (action
   (with-stdout-to
    %{targets}
-   (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:parser.mly} --deep fuzz_million_implementation --generate))))
+   (run ./fuzz_roundtrip.exe --menhir %{bin:menhir} --fuzzer %{bin:ocamlgrammarfuzzer} --grammar %{dep:parser.mly} --deep fuzz_million_implementation --generate))))
 
 (rule
  (targets fuzz_long_interface.sentences)
  (action
   (with-stdout-to
    %{targets}
-   (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:parser.mly} --deep fuzz_long_interface --generate))))
+   (run ./fuzz_roundtrip.exe --menhir %{bin:menhir} --fuzzer %{bin:ocamlgrammarfuzzer} --grammar %{dep:parser.mly} --deep fuzz_long_interface --generate))))
 
 (rule
  (targets fuzz_huge_2000_interface.sentences)
  (action
   (with-stdout-to
    %{targets}
-   (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:parser.mly} --deep fuzz_huge_2000_interface --generate))))
+   (run ./fuzz_roundtrip.exe --menhir %{bin:menhir} --fuzzer %{bin:ocamlgrammarfuzzer} --grammar %{dep:parser.mly} --deep fuzz_huge_2000_interface --generate))))
 
 (rule
  (targets fuzz_huge_20000_interface.sentences)
  (action
   (with-stdout-to
    %{targets}
-   (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:parser.mly} --deep fuzz_huge_20000_interface --generate))))
+   (run ./fuzz_roundtrip.exe --menhir %{bin:menhir} --fuzzer %{bin:ocamlgrammarfuzzer} --grammar %{dep:parser.mly} --deep fuzz_huge_20000_interface --generate))))
 
 (rule
  (targets fuzz_million_interface.sentences)
  (action
   (with-stdout-to
    %{targets}
-   (run ./fuzz_roundtrip.exe %{bin:menhir} %{bin:ocamlgrammarfuzzer} %{dep:parser.mly} --deep fuzz_million_interface --generate))))
+   (run ./fuzz_roundtrip.exe --menhir %{bin:menhir} --fuzzer %{bin:ocamlgrammarfuzzer} --grammar %{dep:parser.mly} --deep fuzz_million_interface --generate))))
 
 (rule
  (package fromage)
@@ -133,7 +133,7 @@
  (action
   (with-stdout-to
    %{targets}
-   (run ./fuzz_roundtrip.exe --sentences %{dep:fuzz_0.sentences} --quick implementation --configuration 0 --part 0/4))))
+   (run ./fuzz_roundtrip.exe --sentences %{dep:fuzz_0.sentences} --quick --entrypoint implementation --configuration 0 --part 0/4))))
 
 (rule
  (package fromage)
@@ -141,7 +141,7 @@
  (action
   (with-stdout-to
    %{targets}
-   (run ./fuzz_roundtrip.exe --sentences %{dep:fuzz_0.sentences} --quick implementation --configuration 0 --part 1/4))))
+   (run ./fuzz_roundtrip.exe --sentences %{dep:fuzz_0.sentences} --quick --entrypoint implementation --configuration 0 --part 1/4))))
 
 (rule
  (package fromage)
@@ -149,7 +149,7 @@
  (action
   (with-stdout-to
    %{targets}
-   (run ./fuzz_roundtrip.exe --sentences %{dep:fuzz_0.sentences} --quick implementation --configuration 0 --part 2/4))))
+   (run ./fuzz_roundtrip.exe --sentences %{dep:fuzz_0.sentences} --quick --entrypoint implementation --configuration 0 --part 2/4))))
 
 (rule
  (package fromage)
@@ -157,7 +157,7 @@
  (action
   (with-stdout-to
    %{targets}
-   (run ./fuzz_roundtrip.exe --sentences %{dep:fuzz_0.sentences} --quick implementation --configuration 0 --part 3/4))))
+   (run ./fuzz_roundtrip.exe --sentences %{dep:fuzz_0.sentences} --quick --entrypoint implementation --configuration 0 --part 3/4))))
 
 (rule
  (package fromage)
@@ -165,7 +165,7 @@
  (action
   (with-stdout-to
    %{targets}
-   (run ./fuzz_roundtrip.exe --sentences %{dep:fuzz_2.sentences} --quick implementation --configuration 1 --part 0/1))))
+   (run ./fuzz_roundtrip.exe --sentences %{dep:fuzz_2.sentences} --quick --entrypoint implementation --configuration 1 --part 0/1))))
 
 (rule
  (package fromage)
@@ -173,7 +173,7 @@
  (action
   (with-stdout-to
    %{targets}
-   (run ./fuzz_roundtrip.exe --sentences %{dep:fuzz_3.sentences} --quick implementation --configuration 2 --part 0/1))))
+   (run ./fuzz_roundtrip.exe --sentences %{dep:fuzz_3.sentences} --quick --entrypoint implementation --configuration 2 --part 0/1))))
 
 (rule
  (package fromage)
@@ -181,7 +181,7 @@
  (action
   (with-stdout-to
    %{targets}
-   (run ./fuzz_roundtrip.exe --sentences %{dep:fuzz_4.sentences} --quick implementation --configuration 3 --part 0/1))))
+   (run ./fuzz_roundtrip.exe --sentences %{dep:fuzz_4.sentences} --quick --entrypoint implementation --configuration 3 --part 0/1))))
 
 (rule
  (alias runtest)
@@ -199,7 +199,7 @@
  (action
   (with-stdout-to
    %{targets}
-   (run ./fuzz_roundtrip.exe --sentences %{dep:fuzz_6.sentences} --quick interface --configuration 0 --part 0/4))))
+   (run ./fuzz_roundtrip.exe --sentences %{dep:fuzz_6.sentences} --quick --entrypoint interface --configuration 0 --part 0/4))))
 
 (rule
  (package fromage)
@@ -207,7 +207,7 @@
  (action
   (with-stdout-to
    %{targets}
-   (run ./fuzz_roundtrip.exe --sentences %{dep:fuzz_6.sentences} --quick interface --configuration 0 --part 1/4))))
+   (run ./fuzz_roundtrip.exe --sentences %{dep:fuzz_6.sentences} --quick --entrypoint interface --configuration 0 --part 1/4))))
 
 (rule
  (package fromage)
@@ -215,7 +215,7 @@
  (action
   (with-stdout-to
    %{targets}
-   (run ./fuzz_roundtrip.exe --sentences %{dep:fuzz_6.sentences} --quick interface --configuration 0 --part 2/4))))
+   (run ./fuzz_roundtrip.exe --sentences %{dep:fuzz_6.sentences} --quick --entrypoint interface --configuration 0 --part 2/4))))
 
 (rule
  (package fromage)
@@ -223,7 +223,7 @@
  (action
   (with-stdout-to
    %{targets}
-   (run ./fuzz_roundtrip.exe --sentences %{dep:fuzz_6.sentences} --quick interface --configuration 0 --part 3/4))))
+   (run ./fuzz_roundtrip.exe --sentences %{dep:fuzz_6.sentences} --quick --entrypoint interface --configuration 0 --part 3/4))))
 
 (rule
  (package fromage)
@@ -231,7 +231,7 @@
  (action
   (with-stdout-to
    %{targets}
-   (run ./fuzz_roundtrip.exe --sentences %{dep:fuzz_8.sentences} --quick interface --configuration 1 --part 0/1))))
+   (run ./fuzz_roundtrip.exe --sentences %{dep:fuzz_8.sentences} --quick --entrypoint interface --configuration 1 --part 0/1))))
 
 (rule
  (package fromage)
@@ -239,7 +239,7 @@
  (action
   (with-stdout-to
    %{targets}
-   (run ./fuzz_roundtrip.exe --sentences %{dep:fuzz_9.sentences} --quick interface --configuration 2 --part 0/1))))
+   (run ./fuzz_roundtrip.exe --sentences %{dep:fuzz_9.sentences} --quick --entrypoint interface --configuration 2 --part 0/1))))
 
 (rule
  (package fromage)
@@ -247,7 +247,7 @@
  (action
   (with-stdout-to
    %{targets}
-   (run ./fuzz_roundtrip.exe --sentences %{dep:fuzz_10.sentences} --quick interface --configuration 3 --part 0/1))))
+   (run ./fuzz_roundtrip.exe --sentences %{dep:fuzz_10.sentences} --quick --entrypoint interface --configuration 3 --part 0/1))))
 
 (rule
  (alias runtest)

@@ -64,13 +64,8 @@ let declared_errors parser =
   in
   List.filter (( <> ) "internal") (loop 0 [])
 
-let () =
+let main directory parser =
   Warnings.parse_options false "-a" |> ignore;
-  let directory, parser =
-    match Sys.argv with
-    | [| _; directory; parser |] -> directory, parser
-    | _ -> failwith "usage: errors.exe CASES PARSER.ML"
-  in
   let files = List.sort compare (Array.to_list (Sys.readdir directory)) in
   let raised =
     List.filter_map
@@ -114,3 +109,22 @@ let () =
       Printf.printf
         "Errors without a test in test/errors/cases (%d):\n%s\n"
         (List.length untested) (String.concat "\n" untested)
+
+let () =
+  let open Cmdliner in
+  let directory = Arg.(required & pos 0 (some dir) None & info [] ~docv:"CASES")
+  and parser =
+    Arg.(required & pos 1 (some file) None & info [] ~docv:"PARSER.ML")
+  in
+  exit
+    ( Cmd.eval
+        ( Cmd.make
+            ( Cmd.info
+                "errors"
+                ~doc:
+                  "Show the errors of OCST and of the compiler on the cases, \
+                   and the errors of PARSER.ML without a case."
+            )
+            Term.(const main $ directory $ parser)
+        )
+    )

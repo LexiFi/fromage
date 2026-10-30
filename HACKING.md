@@ -30,11 +30,12 @@ library `fromage`, module `Ocst_pretty`, in `pretty/`) and the formatter
 (the executable `fromage`). Each test belongs to one of them: the tests of
 the parser, the errors, the doc comments and the coverage to `ocst`, the
 round-trips, the fuzzing and the layout to `fromage`. The dependencies of
-the tests are `{with-test}` for `@runtest` (`menhir` and
-`ocamlgrammarfuzzer`, for `fromage`), `{with-dev-setup}` for the rest of
-`@runtest-full` (also `bisect_ppx`, for the coverage, which is skipped
-without it). `ocamlgrammarfuzzer` and the version of `bisect_ppx` which
-builds with OCaml 5.5 are pinned in the `.opam.template` files. The opam
+the tests are `{with-test}` for `@runtest` (`cmdliner`, which parses the
+command lines of the executables, and `menhir` and `ocamlgrammarfuzzer`, for
+`fromage`), `{with-dev-setup}` for the rest of
+`@runtest-full` (also `ppx_windtrap`, for the coverage, which is skipped
+without it). `ocamlgrammarfuzzer`, which is not in the opam repository, is
+pinned in the `.opam.template` files. The opam
 files are checked by `@runtest`: after a change of `dune-project`,
 `dune promote` updates them. From the repository root:
 
@@ -103,12 +104,13 @@ arguments: a rule saves its sentences in `_build/default/test/*.sentences`
 them, in `test` and `test/coverage`, read them (`--sentences FILE`).
 
 `--timings` prints, on the error output, the time of each configuration and
-of each phase of the checks (parsing, formatting, comparisons...). For
-larger runs, from the repository root:
+of each phase of the checks (parsing, formatting, comparisons...); `--help`
+lists all the options. For larger runs, from the repository root (the
+arguments after `--` are those of ocamlgrammarfuzzer):
 
 ```bash
-_build/default/test/fuzz_roundtrip.exe $(which menhir) $(which ocamlgrammarfuzzer) \
-  test/parser.mly interface --seed 4 --count 100000
+_build/default/test/fuzz_roundtrip.exe --grammar test/parser.mly \
+  -- interface --seed 4 --count 100000
 ```
 
 The fuzzing test also puts a doc comment before every token of each sentence
@@ -123,26 +125,28 @@ sentences are invalid. To see why generated sentences are rejected by the
 compiler, grouped by error, with the shortest example of each:
 
 ```bash
-./fuzz_roundtrip.exe MENHIR FUZZER GRAMMAR --rejections implementation --seed 1 --count 2000
+_build/default/test/fuzz_roundtrip.exe --grammar test/parser.mly --rejections \
+  -- implementation --seed 1 --count 2000
 ```
 
 `runtest-full` also measures the coverage of OCST by its tests (not the deep
 fuzzing): `test/coverage` copies the sources of OCST and instruments them
-with bisect_ppx, runs the tests against this copy, and compares the coverage
-of each module, and the list of the uncovered points (each marked with `▲`
-in its line), with `test/coverage/coverage.expected`. The coverage is 100%,
-and must stay so. The report is also in
-`_build/default/test/coverage/html/index.html`.
+with `ppx_windtrap.coverage`, runs the tests against this copy (each process
+writing its own `.coverage` file), and compares the report of
+`windtrap coverage` (the coverage of each module, and the source of the
+uncovered lines) with `test/coverage/coverage.expected`. The coverage is
+100%, and must stay so. For another view of the same files:
+`windtrap coverage _build/default/test/coverage`.
 
 - Cover new code with explicit cases: an example of `test/examples` (which
   must be valid: the codebase test checks it), a case of
   `test/errors/cases`, or a unit test (`test/parser_test.ml`,
   `test/random_test.ml`) for the functions which only the API reaches.
-- bisect_ppx counts every branch: each alternative of an or-pattern, each
-  side of `||` and `&&`, and the return of a function application which is
-  not in tail position. So the parser and the lexer raise their errors with
-  `raise` at the call site (`raise (failure state error)`), which bisect_ppx
-  knows does not return.
+- windtrap counts the entry of every block (function body, match arm, `if`
+  branch) and the return of every call, except the calls of `raise`,
+  `failwith`, `invalid_arg` and `exit`. So the parser and the lexer raise
+  their errors with `raise` at the call site (`raise (failure state error)`):
+  the return of a function which raises would be uncovered.
 - Remove the code which no source can reach, or restructure it (make the last
   case of a match the case which the caller checked). What remains (internal
   errors, the `_ -> None` of selectors after a checked token, consistency
@@ -166,7 +170,7 @@ smaller source failing in the same way (`minimized:`). Dune only shows the
 error output of a rule when it ends: to see the failures during the run,
 start the executable itself (as above), with the options
 of the rules of `test/fuzz.inc` (`--deep NAME`, `--part I/N`, and
-`--sentences FILE` with a file built by dune, or `MENHIR FUZZER GRAMMAR`
+`--sentences FILE` with a file built by dune, or `--grammar GRAMMAR`
 instead to generate the sentences).
 
 Failures found by the fuzzer are LR artifacts of the grammar as often as

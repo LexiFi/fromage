@@ -1,13 +1,12 @@
-100.00 %    544/544    test/coverage/cst_lexer.ml
-100.00 %    175/175    test/coverage/doc_comments.ml
-100.00 %      6/6      test/coverage/ocst.ml
-100.00 %   3670/3670   test/coverage/parser.ml
-100.00 %    998/998    test/coverage/printer.ml
-100.00 %      8/8      test/coverage/syntax_error.ml
-100.00 %   2438/2438   test/coverage/to_ast.ml
-100.00 %    501/501    test/coverage/token.ml
-100.00 %     40/40     test/coverage/token_position.ml
-100.00 %     64/64     test/coverage/token_stream.ml
-100.00 %   8444/8444   Project coverage
-
-Uncovered points (▲):
+   cover    points      file                              uncovered lines
+  100.0%     537/537    test/coverage/cst_lexer.ml
+  100.0%     162/162    test/coverage/doc_comments.ml
+  100.0%       6/6      test/coverage/ocst.ml
+  100.0%    3393/3393   test/coverage/parser.ml
+  100.0%     993/993    test/coverage/printer.ml
+  100.0%       8/8      test/coverage/syntax_error.ml
+  100.0%    2415/2415   test/coverage/to_ast.ml
+  100.0%     408/408    test/coverage/token.ml
+  100.0%      37/37     test/coverage/token_position.ml
+  100.0%      64/64     test/coverage/token_stream.ml
+coverage: 100.0% (8023/8023 points)

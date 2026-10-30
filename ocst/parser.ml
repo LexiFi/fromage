@@ -63,8 +63,8 @@ let location state index =
   in
   Location.{ loc_start = start; loc_end = stop; loc_ghost = false }
 
-(* The errors are exceptions, which the parser raises with [raise] (which
-   bisect_ppx knows not to return, unlike a function raising them). The message
+(* The errors are exceptions, which the parser raises with [raise] (which the
+   coverage knows not to return, unlike a function raising them). The message
    starts with the illegal token: "Illegal ')', '..' expected.", "Unexpected
    end of input, ...", also for the internal errors: "Illegal ')', OCST
    internal error: ...". *)

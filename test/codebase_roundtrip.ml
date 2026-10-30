@@ -53,10 +53,10 @@ let check_file filename =
 
 (* Without arguments, checks the OCaml files of the repository; with
    arguments, checks the given files, for debugging. *)
-let () =
+let main files =
   Warnings.parse_options false "-a" |> ignore;
   let files =
-    match List.tl (Array.to_list Sys.argv) with
+    match files with
     | [] -> source_files (git_root ())
     | files -> files
   in
@@ -67,3 +67,19 @@ let () =
       files
   in
   report ~title:"OCST codebase round-trip" failures
+
+let () =
+  let open Cmdliner in
+  let files = Arg.(value & pos_all file [] & info [] ~docv:"FILE") in
+  exit
+    ( Cmd.eval
+        ( Cmd.make
+            ( Cmd.info
+                "codebase_roundtrip"
+                ~doc:
+                  "Check the round-trips of the OCaml files of the \
+                   repository, or of the files given."
+            )
+            Term.(const main $ files)
+        )
+    )

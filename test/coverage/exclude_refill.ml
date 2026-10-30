@@ -2,10 +2,10 @@
    excluded from coverage: OCST lexes strings ([Lexing.from_string]), whose
    end is known, so the lexing engine never asks for more input. *)
 
-let () =
+let main lexer =
   let lines =
     String.split_on_char
-      '\n' (In_channel.with_open_bin Sys.argv.(1) In_channel.input_all)
+      '\n' (In_channel.with_open_bin lexer In_channel.input_all)
   in
   let refill = "| __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf;" in
   let rec loop =
@@ -24,3 +24,19 @@ let () =
     | [] -> ()
   in
   loop lines
+
+let () =
+  let open Cmdliner in
+  let lexer = Arg.(required & pos 0 (some file) None & info [] ~docv:"LEXER.ML")
+  in
+  exit
+    ( Cmd.eval
+        ( Cmd.make
+            ( Cmd.info
+                "exclude_refill"
+                ~doc:
+                  "Print the lexer with its refill branches excluded from coverage."
+            )
+            Term.(const main $ lexer)
+        )
+    )

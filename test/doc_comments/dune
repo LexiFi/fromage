@@ -1,7 +1,7 @@
 (executable
  (name doc_comments)
  (modules doc_comments)
- (libraries roundtrip ocst compiler-libs.common))
+ (libraries cmdliner roundtrip ocst compiler-libs.common))
 
 ; The doc comments of the files of cases, with the warnings about them.
 

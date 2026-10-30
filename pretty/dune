@@ -13,4 +13,4 @@
  (public_name fromage)
  (package fromage)
  (modules ocst_format)
- (libraries ocst ocst_pretty))
+ (libraries cmdliner ocst ocst_pretty))

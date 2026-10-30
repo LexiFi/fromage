@@ -12,7 +12,15 @@ let check path =
   ;
   errors = []
 
+let main files = if not (List.for_all Fun.id (List.map check files)) then exit 1
+
 let () =
-  let files = ref [] in
-  Arg.parse [] (fun file -> files := file :: !files) "layout.exe FILE...";
-  if not (List.for_all Fun.id (List.map check (List.rev !files))) then exit 1
+  let open Cmdliner in
+  let files = Arg.(value & pos_all file [] & info [] ~docv:"FILE") in
+  exit
+    ( Cmd.eval
+        ( Cmd.make
+            (Cmd.info "layout" ~doc:"Check the layout of the sources of OCST.")
+            Term.(const main $ files)
+        )
+    )

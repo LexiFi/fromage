@@ -10,6 +10,7 @@ depends: [
   "ocaml" {>= "5.5" & < "5.6"}
   "ocst" {= version}
   "pretty_expressive"
+  "cmdliner" {>= "2.0"}
   "menhir" {with-test}
   "ocamlgrammarfuzzer" {with-test}
   "odoc" {with-doc}

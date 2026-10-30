@@ -32,12 +32,7 @@ let ocst ~filename source =
     in
     Format.asprintf "%a" Pprintast.structure ast, warnings
 
-let () =
-  let directory =
-    match Sys.argv with
-    | [| _; directory |] -> directory
-    | _ -> failwith "usage: doc_comments.exe CASES"
-  in
+let main directory =
   let files = List.sort compare (Array.to_list (Sys.readdir directory)) in
   List.iter
     ( fun name ->
@@ -73,3 +68,18 @@ let () =
         print_newline ()
     )
     files
+
+let () =
+  let open Cmdliner in
+  let directory = Arg.(required & pos 0 (some dir) None & info [] ~docv:"CASES")
+  in
+  exit
+    ( Cmd.eval
+        ( Cmd.make
+            ( Cmd.info
+                "doc_comments"
+                ~doc:"Show where OCST attaches the doc comments of the cases."
+            )
+            Term.(const main $ directory)
+        )
+    )

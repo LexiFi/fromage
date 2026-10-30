@@ -1,7 +1,7 @@
 (executable
  (name errors)
  (modules errors)
- (libraries roundtrip ocst str compiler-libs.common))
+ (libraries cmdliner roundtrip ocst str compiler-libs.common))
 
 ; The syntax errors on the files of cases, and the untested errors.
 

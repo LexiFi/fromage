@@ -56,12 +56,13 @@
 (executable
  (name codebase_roundtrip)
  (modules codebase_roundtrip)
- (libraries roundtrip lexer_check pretty_check unix compiler-libs.common))
+ (libraries cmdliner roundtrip lexer_check pretty_check unix compiler-libs.common))
 
 (executable
  (name fuzz_roundtrip)
  (modules fuzz_roundtrip)
  (libraries
+  cmdliner
   random_token
   roundtrip
   pretty_check
@@ -119,7 +120,7 @@
 (executable
  (name layout)
  (modules layout)
- (libraries layout_rules))
+ (libraries cmdliner layout_rules))
 
 (rule
  (alias runtest)
@@ -130,7 +131,7 @@
   (glob_files *.ml)
   (glob_files errors/errors.ml)
   (glob_files doc_comments/doc_comments.ml)
-  (glob_files coverage/{coverage_open,exclude_refill,uncovered}.ml)
+  (glob_files coverage/{coverage_open,exclude_refill}.ml)
   (glob_files ../pretty/*.ml)
   (glob_files ../pretty/{doc,ocst_pretty,syntax_layouts,trivia}.mli))
  (action
@@ -144,7 +145,7 @@
 (executable
  (name pretty_test)
  (modules pretty_test)
- (libraries layout_rules ocst ocst_pretty))
+ (libraries cmdliner layout_rules ocst ocst_pretty))
 
 (rule
  (alias runtest)

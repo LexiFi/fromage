@@ -10,9 +10,9 @@
 
 ; The tests: [with-test] are the dependencies of [@runtest] (what [opam
 ; install --with-test] runs), [with-dev-setup] those of [@runtest-full]. The
-; fuzzing needs menhir and ocamlgrammarfuzzer, the coverage of ocst
-; bisect_ppx, whose report needs cmdliner before 2.0 (see the .opam.template
-; files for the versions pinned).
+; executables parse their command line with cmdliner, the fuzzing needs menhir
+; and ocamlgrammarfuzzer (pinned in the .opam.template files), the coverage of
+; ocst ppx_windtrap.
 
 (package
  (name ocst)
@@ -24,13 +24,16 @@
    (and
     (>= 5.5)
     (< 5.6)))
-  (menhir :with-dev-setup)
-  (ocamlgrammarfuzzer :with-dev-setup)
-  (bisect_ppx :with-dev-setup)
   (cmdliner
    (and
+    :with-test
+    (>= 2.0)))
+  (menhir :with-dev-setup)
+  (ocamlgrammarfuzzer :with-dev-setup)
+  (ppx_windtrap
+   (and
     :with-dev-setup
-    (< 2.0)))))
+    (>= 0.2)))))
 
 (package
  (name fromage)
@@ -45,5 +48,7 @@
   (ocst
    (= :version))
   pretty_expressive
+  (cmdliner
+   (>= 2.0))
   (menhir :with-test)
   (ocamlgrammarfuzzer :with-test)))

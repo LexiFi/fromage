@@ -35,40 +35,58 @@ let format ~debug ~width filename source =
       ;
       exit 2
 
-let () =
+let main in_place width debug files =
   (* Formatting keeps the memo tables of the layouts alive until the end of
      the file, and the major GC marks them again and again: it works less
      with this space overhead (10% faster, 20% more memory). *)
   Gc.set { (Gc.get ()) with space_overhead = 200 };
-  let in_place = ref false
-  and width = ref Ocst_pretty.default_width
-  and debug = ref false
-  and files = ref []
-  in
-  let options =
-    [ "-i", Arg.Set in_place, " Format the files in place";
-      "--width", Arg.Set_int width,
-      Printf.sprintf
-        "N The width of the lines (default %d)" Ocst_pretty.default_width
-    ;
-      "-w", Arg.Set_int width, "N Same as --width";
-      "--debug", Arg.Set debug, " Show the details of the errors";
-    ]
-  in
-  Arg.parse
-    (Arg.align options) (fun file -> files := file :: !files)
-    "ocst_format.exe [-i] [--width N] [--debug] FILE..."
-  ;
   List.iter
     ( fun filename ->
         let source = In_channel.with_open_bin filename In_channel.input_all in
-        match format ~debug:!debug ~width:!width filename source with
+        match format ~debug ~width filename source with
         | formatted ->
-            if not !in_place then print_string formatted
+            if not in_place then print_string formatted
             else if formatted <> source then
               Out_channel.with_open_bin
                 filename (fun channel -> output_string channel formatted)
         | exception Ocst.Syntax_error.Error error ->
             prerr_endline (Ocst.Syntax_error.to_string error); exit 1
     )
-    (List.rev !files)
+    files
+
+let () =
+  let open Cmdliner in
+  let in_place =
+    Arg.(value & flag & info [ "i" ] ~doc:"Format the files in place.")
+  and width =
+    Arg.(
+      value & opt int Ocst_pretty.default_width
+      & info [ "w"; "width" ] ~docv:"N" ~doc:"The width of the lines."
+    )
+  and debug =
+    Arg.(
+      value & flag
+      &
+      info
+        [ "debug" ]
+        ~doc:
+          "When formatting would change the AST of a file, show the item \
+             and the formatted source."
+    )
+  and files = Arg.(non_empty & pos_all file [] & info [] ~docv:"FILE")
+  in
+  let doc = "Format OCaml files."
+  and exits =
+    Cmd.Exit.info 1 ~doc:"on a syntax error."
+    ::
+    Cmd.Exit.info
+      2 ~doc:"when formatting would change the AST of a file (left as it is)."
+    :: Cmd.Exit.defaults
+  in
+  exit
+    ( Cmd.eval
+        ( Cmd.make
+            (Cmd.info "fromage" ~doc ~exits)
+            Term.(const main $ in_place $ width $ debug $ files)
+        )
+    )

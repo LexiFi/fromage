@@ -1,13 +1,14 @@
 ; Coverage of OCST by the tests of runtest-full (not the deep fuzzing): the sources
-; of OCST are copied and instrumented with bisect_ppx, with the test helpers,
-; and the tests run against this copy. The coverage, by module, is compared
-; with coverage.expected. Without bisect_ppx, nothing here is built or run.
+; of OCST are copied and instrumented with ppx_windtrap.coverage, with the test
+; helpers, and the tests run against this copy. The coverage, by module, is
+; compared with coverage.expected. Without ppx_windtrap, nothing here is built
+; or run.
 
 ; [dune build] builds the instrumented tests, without running them.
 
 (alias
  (name default)
- (enabled_if %{lib-available:bisect_ppx})
+ (enabled_if %{lib-available:ppx_windtrap.coverage})
  (deps
   (alias check)
   (glob_files *.exe)))
@@ -26,7 +27,7 @@
 (executable
  (name exclude_refill)
  (modules exclude_refill)
- (libraries str))
+ (libraries cmdliner str))
 
 (copy_files#
  (files ../{roundtrip,random_token}.{ml,mli}))
@@ -64,7 +65,7 @@
   coverage_open)
  (preprocess
   (per_module
-   ((pps bisect_ppx)
+   ((pps ppx_windtrap.coverage)
     ocst
     cst
     doc_comments
@@ -97,15 +98,10 @@
  (optional)
  (flags
   (:standard -open Ocst_coverage.Coverage_open))
- (libraries ocst_coverage str unix compiler-libs.common))
+ (libraries cmdliner ocst_coverage str unix compiler-libs.common))
 
 (rule
  (copy ../doc_comments/doc_comments.ml doc_comments_test.ml))
-
-(executable
- (name uncovered)
- (modules uncovered)
- (libraries str))
 
 ; The fuzzing, in parallel: one rule per configuration and part, as in the
 ; parent directory, generated in fuzz.inc (by [fuzz_roundtrip.exe
@@ -114,7 +110,7 @@
 (include fuzz.inc)
 
 (rule
- (enabled_if %{lib-available:bisect_ppx})
+ (enabled_if %{lib-available:ppx_windtrap.coverage})
  (action
   (with-stdout-to
    fuzz.inc.generated
@@ -123,22 +119,23 @@
 (rule
  (alias runtest)
  (package ocst)
- (enabled_if %{lib-available:bisect_ppx})
+ (enabled_if %{lib-available:ppx_windtrap.coverage})
  (action
   (diff fuzz.inc fuzz.inc.generated)))
 
-; The tests write their coverage in this directory ([BISECT_FILE]); their
-; outputs are checked by the tests of the parent directory. The report of the
-; lines covered is in _build/default/test/coverage/html/index.html.
+; The tests write their coverage in this directory, one file per process
+; ([WINDTRAP_COVERAGE_FILE]); their outputs are checked by the tests of the
+; parent directory. [windtrap coverage] merges the files, and shows the lines
+; which no test runs.
 
 (rule
  (alias runtest-full)
  (package ocst)
- (enabled_if %{lib-available:bisect_ppx})
+ (enabled_if %{lib-available:ppx_windtrap.coverage})
  (targets coverage.actual)
  (deps
   (universe)
-  ; The instrumented sources, which the report of bisect_ppx reads.
+  ; The instrumented sources, which the report quotes.
   (glob_files *.ml)
   ; The coverage of the fuzzing, by the rules of fuzz.inc.
   (glob_files fuzz_*.coverage)
@@ -146,7 +143,6 @@
   parser_test.exe
   random_test.exe
   errors.exe
-  uncovered.exe
   doc_comments_test.exe
   (source_tree ../errors/cases)
   (source_tree ../doc_comments/cases)
@@ -154,35 +150,32 @@
   (source_tree ../ocamlformat_tests))
  (action
   (progn
-   (system "rm -f bisect*.coverage")
    (setenv
-    BISECT_FILE
-    bisect
-    (progn
-     (ignore-stdout
-      (run ./parser_test.exe))
-     (ignore-stdout
-      (run ./random_test.exe))
-     (ignore-stdout
-      (run ./errors.exe ../errors/cases %{dep:../../ocst/parser.ml}))
-     (ignore-stdout
-      (run ./doc_comments_test.exe ../doc_comments/cases))
-     (ignore-stdout
-      (run ./codebase_roundtrip.exe))))
-   ; The covered and uncovered points, in html/index.html.
-   (run
-    %{bin:bisect-ppx-report}
-    html
-    --coverage-path
-    .
-    --source-path
-    %{workspace_root}
-    -o
-    html)
+    WINDTRAP_COVERAGE_FILE
+    parser_test.coverage
+    (ignore-stdout
+     (run ./parser_test.exe)))
+   (setenv
+    WINDTRAP_COVERAGE_FILE
+    random_test.coverage
+    (ignore-stdout
+     (run ./random_test.exe)))
+   (setenv
+    WINDTRAP_COVERAGE_FILE
+    errors.coverage
+    (ignore-stdout
+     (run ./errors.exe ../errors/cases %{dep:../../ocst/parser.ml})))
+   (setenv
+    WINDTRAP_COVERAGE_FILE
+    doc_comments_test.coverage
+    (ignore-stdout
+     (run ./doc_comments_test.exe ../doc_comments/cases)))
+   (setenv
+    WINDTRAP_COVERAGE_FILE
+    codebase_roundtrip.coverage
+    (ignore-stdout
+     (run ./codebase_roundtrip.exe)))
    (with-stdout-to
     %{targets}
-    (progn
-     (run %{bin:bisect-ppx-report} summary --per-file --coverage-path .)
-     (echo "\nUncovered points (▲):\n")
-     (run ./uncovered.exe html/test/coverage)))
+    (run %{bin:windtrap} coverage --color=never --show-uncovered .))
    (diff coverage.expected %{targets}))))
