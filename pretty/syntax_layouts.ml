@@ -167,12 +167,23 @@ module Make (D : Doc.S) =
 
     (* {1 For loops} *)
 
-    let for_range ~index equal ~start ~direction ~stop =
-      let equal = D.tok equal in
+    let for_head ~keyword ~index equal ~start ~direction ~stop do_ =
+      let equal = D.tok equal
+      and do_ = D.tok do_
+      in
       let stop = after direction stop in
-      flat (index +- equal +- start +- stop)
-      <|> (flat (index +- equal +- start) +| stop)
-      <|> (index +| (equal +- nest 2 start) +| stop)
+      let range =
+        flat (index +- equal +- start +- stop)
+        <|> (flat (index +- equal +- start) +| stop)
+        <|> (index +| (equal +- nest 2 start) +| stop)
+      in
+      flat (keyword +- range +- do_)
+      (* [for index =] on its line, [start] after it or below it, and
+         [to stop] on the next line. *)
+      <|> (after (flat (keyword +- index +- equal)) start +/ stop +| do_)
+      (* The range on the lines after [for], only when [for index =] cannot
+         be on one line. *)
+      <|> as_last_resort (keyword +/ range +| do_)
 
     (* {1 Aliases} *)
 

@@ -926,13 +926,12 @@ module Make (Config : Doc.CONFIG) =
             { left = do_; content = body; right = done_ }
           )
       ->
-          let range =
-            for_range
+          let head =
+            for_head
+              ~keyword:(keyword for_ ext)
               ~index:(pattern index) equal ~start:(expr start)
-              ~direction:(tok direction) ~stop:(expr stop)
+              ~direction:(tok direction) ~stop:(expr stop) do_
           in
-          let head = keyword for_ ext in
-          let head = keyword_head head range (tok do_) in
           let body = expr body
           and done_ = tok done_
           in

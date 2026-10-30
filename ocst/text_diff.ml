@@ -69,8 +69,7 @@ let diff ?(context = 3) before after =
   Array.iteri
     ( fun index (kind, _) ->
         if kind <> ' ' then
-          for
-            near = max 0 (index - context)
+          for near = max 0 (index - context)
             to min (Array.length lines - 1) (index + context)
           do
             shown.(near) <- true

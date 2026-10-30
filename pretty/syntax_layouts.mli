@@ -317,33 +317,41 @@ module Make (D : Doc.S)
 
       (** {1 For loops} *)
 
-      val for_range :
-        index:t -> [ `EQUAL ] Token.token -> start:t -> direction:t -> stop:t
+      val for_head :
+        keyword:t -> index:t -> [ `EQUAL ] Token.token -> start:t
+        -> direction:t -> stop:t -> [ `DO ] Token.token
         -> t
-      (** [i = a to b] in [for i = a to b do]:
+      (** [for i = a to b do], after [keyword] ([for], with its extension and
+          attributes):
       {[
-        index = start to stop
+        for index = start to stop do
+      ]}
+      Else [for index =] on its line, [start] after it or below it, and
+      [to stop] on the next line:
+      {[
+        for index = start
+          to
+            stop ...
+            stop
+        do
       ]}
       {[
-        index = start
-        to
-          stop ...
-          stop
-      ]}
-      With [start] on several lines, each part starts its line:
-      {[
-        index
-        = start ...
+        for index =
+          start ...
           start
-        to stop
+          to stop
+        do
       ]}
+      Only when [for index =] cannot be on one line (after comments on lines
+      of their own), the range on the lines after [for], each part starting
+      its line when [start] is on several lines:
       {[
-        index
-        = start ...
-          start
-        to
-          stop ...
-          stop
+        for
+          index
+          = start ...
+            start
+          to stop
+        do
       ]} *)
 
       (** {1 Aliases} *)

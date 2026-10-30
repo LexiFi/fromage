@@ -315,11 +315,10 @@ let () = for i = 1 to 10 do print_int i done
 
 (* 10b. Long bounds. *)
 let () =
-  for
-    index
-    = function_with_a_long_name
-        argument_number_one argument_number_two
-        argument_number_three argument_number_four
+  for index =
+    function_with_a_long_name
+      argument_number_one argument_number_two
+      argument_number_three argument_number_four
     to
       function_with_a_long_name
         argument_number_one argument_number_two
@@ -330,8 +329,7 @@ let () =
 
 (* 10c. Long stop. *)
 let () =
-  for
-    index = 0
+  for index = 0
     to
       function_with_a_long_name
         argument_number_one argument_number_two
@@ -342,12 +340,24 @@ let () =
 
 (* 10d. Long start, short stop. *)
 let () =
+  for index =
+    function_with_a_long_name
+      argument_number_one argument_number_two
+      argument_number_three argument_number_four
+    downto 0
+  do
+    ()
+  done
+
+(* 10e. [for index =] which cannot be on one line, after a comment on its own
+   line: the range on the lines after [for]. *)
+let () =
   for
+    (* The index. *)
     index
     = function_with_a_long_name
-        argument_number_one argument_number_two
-        argument_number_three argument_number_four
-    downto 0
+        argument_number_one argument_number_two argument_number_three
+    to 10
   do
     ()
   done
