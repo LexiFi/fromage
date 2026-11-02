@@ -93,9 +93,12 @@ module Make (D : Doc.S)
         ?in_bracket:bool -> Operator_classification.t -> t
         -> ([< operator_kind ] Token.token * t) list
         -> t
-      (** [operator_chain kind first rest]: a chain of operators of [kind], its
-      first operand, then each operator and the operand after it. With all
-      the operands on one line, packed at the same indentation:
+      (** [operator_chain kind first rest]: a chain of binary operators of
+      [kind] and of the same precedence, nested in one another, as
+      [a + b - c] ([(a + b) - c]) or [a :: b :: l] ([a :: (b :: l)]): their
+      operands in the order of the source, [first], then each one after the
+      operator before it ([+ b], [- c]). With all the operands on one line,
+      packed at the same indentation:
       {[
         a + b + c
         + d + e
