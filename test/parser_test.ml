@@ -45,8 +45,8 @@ let () =
     failwith "CST interface printer changed source"
   ;
   let compiler_lexbuf = Lexing.from_string interface_source in
-  compiler_lexbuf.lex_curr_p
-  <- { compiler_lexbuf.lex_curr_p with pos_fname = "parser_test.mli" }
+  compiler_lexbuf.lex_curr_p <-
+    { compiler_lexbuf.lex_curr_p with pos_fname = "parser_test.mli" }
   ;
   let compiler_interface = Parse.interface compiler_lexbuf in
   if

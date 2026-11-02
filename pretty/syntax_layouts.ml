@@ -125,7 +125,10 @@ module Make (D : Doc.S) =
           in
           match kind with
           | Right_into_left ->
-              packed <|> losing_ties lines <|> at_line_end first rest
+              (* [a :=] at the end of its line rather than [:= b] at the
+                 start of the next one, for the same number of lines. *)
+                flat packed <|> losing_ties (packed <|> lines)
+              <|> at_line_end first rest
           | Symmetric | Left_into_right -> packed <|> losing_ties lines
 
     (* {1 Type constraints} *)

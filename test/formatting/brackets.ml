@@ -26,8 +26,8 @@ let index_qualified =
   matrix.M.%{aaaaaaaaaaaaaaaa; bbbbbbbbbbbbbbbbbbbbb; cccccccccccccccccccc; ddd}
 
 let index_assign =
-  matrix.%{aaaaaaaaaaaaaaaa; bbbbbbbbbbbbbbbbbbbbb; cccccccccccccccccccc}
-  <- value
+  matrix.%{aaaaaaaaaaaaaaaa; bbbbbbbbbbbbbbbbbbbbb; cccccccccccccccccccc} <-
+    value
 
 let open_paren =
   M.(

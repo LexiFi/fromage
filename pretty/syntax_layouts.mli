@@ -128,7 +128,8 @@ module Make (D : Doc.S)
             b
       ]}
       where, after an operand on one line, the operator can also end its
-      line, each next operand indented by 2 from the one before it:
+      line, each next operand indented by 2 from the one before it, which is
+      chosen over the other layouts of the same number of lines:
       {[
           a :=
             b ...

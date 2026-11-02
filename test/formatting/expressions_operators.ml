@@ -108,6 +108,13 @@ let () =
     other_function_with_a_long_name
       argument_number_four argument_number_five argument_number_six
 
+(* 7b'''. A value on one line, which does not fit after the left side: after
+   the operator at the end of the line of the left side, rather than after
+   the operator at the start of the next line. *)
+let () =
+  reference_with_a_long_name :=
+    some_function_with_a_long_name argument_number_one argument_number_two
+
 (* 7c. In a bracket: the operators in the column of the bracket. *)
 let x7_bracket =
   f
