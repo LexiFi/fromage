@@ -135,7 +135,8 @@ let errors ~filename source =
   let content_after_bracket ((line, column) as bracket) (line', _) =
     match Hashtbl.find_opt after_brackets bracket with
     | _ when Hashtbl.mem attribute_brackets bracket -> ()
-    | Some (content_line, content_column) when
+    | Some (content_line, content_column)
+      when
           line' <> line && content_line = line && content_column <> column + 2
         && not (chain_operand bracket content_column)
     ->
@@ -168,13 +169,13 @@ let errors ~filename source =
         in
         begin match !stack, previous with
         | (Bracket, _) :: _, _ when is_closing_bracket token.kind -> ()
-        | (Bracket, bracket) :: _, _ when
-            not (Hashtbl.mem first_elements bracket)
+        | (Bracket, bracket) :: _, _
+          when not (Hashtbl.mem first_elements bracket)
         ->
             Hashtbl.add first_elements bracket start;
             Hashtbl.replace after_brackets bracket start
-        | (Bracket, bracket) :: _, Some (`COMMA, _) when
-            Hashtbl.mem in_values bracket
+        | (Bracket, bracket) :: _, Some (`COMMA, _)
+          when Hashtbl.mem in_values bracket
         -> ()
         | (Bracket, bracket) :: _, Some ((`SEMI | `COMMA), _) when starts_line
         ->
@@ -224,8 +225,8 @@ let errors ~filename source =
                is closed by [->] two columns after where [begin] is opened. *)
             let start =
               match previous, !module_path with
-              | Some (`BEGIN, (begin_line, begin_column)), _ when
-                  begin_line = line
+              | Some (`BEGIN, (begin_line, begin_column)), _
+                when begin_line = line
               ->
                   let begin_column =
                     match !stack with
@@ -235,8 +236,8 @@ let errors ~filename source =
                   line, begin_column + 2
               (* [then begin] and [else begin] are opened where their line
                  starts: [end] is in the column of [if] or [else]. *)
-              | Some ((`THEN | `ELSE), (keyword_line, _)), _ when
-                  token.kind = `BEGIN && keyword_line = line
+              | Some ((`THEN | `ELSE), (keyword_line, _)), _
+                when token.kind = `BEGIN && keyword_line = line
               -> line, Option.value contents.(line) ~default:column
               (* The bracket of a local open [M.(e)] or [M.{ x }], or of an
                  index [x.%{ i }], is opened where the path starts. *)

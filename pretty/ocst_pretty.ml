@@ -687,8 +687,8 @@ module Make (Config : Doc.CONFIG) =
           (* [((a + b) + c) + d]: the operands from the last one. *)
           let rec operands rest (value : expr) =
             match value with
-            | { node = Exp_infix (left, operator, right); attributes = [] } when
-                same operator
+            | { node = Exp_infix (left, operator, right); attributes = [] }
+              when same operator
             -> operands ((operator, expr right) :: rest) left
             | _ -> expr value, rest
           in
@@ -697,8 +697,8 @@ module Make (Config : Doc.CONFIG) =
           (* [a + (b + (c + d))]. *)
           let rec operands rest operator (value : expr) =
             match value with
-            | { node = Exp_infix (left, next, right); attributes = [] } when
-                same next
+            | { node = Exp_infix (left, next, right); attributes = [] }
+              when same next
             -> operands ((operator, expr left) :: rest) next right
             | _ -> List.rev ((operator, expr value) :: rest)
           in

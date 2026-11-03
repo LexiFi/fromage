@@ -448,8 +448,8 @@ let builtin_index ~loc paren index =
   | `LBRACE ->
       let coordinates =
         match index.pexp_desc with
-        | Pexp_tuple elements when
-            List.for_all (fun (label, _) -> label = None) elements
+        | Pexp_tuple elements
+          when List.for_all (fun (label, _) -> label = None) elements
         -> List.map snd elements
         | _ -> [ index ]
       in

@@ -281,8 +281,9 @@ module Make (D : Doc.S) =
       | None -> head
       | Some (when_, guard) ->
           let guard = after (D.tok when_) guard in
-          (* After a head on several lines, [when] starts the next line. *)
-          (flat head +- guard) <|> losing_ties (head +| guard)
+          (* All on one line, or [when] starting the next line, in the
+             column of the head. *)
+          flat (head +- guard) <|> (head +| guard)
 
     let cases ?doc print values =
       bar_list ?doc (fun value -> case_after_bar (print value)) values

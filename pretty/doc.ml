@@ -521,8 +521,8 @@ module Make (Config : CONFIG) : S =
 
     let ( ++ ) left right =
       match left.last, right.first with
-      | Some last, Some first when
-          Trivia.can_glue last first && not right.breaks
+      | Some last, Some first
+        when Trivia.can_glue last first && not right.breaks
       -> join ( ^^ ) left right
       | _ -> left +- right
 
@@ -706,7 +706,8 @@ module Make (Config : CONFIG) : S =
       match value.last with
       (* After [)], [end] or [done] which close the value, at the start of
          their line, the separator follows on their line. *)
-      | Some { kind = `RPAREN | `END | `DONE; _ } when
+      | Some { kind = `RPAREN | `END | `DONE; _ }
+        when
           value.closed && not (starts_with_comments_of_previous_line separator)
       -> value ++ separator
       | _ -> flat value ++ separator <|> losing_ties alone

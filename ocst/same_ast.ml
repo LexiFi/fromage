@@ -110,8 +110,8 @@ let compare_items
             let rec loop original formatted =
               match original, formatted with
               | [], [] -> Ok ()
-              | o :: original, f :: formatted when
-                  without_locations o = without_locations f
+              | o :: original, f :: formatted
+                when without_locations o = without_locations f
               -> loop original formatted
               | o :: _, f :: _ ->
                   let quote docs =

@@ -638,7 +638,8 @@ let dune_rules directory =
                       in
                       let sentences =
                         match same_sentences with
-                        | Some quick_index when
+                        | Some quick_index
+                          when
                             not (List.mem (entrypoint, quick_index) !included)
                         ->
                             included := (entrypoint, quick_index) :: !included;
@@ -881,8 +882,8 @@ let main
     match dune_rules_directory, generator, extra, explicit with
     | Some directory, _, _, _ -> Ok (print_string (dune_rules directory))
     | None, Error message, _, _ | None, _, Error message, _ -> Error message
-    | None, _, _, entrypoint :: _ when
-        not (List.mem entrypoint [ "implementation"; "interface" ])
+    | None, _, _, entrypoint :: _
+      when not (List.mem entrypoint [ "implementation"; "interface" ])
     -> Error ("unknown entry point " ^ entrypoint)
     | None, Ok generator, Ok extra, _ ->
         match show_rejections, generator, explicit with

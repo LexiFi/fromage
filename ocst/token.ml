@@ -194,7 +194,8 @@ module Uident =
       then Some text
       else if not (is_ascii text) then
         match Misc.Utf8_lexeme.normalize text with
-        | Ok name when
+        | Ok name
+          when
               Misc.Utf8_lexeme.is_valid_identifier name
             && Misc.Utf8_lexeme.is_capitalized name
         -> Some text

@@ -25,8 +25,8 @@ let readme_case x =
 
 let case_guard x =
   match x with
-  | Some value when
-      value > some_threshold_with_a_long_name && value < another_threshold
+  | Some value
+    when value > some_threshold_with_a_long_name && value < another_threshold
   -> value
   | _ -> 0
 

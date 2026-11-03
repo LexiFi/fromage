@@ -417,22 +417,25 @@ module Make (D : Doc.S)
 
       val guarded : t -> ([ `WHEN ] Token.token * t) option -> t
       (** [guarded head guard]: a pattern and its guard, [p when e], as the head
-      of a case:
+      of a case: all on one line, or [when] starting the next line, in the
+      column of the head, with the guard after it, or on the next lines,
+      indented by 2 from [when]. In a case, [->] after them is then in the
+      column of the bar ([case_after_bar]):
       {[
-        head when guard
+        | head when guard
       ]}
       {[
-        head when
-          guard ...
-          guard
+        | head ...
+          head
+          when guard
+        -> body
       ]}
-      After a [head] on several lines, [when] starts the next line, in the
-      column of the head, the guard after it or on the next lines, indented by
-      2:
       {[
-        head ...
-        head
-        when guard
+        | head
+          when
+            guard ...
+            guard
+        -> body
       ]} *)
 
       val cases :

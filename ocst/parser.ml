@@ -3045,8 +3045,8 @@ and class_type state error =
   else
     match next state with
     | `OBJECT | `LET -> Cty_signature (class_signature state error)
-    | `LBRACKET when
-        not (List.mem (peek state 1) [ `BACKQUOTE; `BAR; `RBRACKET ])
+    | `LBRACKET
+      when not (List.mem (peek state 1) [ `BACKQUOTE; `BAR; `RBRACKET ])
     ->
         (* [[t, u] c], or a polymorphic variant type [[t | `A]] as the
            domain of an arrow: the types after [[] tell them apart. *)
@@ -4792,11 +4792,11 @@ and expr_application state error =
       let head = simple_expr state error in
       let applied =
         match head with
-        | { node = Exp_construct (constructor, None); attributes = [] } when
-            starts_simple_expr (next state)
+        | { node = Exp_construct (constructor, None); attributes = [] }
+          when starts_simple_expr (next state)
         -> mk (Exp_construct (constructor, Some (simple_expr state internal)))
-        | { node = Exp_variant (tag, None); attributes = [] } when
-            starts_simple_expr (next state)
+        | { node = Exp_variant (tag, None); attributes = [] }
+          when starts_simple_expr (next state)
         -> mk (Exp_variant (tag, Some (simple_expr state internal)))
         | _ when starts_argument (next state) ->
             mk (Exp_apply (head, repeat state starts_argument argument))

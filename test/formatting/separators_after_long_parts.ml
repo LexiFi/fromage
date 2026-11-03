@@ -6,7 +6,9 @@
    belongs to. After a token of one character ([:], [=], [?]), a part on
    several lines is on the line of the token, its next lines indented by 2,
    as in [( ]; after a longer token ([:>]), it is on the next lines,
-   indented by 2. *)
+   indented by 2. Except [when], which starts its line in the column of the
+   pattern whenever the pattern and the guard are not on one line: the guard
+   is then after [when], or below it, indented by 2. *)
 
 (* {1 Tokens after an expression or a pattern} *)
 

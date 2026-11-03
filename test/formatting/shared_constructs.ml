@@ -726,7 +726,8 @@ let f18_pattern =
 (* 18c. Long guard. *)
 let f18_guard =
   function
-    x when
+    x
+    when
       function_with_a_long_name
         argument_number_one argument_number_two
         argument_number_three argument_number_four
@@ -793,6 +794,7 @@ type _ t19_result =
       ) t19_result
 
 (* 19d. Long arguments and long result. *)
+(* bookmark *)
 type _ t19_both =
     Constructor :
       aaaaaaaaaaaaaaaaaaaa * bbbbbbbbbbbbbbbbbbbbbbbb
