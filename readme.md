@@ -24,6 +24,47 @@ to express the intent of the authors.
 
 ## Formatting principle
 
+### Context giving symbols should be at the start of the line
+
+The left of the line is the most visible spot. Things that gives context should
+be here. For instance
+
+```ocaml
+match x with
+| Lonnnng_pattern (a, b, c) when
+  Some_cons (d, e, h) ->
+    some_function j g k
+```
+is not great because to understand where the pattern, the when clause and the 
+result start and end you have to look at the end of the lines. So there is a 
+preference for the start of the line:
+
+```ocaml
+match x with
+| Lonnnng_pattern (a, b, c) 
+  when Some_cons (d, e, h) 
+-> some_function j g k
+```
+
+This is just an example, and this preference is not a hard rule. For instance,
+because its much more usual, if the pattern + when clause is single line we 
+allow the `->` to end the line:
+
+```ocaml
+match x with
+| Shorter_pattern (a, b, c) when Some_cons (d, e, h) -> 
+    some_function j g k
+```
+
+This is both for the sake of tradition which has some value because a formatting 
+that one is used to can be easier to read and because its easy to know where the
+pattern end if its one line. Another way to put it is we subscribe to the 
+classical view that the `->` ends the pattern instead of the defendable view 
+that it start the result expression. 
+
+In fact as explained, there is a stricter version of that rule for multiline 
+blocks. 
+
 ### No diagonal separators
 
 One the big principle is to avoid diagonal separators:
