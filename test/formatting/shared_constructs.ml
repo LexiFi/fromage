@@ -794,9 +794,37 @@ type _ t19_result =
       ) t19_result
 
 (* 19d. Long arguments and long result. *)
-(* bookmark *)
+(* This looks a bit weird but makes a lot more sense when you have the | it 
+   should have. Its not a fun decl like construct but a match case like 
+   construct.  *)
+
 type _ t19_both =
     Constructor :
+      aaaaaaaaaaaaaaaaaaaa * bbbbbbbbbbbbbbbbbbbbbbbb
+      * cccccccccccccccccccc * dddddddddddddddddddd * e
+  ->
+      ( 'aaaaaaaaaaaaaa, 'bbbbbbbbbbbbbbbbbbb, 'cccccccccccccccc,
+        'ddddddddddd, 'eeeeeeeee, 'ffffffffffffffff
+      ) t19_both
+
+(* the above is more understandable when looking at the bellow *)
+
+type _ t19_match_like =
+    Constructor1 :
+      aaaaaaaaaaaaaaaaaaaa * bbbbbbbbbbbbbbbbbbbbbbbb
+      * cccccccccccccccccccc * dddddddddddddddddddd * e
+  ->
+      ( 'aaaaaaaaaaaaaa, 'bbbbbbbbbbbbbbbbbbb, 'cccccccccccccccc,
+        'ddddddddddd, 'eeeeeeeee, 'ffffffffffffffff
+      ) t19_both
+  | Constructor2 :
+      aaaaaaaaaaaaaaaaaaaa * bbbbbbbbbbbbbbbbbbbbbbbb
+      * cccccccccccccccccccc * dddddddddddddddddddd * e
+  ->
+      ( 'aaaaaaaaaaaaaa, 'bbbbbbbbbbbbbbbbbbb, 'cccccccccccccccc,
+        'ddddddddddd, 'eeeeeeeee, 'ffffffffffffffff
+      ) t19_both
+  | Constructor3 :
       aaaaaaaaaaaaaaaaaaaa * bbbbbbbbbbbbbbbbbbbbbbbb
       * cccccccccccccccccccc * dddddddddddddddddddd * e
   ->
