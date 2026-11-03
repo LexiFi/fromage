@@ -622,10 +622,10 @@ module type S14_substitutions =
 external f15 : int -> int = "f15"
 
 (* 15b. Long type. *)
-external f15_type :
-  aaaaaaaaaaaaaaaaaaaa -> bbbbbbbbbbbbbbbbbbbbbbbb
-  -> cccccccccccccccccccc -> dddddddddddddddddddd
-  -> e
+external f15_type
+  : aaaaaaaaaaaaaaaaaaaa -> bbbbbbbbbbbbbbbbbbbbbbbb
+    -> cccccccccccccccccccc -> dddddddddddddddddddd
+    -> e
   = "f"
 
 (* 15c. Long primitives. *)

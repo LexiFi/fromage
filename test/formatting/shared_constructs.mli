@@ -65,8 +65,9 @@ type t4_long :=
 external f5 : int -> int = "f5"
 
 (* 5b. Long type and long primitives. *)
-external f5_long :
-  aaaaaaaaaaaaaaaaaaaa -> bbbbbbbbbbbbbbbbbbbbbbbb -> cccccccccccccccccccc -> d
+external f5_long
+  : aaaaaaaaaaaaaaaaaaaa -> bbbbbbbbbbbbbbbbbbbbbbbb -> cccccccccccccccccccc
+    -> d
   =
   "aaaaaaaaaaaaaaaaaaaa" "bbbbbbbbbbbbbbbbbbbbbbb"
   "cccccccccccccccccccccc" "dddddddd"

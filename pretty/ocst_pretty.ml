@@ -1721,18 +1721,19 @@ module Make (Config : Doc.CONFIG) =
         : value_description
         )
       =
-        let value =
-          after
-            (keyword keyword_ ext +- val_ident name +- tok colon)
-            (core_type typ)
+        let keyword = keyword keyword_ ext
+        and name = val_ident name
         in
         let value =
           match primitives with
-          | None -> value
+          | None -> after (keyword +- name +- tok colon) (core_type typ)
           | Some (equal, names) ->
-              (* As [let x : t = e]. *)
+              (* As [let x : t = e]: [:] starts its line when the type is on
+                 several lines, so that the type is not confused with the
+                 primitives. A [val], without [=], keeps [:] after the
+                 name. *)
               binding
-                ~head:value
+                ~keyword ~head:name ~constraint_:(colon, core_type typ)
                 ~body:
                   (pack_list_isolating_multiline ~indent:0 (List.map tok names))
                 equal

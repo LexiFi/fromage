@@ -1,16 +1,19 @@
 (* The types after a name in signatures (see separators_after_long_parts.ml).
-   After a name, [:] ends the line: the head is a fixed number of tokens, so
-   the type would not gain any room on the next line. *)
+   After the name of a [val], [:] ends the line: the head is a fixed number
+   of tokens, so the type would not gain any room on the next line. An
+   [external] has [=] and its primitives after its type: [:] starts the next
+   line, as in [let x : t = e], so that the type is not confused with what
+   comes after [=]. *)
 
 val aaaaaaaaaaaaaaaaaaaa :
   aaaaaaaaaaaaaaaaaaaa -> bbbbbbbbbbbbbbbbbbbbbbbb
   -> cccccccccccccccccccc -> dddddddddddddddddddd
   -> e
 
-external bbbbbbbbbbbbbbbbbbbb :
-  aaaaaaaaaaaaaaaaaaaa -> bbbbbbbbbbbbbbbbbbbbbbbb
-  -> cccccccccccccccccccc -> dddddddddddddddddddd
-  -> e
+external bbbbbbbbbbbbbbbbbbbb
+  : aaaaaaaaaaaaaaaaaaaa -> bbbbbbbbbbbbbbbbbbbbbbbb
+    -> cccccccccccccccccccc -> dddddddddddddddddddd
+    -> e
   = "primitive"
 
 module Mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm :
