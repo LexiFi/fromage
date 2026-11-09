@@ -1,3 +1,36 @@
+# Introduction
+
+This repo contains both a new parser/syntax tree for OCaml called Ocst, and a
+new formatter called fromage.
+
+This is something intended to be used and useful, but its also an experiment in
+LLM assisted programming. This is a good project to give a lot of freedom to an
+LLM because a lot of properties are very easy to test: for the CST we have 
+checks that no information is lost and that it behaves the same as the upstream
+parser, for the formatter we have checks that it does not change the source.
+
+We also use [ocamlgrammarfuzzer](https://github.com/shogan-ai/ocamlgrammarfuzzer).
+Without this none of this would be reasonable: fuzzing make sure every corner of
+the grammar is tested. Big thanks to its authors.
+
+Because of that, some parts the codebase are meant to be proof read by humans, 
+others not. 
+
+Part that are meant to be read include:
+
+- The test suite
+- The type of the syntax tree in Ocst
+- The output of the formatter (this means every file, but only looking at 
+  formatting.)
+
+Part the are not meant to be read by humans at all:
+
+- The parser code for Ocst
+- The formatting code for the formatter
+
+This readme is not LLM-generated, its intended as human-to-human communication,
+to express the intent of the authors.
+
 # Fromage
 
 Fromage is a new formatter for ocaml. It intends to be opiniated but open 
@@ -14,13 +47,6 @@ should just adopt it instead of making an option.
 For now there is only one version, but I also intend the formatting to be 
 versioned so that we can improve it without forcing other devs to have large 
 diffs in their codebase.
-
-The implementation is heavily LLM-assisted. The goal is to ensure quality with 
-extensive testing, including fuzzing thanks to 
-[ocamlgrammarfuzzer](https://github.com/shogan-ai/ocamlgrammarfuzzer).
-
-This readme is not LLM-generated, its intended as human-to-human communication,
-to express the intent of the authors.
 
 ## Formatting principle
 
@@ -403,9 +429,9 @@ Sharing such code is important for LLM assisted programming because it nudges
 the LLM into making the change everywhere even if its asked only for one of the 
 construct.
 
-# ocst
+# Ocst
 
-ocst is a concrete syntax tree for ocaml. It provides a parser that has been
+Ocst is a concrete syntax tree for ocaml. It provides a parser that has been
 implemented from scratch in recursive descent.
 
 A concrete syntax tree is similar to an abstract syntax tree, but preserves a 
