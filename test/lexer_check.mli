@@ -2,6 +2,7 @@
    the same source, and which are the tokens of the lexer of the compiler, at
    the same positions. *)
 
-val check : string -> string -> unit
-(** [check filename source] fails with [Failure] when the tokens of [source]
-    do not print back to [source], or differ from those of the compiler. *)
+val check : name:string -> string -> string -> unit
+(** [check ~name filename source] fails with [Failure] when the tokens of
+    [source] do not print back to [source], or differ from those of the
+    compiler. [filename] is used in positions, [name] in error messages. *)

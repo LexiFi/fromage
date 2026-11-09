@@ -54,10 +54,6 @@ let main directory =
         | exception error ->
             Printf.printf "OCST fails: %s\n" (Printexc.to_string error)
         end;
-        let check =
-          if Filename.check_suffix name ".mli" then check_interface
-          else check_implementation
-        in
         begin
           match failure ~name (fun () -> ignore (check filename source)) with
           | None -> print_endline "The compiler agrees."

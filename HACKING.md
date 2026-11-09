@@ -59,49 +59,65 @@ tests are dune rules, run in dune's sandbox: they take the files they read
 as arguments, and find the repository with `DUNE_SOURCEROOT`
 (`git_root` in `test/roundtrip.ml`).
 
-The main test is `test/codebase_roundtrip.ml`. For every `.ml`/`.mli`
-file of the repository, including untracked files in `test/examples` and
-`test/ocamlformat_tests`, it checks that:
+The checks of OCST against the compiler are `Roundtrip.check`
+(`test/roundtrip.ml`), which the tests run on all their sources: the files
+of the repository and the generated sentences. On a source, it checks that:
 - the tokens print back to the source, and are those of the compiler's
   lexer, at the same positions (`test/lexer_check.ml`);
-- the printed CST is identical to the source;
-- the AST built by `to_ast.ml` is equal to the compiler's.
+- OCST and the compiler accept or reject it alike, and OCST fails with a
+  syntax error, never with an internal error or another exception;
+- when they accept it, the printed CST is identical to the source, and the
+  AST built by `to_ast.ml` is equal to the compiler's, with the same
+  warnings about doc comments;
+- the formatter keeps it, in the tests which link `test/pretty_check` (see
+  "The pretty printer").
 
-When the ASTs differ, the first failing file is reported in detail: the
-first differing top-level item, the path to the first difference and the
-locations around it, including differences that Printast does not show
-(ghost flags, location stacks). The other failing files get one line each.
-Sources that both parsers reject pass. To check some files only, for
-debugging:
+The driver of these checks is `test/driver.ml`. Whatever the sources, it
+shows each failure on the error output as soon as it is found, with a
+smaller source failing in the same way (`minimized:`), and reports, on the
+standard output, the number of sources which both parsers accept, which are
+the ones compared in depth (sources that both parsers reject pass), and the
+failures: the first one in detail (for an AST mismatch, the first differing
+top-level item, the path to the first difference and the locations around
+it, including differences that Printast does not show: ghost flags,
+location stacks), the others in one line each.
+
+The first test (`driver.exe --repository`, in `test/repository.expected`)
+checks every `.ml`/`.mli` file of the repository, including untracked files
+in `test/examples` and `test/ocamlformat_tests`, and the invalid sources of
+`test/errors/cases`. To check some files only, for debugging (with
+`--mutants N` for mutants of them, see below):
 
 ```bash
-dune build ./test/codebase_roundtrip.exe
-_build/default/test/codebase_roundtrip.exe FILE...
+dune build ./test/driver.exe
+_build/default/test/driver.exe --file FILE --file FILE...
 ```
 
-The second test is `test/fuzz_roundtrip.ml`: it compiles `test/parser.mly`
-with Menhir, generates sentences from it with ocamlgrammarfuzzer, and checks
-each sentence like a file. The fuzzer prints identifiers, labels and
-strings of about 15 characters (`names` in `test/fuzz_roundtrip.ml`), so that
-some constructs fit on one line and others need several. Its configurations
-include `--exhaust`,
-which covers all the productions of the grammar; `runtest` runs those of
-`--quick`, and `runtest-full` all of them.
+The second test is the fuzzing: `test/parser.mly` is compiled with Menhir,
+ocamlgrammarfuzzer generates sentences from it, and `test/driver.ml` checks
+each sentence and its mutants like a file. The fuzzer prints
+identifiers, labels and strings of about 15 characters (`names` in
+`test/fuzz_configurations.ml`), so that some constructs fit on one line and
+others need several. Its configurations (`test/fuzz_configurations.ml`)
+include `--exhaust`, which covers all the productions of the grammar;
+`runtest` runs those of `--quick`, and `runtest-full` all of them.
 
 Each configuration runs in its own dune rule, the exhaustive ones in 4
 parts (`--configuration I --part I/N`), so that they run in parallel; the
 outputs of the rules of a group are concatenated and compared with its
-`.expected` file. These rules are generated from the configurations of
-`fuzz_roundtrip.ml` in `test/fuzz.inc` and `test/coverage/fuzz.inc`
-(`fuzz_roundtrip.exe --dune-rules test|coverage`): `runtest` checks that
+`.expected` file. These rules are generated from the configurations in
+`test/fuzz.inc` and `test/coverage/fuzz.inc`
+(`fuzz_generate.exe rules test|coverage`): `runtest` checks that
 they are up to date, and `dune promote` updates them after a change of the
 configurations. Each check is done once: `runtest-full` reuses the outputs
 of the quick rules for the configurations which they share, and checks only
 the mutants (`--mutants-only`) of the configurations whose sentences
 another rule checks. The fuzzer also runs once for each entry point and
 arguments: a rule saves its sentences in `_build/default/test/*.sentences`
-(`--generate`), and the rules of all the parts of the configurations with
-them, in `test` and `test/coverage`, read them (`--sentences FILE`).
+(`fuzz_generate.exe sentences`), and the rules of all the parts of the
+configurations with them, in `test` and `test/coverage`, read them
+(`driver.exe --sentences FILE`). `fuzz_generate.exe` does not depend
+on OCST, so a change of OCST does not generate the sentences again.
 
 `--timings` prints, on the error output, the time of each configuration and
 of each phase of the checks (parsing, formatting, comparisons...); `--help`
@@ -109,23 +125,23 @@ lists all the options. For larger runs, from the repository root (the
 arguments after `--` are those of ocamlgrammarfuzzer):
 
 ```bash
-_build/default/test/fuzz_roundtrip.exe --grammar test/parser.mly \
+_build/default/test/driver.exe --grammar test/parser.mly \
   -- interface --seed 4 --count 100000
 ```
 
 The fuzzing test also puts a doc comment before every token of each sentence
 of the exhaustive mode (`--doc-comments`), with random blank lines, to check
 where doc comments are attached; the report gives, for each configuration,
-the number of sentences and mutants which both parsers accept, which are the
-ones compared in depth (most random sentences are rejected by both).
+the number of sentences and mutants which both parsers accept (most random
+sentences are rejected by both).
 
 Random sentences avoid a few productions which the semantic actions of
-`parser.mly` reject (`valid` in `test/fuzz_roundtrip.ml`), otherwise most long
+`parser.mly` reject (`valid` in `test/fuzz_configurations.ml`), otherwise most long
 sentences are invalid. To see why generated sentences are rejected by the
 compiler, grouped by error, with the shortest example of each:
 
 ```bash
-_build/default/test/fuzz_roundtrip.exe --grammar test/parser.mly --rejections \
+_build/default/test/driver.exe --grammar test/parser.mly --rejections \
   -- implementation --seed 1 --count 2000
 ```
 
@@ -139,7 +155,7 @@ uncovered lines) with `test/coverage/coverage.expected`. The coverage is
 `windtrap coverage _build/default/test/coverage`.
 
 - Cover new code with explicit cases: an example of `test/examples` (which
-  must be valid: the codebase test checks it), a case of
+  must be valid: `test/pretty_test.ml` formats it), a case of
   `test/errors/cases`, or a unit test (`test/parser_test.ml`,
   `test/random_test.ml`) for the functions which only the API reaches.
 - windtrap counts the entry of every block (function body, match arm, `if`
@@ -158,7 +174,7 @@ A deeper fuzzing, too long for `runtest-full`, inserts every token of
 `test/random_token.ml` in every sentence of the exhaustive mode (one token
 per mutant), checks long random sentences with more mutants, and doc
 comments before every token after each kind of separator. Its
-configurations are `deep_configurations` in `test/fuzz_roundtrip.ml`, each
+configurations are `deep_configurations` in `test/fuzz_configurations.ml`, each
 split in parts, in the rules of `test/fuzz.inc`:
 
 ```bash
@@ -445,7 +461,7 @@ document itself.
 
 It is tested in two ways:
 
-- The round-trip tests (`test/roundtrip.ml`), on all the sources of the
+- The round-trip checks (`Roundtrip.check`), on all the sources of the
   repository and the fuzzed sentences, check that the formatted source has the
   same tokens and comments as the original one, and that a comment (or doc
   comment) which starts its line in the original one still starts a line: a

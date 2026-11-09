@@ -30,15 +30,10 @@
  (libraries cmdliner str))
 
 (copy_files#
- (files ../{roundtrip,random_token}.{ml,mli}))
-
-; The lexer round-trip, with the compiler's [Parser] rather than OCST's.
+ (files ../{roundtrip,lexer_check,random_token}.{ml,mli}))
 
 (copy_files#
- (files ../lexer_check.{ml,mli}))
-
-(copy_files#
- (files ../{fuzz_roundtrip,codebase_roundtrip,parser_test,random_test}.ml))
+ (files ../{driver,parser_test,random_test}.ml))
 
 (copy_files#
  (files ../errors/errors.ml))
@@ -60,8 +55,6 @@
   token
   token_position
   token_stream
-  roundtrip
-  random_token
   coverage_open)
  (preprocess
   (per_module
@@ -79,33 +72,50 @@
     token_stream)))
  (libraries compiler-libs.common unix))
 
+; The helpers of the tests, on the instrumented OCST, in a library of their
+; own: inside the library of OCST, its [Parser] would hide the compiler's,
+; which the lexer check uses. Unwrapped, as in the parent directory.
+
+(library
+ (name roundtrip_coverage)
+ (optional)
+ (wrapped false)
+ (modules roundtrip lexer_check random_token)
+ (flags
+  (:standard -open Ocst_coverage.Coverage_open))
+ (libraries ocst_coverage unix compiler-libs.common))
+
 (executables
  (names
-  fuzz_roundtrip
-  codebase_roundtrip
+  driver
   parser_test
   random_test
   errors
   doc_comments_test)
  (modules
-  fuzz_roundtrip
-  codebase_roundtrip
+  driver
   parser_test
   random_test
   errors
-  doc_comments_test
-  lexer_check)
+  doc_comments_test)
  (optional)
  (flags
   (:standard -open Ocst_coverage.Coverage_open))
- (libraries cmdliner ocst_coverage str unix compiler-libs.common))
+ (libraries
+  cmdliner
+  ocst_coverage
+  roundtrip_coverage
+  fuzz_configurations
+  str
+  unix
+  compiler-libs.common))
 
 (rule
  (copy ../doc_comments/doc_comments.ml doc_comments_test.ml))
 
 ; The fuzzing, in parallel: one rule per configuration and part, as in the
-; parent directory, generated in fuzz.inc (by [fuzz_roundtrip.exe
-; --dune-rules coverage]), each writing its coverage.
+; parent directory, generated in fuzz.inc (by [fuzz_generate.exe rules
+; coverage]), each writing its coverage.
 
 (include fuzz.inc)
 
@@ -114,7 +124,7 @@
  (action
   (with-stdout-to
    fuzz.inc.generated
-   (run ./fuzz_roundtrip.exe --dune-rules coverage))))
+   (run ../fuzz_generate.exe rules coverage))))
 
 (rule
  (alias runtest)
@@ -139,7 +149,7 @@
   (glob_files *.ml)
   ; The coverage of the fuzzing, by the rules of fuzz.inc.
   (glob_files fuzz_*.coverage)
-  codebase_roundtrip.exe
+  driver.exe
   parser_test.exe
   random_test.exe
   errors.exe
@@ -172,9 +182,9 @@
      (run ./doc_comments_test.exe ../doc_comments/cases)))
    (setenv
     WINDTRAP_COVERAGE_FILE
-    codebase_roundtrip.coverage
+    repository.coverage
     (ignore-stdout
-     (run ./codebase_roundtrip.exe)))
+     (run ./driver.exe --repository)))
    (with-stdout-to
     %{targets}
     (run %{bin:windtrap} coverage --color=never --show-uncovered .))

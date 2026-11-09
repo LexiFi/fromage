@@ -1,7 +1,8 @@
-(** Round-trip checks of OCST against the compiler: a source is lexed and
-    parsed by OCST, printed back, and converted to a Parsetree, which must be
-    equal to the compiler's, with the same warnings about doc comments
-    (warning 50). *)
+(** The checks of OCST against the compiler, which the tests run on all their
+    sources (the files of the repository, the generated sentences...): a
+    source is lexed and parsed by OCST, printed back, and converted to a
+    Parsetree, which must be equal to the compiler's, with the same warnings
+    about doc comments (warning 50). *)
 
 val git_root : unit -> string
 (** The root of the repository: dune's source tree when a dune rule runs the
@@ -13,9 +14,6 @@ val timed : string -> (unit -> 'a) -> 'a
 
 val print_timings : unit -> unit
 (** The time spent in each phase, the longest first, on the error output. *)
-
-exception Mismatch of string * string Lazy.t
-(** An AST mismatch: a one-line message, and details on the first difference. *)
 
 val docstring_warnings : (unit -> 'a) -> 'a * (Location.t * Warnings.t) list
 (** The result of a parser, with the warnings about doc comments (warning 50)
@@ -39,16 +37,17 @@ val formatter : formatter option ref
     formatted source must have the same tokens and comments as the original
     one. The tests set it by linking the library [pretty_check]. *)
 
-val check_implementation : ?name:string -> string -> string -> bool
-(** [check_implementation ?name filename source] checks an implementation.
-    [filename] is used in locations, [name] (by default [filename]) in error
-    messages. Raises [Failure] or [Mismatch] when the check fails. Sources that
-    both parsers reject pass, unless OCST fails with an internal error or an
-    exception other than a syntax error. Returns whether both parsers accept
-    the source. *)
-
-val check_interface : ?name:string -> string -> string -> bool
-(** Same as [check_implementation], for an interface. *)
+val check : ?name:string -> string -> string -> bool
+(** [check ?name filename source]: the checks of OCST on [source], an
+    interface if [filename] ends with [.mli], else an implementation. The
+    lexer round-trip ([Lexer_check]); then OCST and the compiler accept or
+    reject the source alike, OCST failing with a syntax error, never with an
+    internal error or another exception; when they accept it, the CST prints
+    back to the source, its AST is the compiler's, with the same warnings
+    about doc comments, and the formatter, if set, keeps it. [filename] is
+    used in locations, [name] (by default [filename]) in error messages.
+    Raises an exception when a check fails (see [failure]). Returns whether
+    both parsers accept the source. *)
 
 type failure = { message : string; details : string Lazy.t option }
 

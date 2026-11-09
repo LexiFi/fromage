@@ -7,7 +7,7 @@
 (*                                                                        *)
 (**************************************************************************)
 
-let check_roundtrip filename input =
+let check_roundtrip ~name input =
   let output = Ocst.source_of_tokens (Ocst.lex input) in
   if input <> output then begin
     let rec first_difference offset =
@@ -19,7 +19,7 @@ let check_roundtrip filename input =
     in
     failwith
       ( Printf.sprintf
-          "%s: round trip differs at byte %d" filename (first_difference 0)
+          "%s: round trip differs at byte %d" name (first_difference 0)
       )
   end
 
@@ -237,7 +237,7 @@ let describe_position (position : Lexing.position) =
     "%s:%d:%d" position.pos_fname position.pos_lnum
     (position.pos_cnum - position.pos_bol)
 
-let check_tokens filename source =
+let check_tokens ~name filename source =
   let tokens = Ocst.lex source in
   let spans = Token_position.spans ~filename tokens in
   let rec compare index ocst compiler =
@@ -247,13 +247,13 @@ let check_tokens filename source =
         failwith
           ( Printf.sprintf
               "%s: OCST lexing error on %S at %s, the compiler lexer succeeds"
-              filename error.Token.text (describe_position spans.(index).start)
+              name error.Token.text (describe_position spans.(index).start)
           )
     | _, Lexing_failed :: _ ->
         failwith
           ( Printf.sprintf
               "%s: the compiler lexer fails at token %d, OCST does not"
-              filename index
+              name index
           )
     | token :: ocst, Lexed (expected, start, stop) :: compiler ->
         let span = spans.(index) in
@@ -262,17 +262,17 @@ let check_tokens filename source =
           failwith
             ( Printf.sprintf
                 "%s: token %S at %s differs from the compiler token at %s"
-                filename (Token.text token)
-                (describe_position span.start) (describe_position start)
+                name (Token.text token) (describe_position span.start)
+                (describe_position start)
             )
         ;
         compare (index + 1) ocst compiler
     | [], [] -> ()
-    | _ -> failwith (filename ^ ": token counts differ")
+    | _ -> failwith (name ^ ": token counts differ")
   in
   compare 0 tokens (compiler_tokens filename source)
 
-let check filename source =
+let check ~name filename source =
   Compiler_lexer.print_warnings := false;
-  check_roundtrip filename source;
-  check_tokens filename source
+  check_roundtrip ~name source;
+  check_tokens ~name filename source
