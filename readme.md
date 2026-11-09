@@ -31,6 +31,9 @@ Part the are not meant to be read by humans at all:
 This readme is not LLM-generated, its intended as human-to-human communication,
 to express the intent of the authors.
 
+During development the parts that are supposed to be human checked might not be,
+but no release should be made until thats the case.
+
 # Fromage
 
 Fromage is a new formatter for ocaml. It intends to be opiniated but open 
