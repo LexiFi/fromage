@@ -228,6 +228,84 @@ Now the difference of indentation between `f` and its args is only one,
 which is wrong and should not happen. If `[|` was something even longer it could
 be even worse.
 
+### Repeated constructs should be packed
+
+This one is a bit more abstract. What we mean by that is that various "lists"
+will have the same behavior. By list I mean any construct where you can repeat 
+an element an arbirary number of times, like a tuple, or function arguments.
+
+First lets describe this behavior with function arguments:
+
+```ocaml
+f a b c (looooong arguuuumennnnnnt) d e
+```
+
+will be formatted
+```ocaml
+f
+  a b c
+  ( looooong 
+      arguuuumennnnnnt
+  )
+  d e
+```
+This idea is the following: we "pack" that is put together multiple args on a 
+single line when possible, but multiline elements such as the one in `()` are
+isolated with breaks before and after them.
+
+This is used for a lot of other construct such as list and array litterals, 
+tuples.
+
+Some list constructs dont use that and instead are either all one line or each 
+on its own line. An example of this is sequence (`a ; b`) or match branches.
+
+There is some tradeoff between the two:
+
+```ocaml
+{ a; 
+  b; 
+  c;
+  d;
+  e;
+  f;
+  g; 
+  h = (fun x -> looooooong bodyyyy; print "hello"; does_not fit )
+}
+```
+is very tedious compared to 
+
+```ocaml
+{ a; b; c; d; e; f; g; 
+  h = (fun x -> looooooong bodyyyy; print "hello"; does_not fit )
+}
+```
+but if you have a bunch of moderately complex expression the all-or-nothing 
+behavior might be more readable:
+```ocaml
+{ a = (fun x -> reasonably_short body );
+  b = (fun x -> reasonably_short body );
+  c = (fun x -> reasonably_short body );
+  d = (fun x -> reasonably_short body ); 
+}
+```
+compared to
+```ocaml
+{ a = (fun x -> reasonably_short body ); b = (fun x -> reasonably_short body );
+  c = (fun x -> reasonably_short body ); d = (fun x -> reasonably_short body ); 
+}
+```
+
+The solution to this maybe be to sort the elements of the list between "simple"
+and "complex" ones. The simple ones would be allowed to be grouped on one line 
+but not the complex ones. 
+
+Still, I am afraid there is no shortcut here, it need to be rewritten for every 
+piece of the CST is used on. Or maybe a smart trick on the number of tokens, 
+like more than 3 tokens would be complex ? But arguably `A.B.c` is simple were
+`fun x -> y` is complex and the first has more tokens.
+
+So for now there is no such smart decision and we always pack. Ideas welcome !
+
 ### Infix operators
 
 Infix operators are a bit difficult, because they share a syntax node even when
