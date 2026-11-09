@@ -1,0 +1,15 @@
+; An input whose layout is part of the test is left as it is (see
+; ../.ocamlformat-ignore): its formatted version, a.ml.expected, is updated
+; by dune fmt instead (see ../pretty_test.ml).
+
+(rule
+ (with-stdout-to
+  blank_lines_and_doc_comments.ml.formatted
+  (run %{bin:fromage} %{dep:blank_lines_and_doc_comments.ml})))
+
+(rule
+ (alias fmt)
+ (action
+  (diff
+   blank_lines_and_doc_comments.ml.expected
+   blank_lines_and_doc_comments.ml.formatted)))

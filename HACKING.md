@@ -24,12 +24,15 @@ suite compares its output with `Parse.implementation`/`Parse.interface`.
 
 ## Building and testing
 
-The repository has two opam packages, generated from `dune-project`:
-`ocst`, the library (in `ocst/`), and `fromage`, the pretty printer (the
+The repository has three opam packages, generated from `dune-project`:
+`ocst`, the library (in `ocst/`); `fromage`, the pretty printer (the
 library `fromage`, module `Ocst_pretty`, in `pretty/`) and the formatter
-(the executable `fromage`). Each test belongs to one of them: the tests of
+(the executable `fromage`); and `ocamlfromage` (in `ocamlfromage/`), the
+same formatter as an executable named `ocamlformat`, for `dune fmt` (see
+"The pretty printer"). Each test belongs to one of them: the tests of
 the parser, the errors, the doc comments and the coverage to `ocst`, the
-round-trips, the fuzzing and the layout to `fromage`. The dependencies of
+round-trips, the fuzzing and the layout to `fromage`, the command line of
+`ocamlformat` (`test/ocamlfromage.t`) to `ocamlfromage`. The dependencies of
 the tests are `{with-test}` for `@runtest` (`cmdliner`, which parses the
 command lines of the executables, and `menhir` and `ocamlgrammarfuzzer`, for
 `fromage`), `{with-dev-setup}` for the rest of
@@ -308,10 +311,11 @@ kind, and is shared with the lexer test `test/random_test.ml`.
 ## Layout of the sources
 
 The sources are formatted by OCST's own pretty printer (see below):
-`make fmt` runs it on them and on `test/examples` instead of `ocp-indent`,
-except on the inputs of the tests (the `cases` of `test/errors` and
-`test/doc_comments`, whose layout is what they test, and
-`test/ocamlformat_tests`), which are left as they are. `runtest` checks their layout with
+`make fmt` runs `dune fmt`, which runs it, as the `ocamlformat` of
+`ocamlfromage`, on them and on `test/examples`, except on the inputs of the
+tests (the `cases` of `test/errors` and `test/doc_comments`, whose layout is
+what they test, and `test/ocamlformat_tests`), which
+`test/.ocamlformat-ignore` lists. `runtest` checks their layout with
 `test/layout.ml` (which lexes them with OCST; `cst_lexer.mll`, which neither
 can read, follows the same rules by hand). The length of the lines is not
 checked: pretty_expressive keeps them within the width of `make fmt` (80)
@@ -417,12 +421,24 @@ line after an item on several lines of a structure or a signature (checked
 in the round-trip: a blank line is never removed). The attributes of an
 item (`[@@...]`) or of a node (`e [@attr]`) are on its line when both fit,
 else on the next line, in its column. `fromage FILE...` (`ocst_format.exe` in `_build`) prints files
-formatted, and `fromage -i FILE...` formats them in place (as
-`make fmt` does). It
+formatted, and `fromage -i FILE...` formats them in place. It
 refuses to format a file when the compiler's AST of the formatted source
 differs from the original one, except for the locations (`same_ast.ml`): its
 message says which item changes, and whether its doc comments or its code
 do; `--debug` also shows the item and the formatted source.
+
+The package `ocamlfromage` installs the same formatter as an executable
+named `ocamlformat` (`ocamlfromage/ocamlformat.ml`), with the command line of
+ocamlformat as far as `dune fmt` and the editors use it: `--impl`, `--intf`,
+`--name`, `-` for the standard input, `--inplace`, `--output`, `--check`,
+`--margin`, `--root` and `--enable-outside-detected-project`. It reads the
+`.ocamlformat` files of the directory of a file and of the directories above
+it, up to the root of the project, as ocamlformat does
+(`ocamlfromage/config.ml`), but only their options `margin` (the width) and
+`disable`, with the `.ocamlformat-ignore` and `.ocamlformat-enable` files;
+it ignores the others. Unlike ocamlformat, it formats the files of a project
+without a `.ocamlformat`. Dune runs the `ocamlformat` of the workspace
+before an installed one: `dune fmt` in this repository uses it.
 
 - `trivia.ml`: the comments and blank lines before each token. The comments
   on the line of the previous token stay after it; the others are printed
@@ -478,7 +494,7 @@ It is tested in two ways:
   starts with a test there, which fails before the change. An input whose
   own layout matters (blank lines, positions of doc comments) is left as it
   is when it has an `a.ml.expected`, its formatted version, which `make fmt`
-  writes.
+  writes (a rule of `test/formatting/dune`).
 
 ## Workflow
 

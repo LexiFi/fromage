@@ -1,0 +1,7 @@
+# The sources which dune fmt leaves as they are: the inputs of the tests
+# which come from elsewhere, or whose layout is part of the test (the
+# formatted version of a.ml is then a.ml.expected, see formatting/dune).
+errors/cases/*
+doc_comments/cases/*
+ocamlformat_tests/*
+formatting/blank_lines_and_doc_comments.ml

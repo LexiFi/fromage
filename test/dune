@@ -142,7 +142,8 @@
   (glob_files doc_comments/doc_comments.ml)
   (glob_files coverage/{coverage_open,exclude_refill}.ml)
   (glob_files ../pretty/*.ml)
-  (glob_files ../pretty/{doc,ocst_pretty,operator_classification,syntax_layouts,trivia}.mli))
+  (glob_files ../pretty/{doc,ocst_pretty,operator_classification,syntax_layouts,trivia}.mli)
+  (glob_files ../ocamlfromage/*.{ml,mli}))
  (action
   (run ./layout.exe %{deps})))
 
@@ -193,3 +194,10 @@
  (package fromage)
  (modules operator_classification_test)
  (libraries ocst_pretty))
+
+; The command line of the executable ocamlformat of ocamlfromage.
+
+(cram
+ (applies_to ocamlfromage)
+ (package ocamlfromage)
+ (deps %{bin:ocamlformat}))

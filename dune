@@ -8,4 +8,5 @@
  (deps
   (alias_rec ocst/default)
   (alias_rec pretty/default)
+  (alias_rec ocamlfromage/default)
   (alias_rec test/default)))

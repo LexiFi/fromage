@@ -2022,3 +2022,29 @@ let interface ?(width = default_width) ((items, eof) as value : interface) =
   Fun.protect
     ~finally:Trivia.clear
     (fun () -> Layout.D.to_string (Layout.signature items) eof)
+
+type error =
+  | Syntax_error of Ocst.Syntax_error.t
+  | Changes_ast of Ocst.Same_ast.difference
+
+(* [interface], which the argument of [format] hides. *)
+let print_interface = interface
+
+let format ?width ~interface ~filename source =
+  let tokens = Ocst.lex source in
+  match
+    if interface then
+      let formatted =
+        print_interface ?width (Ocst.Parser.interface_tokens ~filename tokens)
+      in
+      formatted, Ocst.Same_ast.interface ~filename source formatted
+    else
+      let formatted =
+        implementation
+          ?width (Ocst.Parser.implementation_tokens ~filename tokens)
+      in
+      formatted, Ocst.Same_ast.implementation ~filename source formatted
+  with
+  | formatted, Ok () -> Ok formatted
+  | _, Error difference -> Error (Changes_ast difference)
+  | exception Ocst.Syntax_error.Error error -> Error (Syntax_error error)

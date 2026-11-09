@@ -1,0 +1,9 @@
+; An executable named ocamlformat, which formats with fromage, with the
+; command line of ocamlformat, for dune fmt (see ocamlformat.ml).
+
+(executable
+ (name ocamlformat)
+ (public_name ocamlformat)
+ (package ocamlfromage)
+ (modules ocamlformat config)
+ (libraries cmdliner ocst fromage))
