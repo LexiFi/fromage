@@ -4,6 +4,6 @@
 (executable
  (name ocamlformat)
  (public_name ocamlformat)
- (package ocamlfromage)
+ (package ocamlfauxrmat)
  (modules ocamlformat config)
  (libraries cmdliner ocst fromage))

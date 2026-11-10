@@ -1,4 +1,4 @@
-The executable ocamlformat of ocamlfromage, with the command line of
+The executable ocamlformat of ocamlfauxrmat, with the command line of
 ocamlformat. A project, whose root is the directory with the dune-project:
 
   $ mkdir -p project/sub/deep project/disabled/enabled project/ignored

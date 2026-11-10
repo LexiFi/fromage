@@ -5,7 +5,7 @@
 (generate_opam_files true)
 
 ; dune fmt formats the OCaml sources with the executable ocamlformat of
-; ocamlfromage (see the Makefile), not the dune files.
+; ocamlfauxrmat (see the Makefile), not the dune files.
 
 (formatting
  (enabled_for ocaml))
@@ -60,7 +60,7 @@
   (ocamlgrammarfuzzer :with-test)))
 
 (package
- (name ocamlfromage)
+ (name ocamlfauxrmat)
  (synopsis "fromage as ocamlformat, for dune fmt")
  (description
   "An executable named ocamlformat which formats with fromage, with the command line of ocamlformat which dune fmt and the editors use. Of the options of the .ocamlformat files, it honors margin and disable, with .ocamlformat-ignore and .ocamlformat-enable, and ignores the others. Unlike ocamlformat, it formats the files of a project without a .ocamlformat.")

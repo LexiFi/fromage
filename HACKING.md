@@ -27,12 +27,12 @@ suite compares its output with `Parse.implementation`/`Parse.interface`.
 The repository has three opam packages, generated from `dune-project`:
 `ocst`, the library (in `ocst/`); `fromage`, the pretty printer (the
 library `fromage`, module `Ocst_pretty`, in `pretty/`) and the formatter
-(the executable `fromage`); and `ocamlfromage` (in `ocamlfromage/`), the
+(the executable `fromage`); and `ocamlfauxrmat` (in `ocamlfauxrmat/`), the
 same formatter as an executable named `ocamlformat`, for `dune fmt` (see
 "The pretty printer"). Each test belongs to one of them: the tests of
 the parser, the errors, the doc comments and the coverage to `ocst`, the
 round-trips, the fuzzing and the layout to `fromage`, the command line of
-`ocamlformat` (`test/ocamlfromage.t`) to `ocamlfromage`. The dependencies of
+`ocamlformat` (`test/ocamlfauxrmat.t`) to `ocamlfauxrmat`. The dependencies of
 the tests are `{with-test}` for `@runtest` (`cmdliner`, which parses the
 command lines of the executables, and `menhir` and `ocamlgrammarfuzzer`, for
 `fromage`), `{with-dev-setup}` for the rest of
@@ -312,7 +312,7 @@ kind, and is shared with the lexer test `test/random_test.ml`.
 
 The sources are formatted by OCST's own pretty printer (see below):
 `make fmt` runs `dune fmt`, which runs it, as the `ocamlformat` of
-`ocamlfromage`, on them and on `test/examples`, except on the inputs of the
+`ocamlfauxrmat`, on them and on `test/examples`, except on the inputs of the
 tests (the `cases` of `test/errors` and `test/doc_comments`, whose layout is
 what they test, and `test/ocamlformat_tests`), which
 `test/.ocamlformat-ignore` lists. `runtest` checks their layout with
@@ -427,14 +427,14 @@ differs from the original one, except for the locations (`same_ast.ml`): its
 message says which item changes, and whether its doc comments or its code
 do; `--debug` also shows the item and the formatted source.
 
-The package `ocamlfromage` installs the same formatter as an executable
-named `ocamlformat` (`ocamlfromage/ocamlformat.ml`), with the command line of
+The package `ocamlfauxrmat` installs the same formatter as an executable
+named `ocamlformat` (`ocamlfauxrmat/ocamlformat.ml`), with the command line of
 ocamlformat as far as `dune fmt` and the editors use it: `--impl`, `--intf`,
 `--name`, `-` for the standard input, `--inplace`, `--output`, `--check`,
 `--margin`, `--root` and `--enable-outside-detected-project`. It reads the
 `.ocamlformat` files of the directory of a file and of the directories above
 it, up to the root of the project, as ocamlformat does
-(`ocamlfromage/config.ml`), but only their options `margin` (the width) and
+(`ocamlfauxrmat/config.ml`), but only their options `margin` (the width) and
 `disable`, with the `.ocamlformat-ignore` and `.ocamlformat-enable` files;
 it ignores the others. Unlike ocamlformat, it formats the files of a project
 without a `.ocamlformat`. Dune runs the `ocamlformat` of the workspace
