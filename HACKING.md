@@ -416,16 +416,22 @@ The layouts which are not decided yet, which may change, are listed in
 
 `pretty/` prints a CST with new line breaks and indentation, following the
 layout rules above, and keeps everything else: the tokens, the comments, and
-the blank lines (several blank lines in a row become one). It adds a blank
-line after an item on several lines of a structure or a signature (checked
-in the round-trip: a blank line is never removed). The attributes of an
+the blank lines (several blank lines in a row become one, and the blank
+lines at the start of the file are removed, except before a doc comment). It
+adds a blank line after an item on several lines of a structure or a
+signature, except next to a doc comment (checked in the round-trip: a blank
+line is never removed). The compiler's lexer files a doc comment according
+to the blank lines around it, so the formatter never changes the blank lines
+next to one. The attributes of an
 item (`[@@...]`) or of a node (`e [@attr]`) are on its line when both fit,
 else on the next line, in its column. `fromage FILE...` (`ocst_format.exe` in `_build`) prints files
 formatted, and `fromage -i FILE...` formats them in place. It
-refuses to format a file when the compiler's AST of the formatted source
-differs from the original one, except for the locations (`same_ast.ml`): its
-message says which item changes, and whether its doc comments or its code
-do; `--debug` also shows the item and the formatted source.
+refuses to format a file when formatting would change more than its
+whitespace: when the compiler's lexer gives other tokens or comments for the
+formatted source, or doc comments attached elsewhere (because of other blank
+lines around them), which is the whole input of the compiler's parser
+(`pretty/same_tokens.ml`). Its message says which token or comment changes;
+`--debug` also shows the formatted source.
 
 The package `ocamlfauxrmat` installs the same formatter as an executable
 named `ocamlformat` (`ocamlfauxrmat/ocamlformat.ml`), with the command line of
@@ -481,10 +487,9 @@ It is tested in two ways:
   repository and the fuzzed sentences, check that the formatted source has the
   same tokens and comments as the original one, and that a comment (or doc
   comment) which starts its line in the original one still starts a line: a
-  comment on its own line always stays there, that the blank lines are kept,
-  and that the compiler's AST is the same except for the locations
-  (`Same_ast`), doc comments included (the library `test/pretty_check`
-  installs the formatter in these tests).
+  comment on its own line always stays there, and that the blank lines are
+  kept; and the check of the formatter itself (`Ocst_pretty.Same_tokens`,
+  the library `test/pretty_check` installs the formatter in these tests).
 - `test/pretty_test.ml` formats the sources of OCST, `test/examples` and
   `test/formatting`, and checks that they are already formatted (by
   `make fmt`), and that the result follows the layout rules and is not

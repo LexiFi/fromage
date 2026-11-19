@@ -30,6 +30,11 @@ type info =
     (** The comments and the line directives before the token, with the
         number of newlines before each. *)
     newlines : int; (** The number of newlines just before the token. *)
+    file_start : bool;
+    (** Whether the token is the first of the file: a blank line before it
+        or its first comment is then two newlines. The blank lines at the
+        start of the file are kept only before a doc comment, which the
+        compiler's lexer files according to them. *)
   }
 
 val set : Token.any_token list -> unit

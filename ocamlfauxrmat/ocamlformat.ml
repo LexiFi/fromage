@@ -46,11 +46,11 @@ let format
           | Ok formatted -> Ok formatted
           | Error (Syntax_error error) ->
               Error (Ocst.Syntax_error.to_string error)
-          | Error (Changes_ast difference) ->
+          | Error (Changes_tokens difference) ->
               Error
                 ( Printf.sprintf
-                    "%s: formatting would change the AST, the file is left \
-                     as it is: %s"
+                    "%s: formatting would change more than the whitespace, \
+                     the file is left as it is: %s"
                     filename difference.summary
                 )
     in

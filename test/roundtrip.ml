@@ -170,6 +170,11 @@ exception Mismatch of string * string Lazy.t
 type formatter =
   { format_implementation : Ocst.Cst.implementation -> string;
     format_interface : Ocst.Cst.interface -> string;
+    same_tokens :
+      filename:string -> string -> string -> (unit, string * string) result
+  ;
+    (** The check of the formatter that it only changes whitespace: its
+        error is a summary and details. *)
   }
 
 let formatter = ref None
@@ -274,10 +279,9 @@ let lines_around text line =
   |> List.map (fun (index, text) -> Printf.sprintf "%5d %s" index text)
   |> String.concat "\n"
 
-(* The formatter keeps the comments and tokens of [source] ([keeps]), and its
-   AST for the compiler's parser, except for the locations ([same_ast]): the
-   items documented by the doc comments too. *)
-let check_format ~name ~same_ast source format =
+(* The formatter keeps the comments and tokens of [source], for its own check
+   ([same_tokens]) and with their lines ([keeps]). *)
+let check_format ~name ~same_tokens source format =
   match timed "format" format with
   | exception error ->
       failwith
@@ -313,26 +317,26 @@ let check_format ~name ~same_ast source format =
                   )
               )
       in
+      Result.iter_error
+        ( fun (summary, details) ->
+            raise
+              ( Mismatch
+                  ( Printf.sprintf
+                      "%s: the formatter changed more than the whitespace: %s"
+                      name summary
+                    ,
+                    lazy details
+                  )
+              )
+        )
+        ( timed
+            "compare the compiler's tokens after formatting"
+            (fun () -> same_tokens source formatted)
+        )
+      ;
       timed
         "compare the tokens after formatting"
         (fun () -> loop (significant source) (significant formatted))
-      ;
-      match
-        timed
-          "compare the ASTs after formatting"
-          (fun () -> same_ast source formatted)
-      with
-      | Ok () -> ()
-      | Error (difference : Ocst.Same_ast.difference) ->
-          raise
-            ( Mismatch
-                ( Printf.sprintf
-                    "%s: the formatter changed the AST: %s"
-                    name difference.summary
-                  ,
-                  lazy difference.details
-                )
-            )
 
 (* The compiler's message for an error, on one line. *)
 let error_message error =
@@ -403,12 +407,7 @@ type ('cst, 'item) kind =
   { parse : filename:string -> Ocst.Token.any_token list -> 'cst;
     compiler_parse : string -> string -> 'item list;
     print : 'cst -> string; to_ast : filename:string -> 'cst -> 'item list;
-    format : formatter -> 'cst -> string;
-    same_ast :
-      filename:string -> 'item list -> string
-      -> (unit, Ocst.Same_ast.difference) result
-  ;
-    dump : 'item list -> string;
+    format : formatter -> 'cst -> string; dump : 'item list -> string;
   }
 
 let implementation =
@@ -421,7 +420,7 @@ let implementation =
     print = Ocst.Printer.string_of_implementation;
     to_ast = Ocst.To_ast.implementation;
     format = (fun formatter -> formatter.format_implementation);
-    same_ast = Ocst.Same_ast.implementation_of_ast; dump = structure_dump;
+    dump = structure_dump;
   }
 
 let interface =
@@ -431,7 +430,7 @@ let interface =
     compiler_parse = compiler_interface;
     print = Ocst.Printer.string_of_interface; to_ast = Ocst.To_ast.interface;
     format = (fun formatter -> formatter.format_interface);
-    same_ast = Ocst.Same_ast.interface_of_ast; dump = signature_dump;
+    dump = signature_dump;
   }
 
 (* The parser round-trip: OCST and the compiler accept the same sources, and
@@ -470,11 +469,7 @@ let check_parser kind ~name filename source =
       Option.iter
         ( fun formatter ->
             check_format
-              ~name
-              ~same_ast:
-                ( fun _ formatted ->
-                    kind.same_ast ~filename compiler_ast formatted
-                )
+              ~name ~same_tokens:(formatter.same_tokens ~filename)
               source (fun () -> kind.format formatter cst)
         )
         !formatter

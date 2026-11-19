@@ -30,12 +30,19 @@ val compiler_error :
 type formatter =
   { format_implementation : Ocst.Cst.implementation -> string;
     format_interface : Ocst.Cst.interface -> string;
+    same_tokens :
+      filename:string -> string -> string -> (unit, string * string) result
+  ;
+    (** The check of the formatter that it only changes whitespace: its
+        error is a summary and details. *)
   }
 
 val formatter : formatter option ref
 (** A formatter, which the checks below also check, when it is set: the
     formatted source must have the same tokens and comments as the original
-    one. The tests set it by linking the library [pretty_check]. *)
+    one, for its own check ([same_tokens]) and for OCST's lexer, which also
+    checks where comments and blank lines are. The tests set it by linking
+    the library [pretty_check]. *)
 
 val check : ?name:string -> string -> string -> bool
 (** [check ?name filename source]: the checks of OCST on [source], an

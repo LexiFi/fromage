@@ -400,6 +400,11 @@ module Make (Config : CONFIG) : S =
       A comment alone on its line is not measured: whatever its length, it
       does not change the layout of the code around it. The last comment is
       followed by code on its line when [last_followed_on_its_line]. *)
+    (** A blank line before the first comment or the token of [info], after the
+      line break which ends the previous line. *)
+    let first_blank_line (info : Trivia.info) =
+      if info.file_start then line_break ^^ line_break else line_break
+
     let comments_before
         ?(last_followed_on_its_line = false) (info : Trivia.info)
       =
@@ -408,7 +413,8 @@ module Make (Config : CONFIG) : S =
           List.fold_left
             ( fun (doc, index) (newlines, comment) ->
                 let separator =
-                  if index = 0 then if newlines >= 2 then line_break else none
+                  if index = 0 then
+                    if newlines >= 2 then first_blank_line info else none
                   else if newlines >= 2 then line_break ^^ line_break
                   else line_break
                 in
@@ -453,7 +459,7 @@ module Make (Config : CONFIG) : S =
         let info = Trivia.info token in
         let leading =
           match info.before with
-          | [] -> if info.newlines >= 2 then line_break else none
+          | [] -> if info.newlines >= 2 then first_blank_line info else none
           | _ ->
               let separator =
                 if info.newlines >= 2 then line_break ^^ line_break
@@ -589,13 +595,36 @@ module Make (Config : CONFIG) : S =
     let ( +|| ) =
       join (fun left right -> left ^^ line_break ^^ line_break ^^ right)
 
+    (* Is there a doc comment between [left] and [right]? A blank line there
+       would change the items it documents for the compiler's lexer, or how
+       the lexer files it, even where the AST stays the same. *)
+    let doc_comment_between left right =
+      let is_doc_comment (token : Token.any_token) =
+        match token.kind with
+          `DOCSTRING _ -> true
+        | _ -> false
+      in
+        Option.fold ~none:false ~some:is_doc_comment left.last
+      ||
+        match right.first with
+        | None -> false
+        | Some token ->
+              is_doc_comment token
+            ||
+              List.exists
+                ( function
+                    Token.Warning _ -> true
+                  | _ -> false
+                )
+                token.leading
+
     let items values =
         List.fold_right
           ( fun (value, adjacent) (rest, rest_adjacent) ->
               let joined =
                 if
-                    is_empty rest || starts_after_blank_line rest
-                  || adjacent || rest_adjacent
+                    is_empty rest || starts_after_blank_line rest || adjacent
+                  || rest_adjacent || doc_comment_between value rest
                 then value +| rest
                 else
                   (* [value] on one line, or a blank line after it. *)

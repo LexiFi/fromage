@@ -43,6 +43,7 @@ type info =
     (** The comments and the line directives before the token, with the
         number of newlines before each. *)
     newlines : int; (** The number of newlines just before the token. *)
+    file_start : bool; (** The token is the first of the file. *)
   }
 
 (** The first token of the file being printed, which has no previous line:
@@ -57,12 +58,52 @@ let set tokens =
 
 let clear () = first := None
 
+(** Does the compiler's lexer see a blank line before the first doc comment
+    of [token]: in its trivia (a doc comment which documents nothing), else
+    the token itself if it is one? A comment ends a newline, not a blank
+    line. *)
+let blank_before_doc_comment (token : Token.any_token) =
+  let rec loop state =
+    function
+    | Token.Warning _ :: _ -> state = `Blank
+    | Whitespace text :: rest ->
+        let newlines =
+          String.fold_left
+            (fun count c -> if c = '\n' then count + 1 else count) 0 text
+        in
+        let state =
+          match newlines, state with
+          | 0, state -> state
+          | 1, `None -> `Newline
+          | _ -> `Blank
+        in
+        loop state rest
+    | Comment _ :: rest ->
+        loop
+          ( match state with
+              `None | `Newline -> `None
+            | `Blank -> `Blank
+          )
+          rest
+    | Line_directive _ :: rest -> loop state rest
+    | [] ->
+        ( match token.kind with
+            `DOCSTRING _ -> state = `Blank
+          | _ -> false
+        )
+  in
+  loop `None token.leading
+
 let info (token : Token.any_token) =
   let is_first =
     match !first with
     | Some first -> first == token
     | None -> false
   in
+  let trivia = of_token token in
+  (* No blank line at the start of the file, except before a doc comment
+     which the compiler's lexer then files otherwise. *)
+  let at_start = is_first && not (blank_before_doc_comment token) in
   let on_previous_line = ref (not is_first)
   and newlines = ref 0
   and previous_line = ref []
@@ -76,16 +117,16 @@ let info (token : Token.any_token) =
       | Comment text when !on_previous_line ->
           previous_line := text :: !previous_line
       | (Comment _ | Directive _) as elt ->
-          (* No blank line at the start of the file. *)
-          let count = if is_first && !before = [] then 1 else max !newlines 1 in
+          let count = if at_start && !before = [] then 1 else max !newlines 1 in
           on_previous_line := false;
           before := (count, elt) :: !before;
           newlines := 0
     )
-    (of_token token)
+    trivia
   ;
   { previous_line = List.rev !previous_line; before = List.rev !before;
-    newlines = (if is_first && !before = [] then 0 else !newlines)
+    newlines = (if at_start && !before = [] then 0 else !newlines);
+    file_start = is_first;
   }
 
 (** Two tokens can be printed without a space between them when they are

@@ -2004,6 +2004,7 @@ module Make (Config : Doc.CONFIG) =
   end
 
 module Operator_classification = Operator_classification
+module Same_tokens = Same_tokens
 
 let default_width = 80
 
@@ -2025,7 +2026,7 @@ let interface ?(width = default_width) ((items, eof) as value : interface) =
 
 type error =
   | Syntax_error of Ocst.Syntax_error.t
-  | Changes_ast of Ocst.Same_ast.difference
+  | Changes_tokens of Same_tokens.difference
 
 (* [interface], which the argument of [format] hides. *)
 let print_interface = interface
@@ -2034,17 +2035,13 @@ let format ?width ~interface ~filename source =
   let tokens = Ocst.lex source in
   match
     if interface then
-      let formatted =
-        print_interface ?width (Ocst.Parser.interface_tokens ~filename tokens)
-      in
-      formatted, Ocst.Same_ast.interface ~filename source formatted
+      print_interface ?width (Ocst.Parser.interface_tokens ~filename tokens)
     else
-      let formatted =
-        implementation
-          ?width (Ocst.Parser.implementation_tokens ~filename tokens)
-      in
-      formatted, Ocst.Same_ast.implementation ~filename source formatted
+      implementation ?width (Ocst.Parser.implementation_tokens ~filename tokens)
   with
-  | formatted, Ok () -> Ok formatted
-  | _, Error difference -> Error (Changes_ast difference)
+  | formatted ->
+      ( match Same_tokens.check ~filename source formatted with
+        | Ok () -> Ok formatted
+        | Error difference -> Error (Changes_tokens difference)
+      )
   | exception Ocst.Syntax_error.Error error -> Error (Syntax_error error)

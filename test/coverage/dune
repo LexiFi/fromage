@@ -15,7 +15,7 @@
 
 (copy_files#
  (files
-  ../../ocst/{ocst,cst,doc_comments,parser,printer,same_ast,syntax_error,text_diff,to_ast,token,token_position,token_stream}.{ml,mli}))
+  ../../ocst/{ocst,cst,doc_comments,parser,printer,syntax_error,text_diff,to_ast,token,token_position,token_stream}.{ml,mli}))
 
 ; The lexer, without its refill branches, which no test can reach.
 
@@ -48,7 +48,6 @@
   cst_lexer
   parser
   printer
-  same_ast
   syntax_error
   text_diff
   to_ast

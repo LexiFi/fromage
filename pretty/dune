@@ -5,8 +5,14 @@
 (library
  (name ocst_pretty)
  (public_name fromage)
- (modules ocst_pretty doc operator_classification syntax_layouts trivia)
- (libraries ocst pretty_expressive))
+ (modules
+  ocst_pretty
+  doc
+  operator_classification
+  same_tokens
+  syntax_layouts
+  trivia)
+ (libraries ocst pretty_expressive compiler-libs.common))
 
 (executable
  (name ocst_format)

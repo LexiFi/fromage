@@ -92,7 +92,9 @@ module type S =
       line after an item on several lines (kept when the source has one),
       except next to the items [adjacent] to the items around them ([true]):
       an ambiguous doc comment documents the items before and after it only
-      without blank lines between them. *)
+      without blank lines between them; and except next to a doc comment,
+      which the compiler's lexer attaches according to the blank lines
+      around it ([Same_tokens]). *)
 
     val nest : int -> t -> t
     (** The document, with its level indented by [indent]: the lines after its

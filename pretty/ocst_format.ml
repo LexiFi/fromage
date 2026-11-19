@@ -1,9 +1,10 @@
 (* Formats files with [Ocst_pretty]: [ocst_format.exe FILE...] prints them
    formatted, [ocst_format.exe -i FILE...] formats them in place, and
    [--width N] sets the width of the lines (80 by default). It fails,
-   without changing a file, when formatting would change the AST of the file
-   (except for the locations): its message says which item changes, and,
-   with [--debug], shows the item and the formatted source. *)
+   without changing a file, when formatting would change more than the
+   whitespace of the file (the input of the compiler's parser, see
+   [Ocst_pretty.Same_tokens]): its message says what changes, and, with
+   [--debug], shows the formatted source. *)
 
 let main in_place width debug files =
   (* Formatting keeps the memo tables of the layouts alive until the end of
@@ -22,15 +23,14 @@ let main in_place width debug files =
                 filename (fun channel -> output_string channel formatted)
         | Error (Syntax_error error) ->
             prerr_endline (Ocst.Syntax_error.to_string error); exit 1
-        | Error (Changes_ast difference) ->
+        | Error (Changes_tokens difference) ->
             Printf.eprintf
-              "%s: formatting would change the AST, the file is left as it \
-               is: %s\n"
+              "%s: formatting would change more than the whitespace, the \
+               file is left as it is: %s\n"
               filename difference.summary
             ;
             if debug then prerr_endline difference.details
-            else
-              prerr_endline "(--debug shows the item and the formatted source)"
+            else prerr_endline "(--debug shows the formatted source)"
             ;
             exit 2
     )
@@ -53,8 +53,8 @@ let () =
       info
         [ "debug" ]
         ~doc:
-          "When formatting would change the AST of a file, show the item \
-             and the formatted source."
+          "When formatting would change more than the whitespace of a \
+             file, show the formatted source around the change."
     )
   and files = Arg.(non_empty & pos_all file [] & info [] ~docv:"FILE")
   in
@@ -63,7 +63,10 @@ let () =
       Cmd.Exit.info 1 ~doc:"on a syntax error."
     ::
       Cmd.Exit.info
-        2 ~doc:"when formatting would change the AST of a file (left as it is)."
+        2
+        ~doc:
+          "when formatting would change more than the whitespace of a file \
+           (left as it is)."
     :: Cmd.Exit.defaults
   in
   exit
